@@ -16,7 +16,7 @@ const NavigationBar = () => {
   const [tab, setTab] = useState(window.location.pathname);
 
   return (
-    <div className='fixed bottom-0 w-full bg-white py-3'>
+    <div className='fixed bottom-0 left-0 w-full bg-white py-3 z-50'>
       <div className='flex justify-around'>
         <Link
           to='/'

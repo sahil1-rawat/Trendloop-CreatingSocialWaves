@@ -152,6 +152,11 @@ export const commentOnPost = async (req, res) => {
     await post.save();
     return res.status(201).json({
       message: 'Comment Added Successfully',
+      totalComments: post.comments.length,
+      user: req.user._id,
+      profilePic: req.user.profilePic.url,
+      name: req.user.name,
+      comment,
     });
   } catch (err) {
     res.status(500).json({
@@ -225,6 +230,7 @@ export const likeUnlikePost = async (req, res) => {
     await post.save();
     res.status(200).json({
       message: isLiked ? 'Post Unliked' : 'Post liked',
+      totalLikes: post.likes.length,
     });
   } catch (err) {
     res.status(500).json({

@@ -6,6 +6,7 @@ import 'swiper/css/pagination';
 import { Navigation, Pagination } from 'swiper/modules';
 import { usePostStore } from '../../store';
 import axios from 'axios';
+import toast from 'react-hot-toast';
 
 const Addpost = ({ type }) => {
   const { posts, reels, setPosts, setReels } = usePostStore();
@@ -13,22 +14,7 @@ const Addpost = ({ type }) => {
   const [files, setFiles] = useState([]);
   const [filePreviews, setFilePreviews] = useState([]);
   const videoRefs = useRef([]);
-  const fetchPosts = async () => {
-    try {
-      const res = await axios.get('/api/post/all', {
-        withCredentials: true,
-      });
-      if (res.status === 200) {
-        setPosts(res.data.posts);
-        setReels(res.data.reels);
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
-  useEffect(() => {
-    fetchPosts();
-  }, []);
+
   const changeFileHandler = (e) => {
     const selectedFiles = Array.from(e.target.files);
 
@@ -77,7 +63,46 @@ const Addpost = ({ type }) => {
   };
 
   const isFormValid = files.length > 0;
+  const fetchPosts = async () => {
+    try {
+      const res = await axios.get('/api/post/all', {
+        withCredentials: true,
+      });
+      if (res.status === 200) {
+        setPosts(res.data.posts);
+        setReels(res.data.reels);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  useEffect(() => {
+    fetchPosts();
+  }, []);
+  const addPost = async (e) => {
+    e.preventDefault();
+    const newPost = new FormData();
+    newPost.append('caption', caption);
+    Array.from(files).forEach((file) => {
+      newPost.append('file', file);
+    });
 
+    try {
+      const res = await axios.post(`/api/post/new?type=${type}`, newPost, {
+        withCredentials: true,
+      });
+
+      if (res.status === 201) {
+        setCaption('');
+        setFiles([]);
+        setFilePreviews([]);
+        fetchPosts();
+        toast.success(res.data.message);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <div className='bg-gray-100 flex items-center justify-center min-h-screen px-4 py-8'>
       <div className='bg-white p-6 md:p-8 rounded-lg shadow-lg max-w-md w-full'>
@@ -95,7 +120,6 @@ const Addpost = ({ type }) => {
             onChange={(e) => setCaption(e.target.value)}
           />
 
-          {/* Conditionally render the file input only if no files are selected */}
           {files.length === 0 && (
             <input
               type='file'
@@ -148,7 +172,8 @@ const Addpost = ({ type }) => {
             className={`bg-blue-500 text-white px-4 py-2 rounded-md w-full ${
               !isFormValid && 'opacity-50 cursor-not-allowed'
             }`}
-            disabled={!isFormValid}>
+            disabled={!isFormValid}
+            onClick={addPost}>
             + Add Post
           </button>
         </form>

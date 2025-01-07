@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BsChatFill, BsThreeDotsVertical } from 'react-icons/bs';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { Swiper, SwiperSlide } from 'swiper/react';
@@ -7,22 +7,67 @@ import { Navigation, Pagination } from 'swiper/modules';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import axios from 'axios';
+import { toast } from 'react-hot-toast';
+import { usePostStore, useUserStore } from '../../store';
 
 const PostCard = ({ type, value }) => {
   const [isLike, setIsLike] = useState(false);
   const [show, setShow] = useState(false);
-  const [newComment, setNewComment] = useState('');
+  const [comment, setNewComment] = useState('');
   const [comments, setComments] = useState(value.comments || []);
+  const { posts, reels, setPosts, setReels } = usePostStore();
+  const { usersData } = useUserStore();
 
+  useEffect(() => {
+    for (let i = 0; i < value.likes.length; i++) {
+      if (value.likes[i] === usersData._id) {
+        setIsLike(true);
+      }
+    }
+  }, [value, usersData._id]);
   // Handle adding a comment
-  const handleAddComment = (e) => {
+  const handleAddComment = async (e) => {
     e.preventDefault();
-    if (newComment.trim()) {
-      setComments([...comments, { user: 'You', text: newComment }]);
-      setNewComment('');
+    /*  if (comment.trim()) {
+       setComments([...comments, { user: 'You', text: comment }]);
+       setNewComment('');*/
+
+    try {
+      const res = await axios.post(`/api/post/comment/${value._id}`, {
+        comment,
+        withCredentials: true,
+      });
+      if (res.status === 201) {
+        const updatedComments = res.data.totalComments;
+        comments.length = updatedComments;
+        value.comments.profilePic = res.data.profilePic;
+        toast.success(res.data.message);
+        setNewComment('');
+      }
+    } catch (err) {
+      console.log(err);
     }
   };
+  const likeUnlikePost = async () => {
+    try {
+      const res = await axios.post(`/api/post/likeunlike/${value._id}`, {
+        withCredentials: true,
+      });
+      console.log(res.data);
 
+      if (res.status === 200) {
+        setIsLike(!isLike);
+        const updatedLikes = res.data.totalLikes;
+        value.likes.length = updatedLikes;
+
+        toast.dismiss();
+        toast.success(res.data.message);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <div className='bg-gray-100 flex items-center justify-center pt-3 pb-14'>
       <div className='bg-white rounded-lg shadow-md max-w-md w-full'>
@@ -87,7 +132,7 @@ const PostCard = ({ type, value }) => {
         <div className='flex items-center justify-between text-gray-500 px-4'>
           <div className='flex items-center space-x-2'>
             <span
-              onClick={() => setIsLike(!isLike)}
+              onClick={likeUnlikePost}
               className='text-red-500 text-2xl cursor-pointer'>
               {isLike ? <FaHeart /> : <FaRegHeart />}
             </span>
@@ -110,7 +155,7 @@ const PostCard = ({ type, value }) => {
               type='text'
               className='custom-input flex-1 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
               placeholder='Enter Comment'
-              value={newComment}
+              value={comment}
               onChange={(e) => setNewComment(e.target.value)}
             />
             <button

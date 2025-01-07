@@ -9,7 +9,7 @@ import Home from './pages/Home.jsx';
 import Login from './pages/Login.jsx';
 import Register from './pages/Register.jsx';
 import Account from './pages/Account.jsx';
-import { useUserStore } from '../store/index.jsx';
+import { usePostStore, useUserStore } from '../store/index.jsx';
 import axios from 'axios';
 import NavigationBar from './components/NavigationBar.jsx';
 import NotFoundPage from './components/NotFoundPage.jsx';
@@ -17,6 +17,8 @@ import Reels from './pages/Reels.jsx';
 
 const App = () => {
   const { isAuth, setUsersData, setIsAuth } = useUserStore();
+  const { posts, reels, setPosts, setReels } = usePostStore();
+
   const [loading, setLoading] = useState(true);
   async function fetchUser() {
     try {
@@ -47,52 +49,54 @@ const App = () => {
   }
 
   return (
-    <Router>
-      <Routes>
-        <Route
-          path='/'
-          element={
-            <PrivateRoute
-              isAuth={isAuth}
-              redirectPath='/login'
-              Component={Home}
-            />
-          }
-        />
-        <Route
-          path='/reels'
-          element={
-            <PrivateRoute
-              isAuth={isAuth}
-              redirectPath='/login'
-              Component={Reels}
-            />
-          }
-        />
+    <div>
+      <Router>
+        <Routes>
+          <Route
+            path='/'
+            element={
+              <PrivateRoute
+                isAuth={isAuth}
+                redirectPath='/login'
+                Component={Home}
+              />
+            }
+          />
+          <Route
+            path='/reels'
+            element={
+              <PrivateRoute
+                isAuth={isAuth}
+                redirectPath='/login'
+                Component={Reels}
+              />
+            }
+          />
 
-        <Route
-          path='/account'
-          element={
-            <PrivateRoute
-              isAuth={isAuth}
-              redirectPath='/login'
-              Component={Account}
-            />
-          }
-        />
+          <Route
+            path='/account'
+            element={
+              <PrivateRoute
+                isAuth={isAuth}
+                redirectPath='/login'
+                Component={Account}
+              />
+            }
+          />
 
-        <Route
-          path='/login'
-          element={<RedirectToHome isAuth={isAuth} Component={Login} />}
-        />
-        <Route
-          path='/register'
-          element={<RedirectToHome isAuth={isAuth} Component={Register} />}
-        />
-        <Route path='*' element={<NotFoundPage />} />
-      </Routes>
-      {isAuth && <NavigationBar />}
-    </Router>
+          <Route
+            path='/login'
+            element={<RedirectToHome isAuth={isAuth} Component={Login} />}
+          />
+          <Route
+            path='/register'
+            element={<RedirectToHome isAuth={isAuth} Component={Register} />}
+          />
+          <Route path='*' element={<NotFoundPage />} />
+        </Routes>
+        {isAuth && <NavigationBar />}
+      </Router>
+    </div>
   );
 };
 
