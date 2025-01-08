@@ -34,7 +34,6 @@ const PostCard = ({ type, value }) => {
   // Handle adding a comment
   const handleAddComment = async (e) => {
     e.preventDefault();
-    console.log(e);
 
     try {
       const res = await axios.post(`/api/post/comment/${value._id}`, {
@@ -96,9 +95,11 @@ const PostCard = ({ type, value }) => {
               </div>
             </div>
           </div>
-          <button className='hover:bg-gray-50 rounded-full p-2 text-gray-500'>
-            <BsThreeDotsVertical />
-          </button>
+          {value.owner._id === usersData._id && (
+            <button className='hover:bg-gray-50 rounded-full p-2 text-gray-500'>
+              <BsThreeDotsVertical />
+            </button>
+          )}
         </div>
 
         {/* Caption */}

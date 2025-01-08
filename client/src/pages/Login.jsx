@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Link, useNavigate } from 'react-router-dom';
 import { useUserStore } from '../../store/index.jsx';
+import Loading from '../components/Loading.jsx';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -16,12 +17,6 @@ const Login = () => {
   } = useUserStore();
 
   const navigate = useNavigate();
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setIsLoading(false); // Page has loaded
-    }, 1000); // Simulated loading time (adjust as needed)
-    return () => clearTimeout(timeout);
-  }, []);
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -39,7 +34,7 @@ const Login = () => {
       const resData = await res.json();
 
       if (res.ok) {
-        navigate('/account');
+        navigate('/');
         toast.success(resData.message);
         setUsersData(resData.user);
         setIsAuth(true);
@@ -54,9 +49,7 @@ const Login = () => {
   return (
     <>
       {isLoading ? (
-        <div className='flex items-center justify-center min-h-screen bg-gray-100'>
-          <div className='w-16 h-16 border-4 border-blue-500 border-solid rounded-full animate-spin border-t-transparent'></div>
-        </div>
+        <Loading />
       ) : (
         <div className='min-h-screen bg-gradient-to-b from-blue-50 to-indigo-100 flex items-center justify-center'>
           <div className='bg-white shadow-xl rounded-2xl overflow-hidden w-full max-w-4xl flex flex-col md:flex-row'>

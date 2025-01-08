@@ -14,12 +14,13 @@ import axios from 'axios';
 import NavigationBar from './components/NavigationBar.jsx';
 import NotFoundPage from './components/NotFoundPage.jsx';
 import Reels from './pages/Reels.jsx';
+import Loading from './components/Loading.jsx';
+const pathName = window.location.pathname;
 
 const App = () => {
-  const { isAuth, setUsersData, setIsAuth } = useUserStore();
-  const { posts, reels, setPosts, setReels } = usePostStore();
+  const { isAuth, setUsersData, setIsAuth, setIsLoading, isLoading } =
+    useUserStore();
 
-  const [loading, setLoading] = useState(true);
   async function fetchUser() {
     try {
       const { data } = await axios.get('/api/user/me', {
@@ -31,22 +32,18 @@ const App = () => {
     } catch (error) {
       console.log(error.message);
       setIsAuth(false);
-    } finally {
-      setLoading(false);
     }
   }
 
   useEffect(() => {
     fetchUser();
   }, []);
-
-  if (loading) {
-    return (
-      <div className='flex items-center justify-center min-h-screen bg-gray-100'>
-        <div className='w-16 h-16 border-4 border-blue-500 border-solid rounded-full animate-spin border-t-transparent'></div>
-      </div>
-    );
-  }
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+    return () => clearTimeout(timeout);
+  }, []);
 
   return (
     <div>
@@ -117,7 +114,9 @@ const RedirectToHome = ({ isAuth, Component }) => {
 
   useEffect(() => {
     if (isAuth) {
-      navigate('/');
+      navigate(
+        `${pathName !== '/login' && pathName !== '/register' ? pathName : '/'}`
+      );
     }
   }, [isAuth, navigate]);
 

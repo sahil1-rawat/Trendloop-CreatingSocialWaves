@@ -4,12 +4,14 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { Navigation, Pagination } from 'swiper/modules';
-import { usePostStore } from '../../store';
+import { usePostStore, useUserStore } from '../../store';
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { LoadingAnimation } from './Loading';
 
 const Addpost = ({ type }) => {
   const { posts, reels, setPosts, setReels } = usePostStore();
+  const { isLoading, setIsLoading, addLoading, setAddLoading } = useUserStore();
   const [caption, setCaption] = useState('');
   const [files, setFiles] = useState([]);
   const [filePreviews, setFilePreviews] = useState([]);
@@ -71,9 +73,11 @@ const Addpost = ({ type }) => {
       if (res.status === 200) {
         setPosts(res.data.posts);
         setReels(res.data.reels);
+        setIsLoading(false);
       }
     } catch (err) {
       console.log(err);
+      setIsLoading(false);
     }
   };
   useEffect(() => {
@@ -81,6 +85,7 @@ const Addpost = ({ type }) => {
   }, []);
   const addPost = async (e) => {
     e.preventDefault();
+    setAddLoading(true);
     const newPost = new FormData();
     newPost.append('caption', caption);
     Array.from(files).forEach((file) => {
@@ -96,11 +101,14 @@ const Addpost = ({ type }) => {
         setCaption('');
         setFiles([]);
         setFilePreviews([]);
+        setAddLoading(false);
         fetchPosts();
+
         toast.success(res.data.message);
       }
     } catch (err) {
       console.log(err);
+      setAddLoading(false);
     }
   };
   return (
@@ -127,6 +135,7 @@ const Addpost = ({ type }) => {
               multiple
               accept={type === 'post' ? 'image/*' : 'video/*'}
               onChange={changeFileHandler}
+              required
             />
           )}
 
@@ -149,14 +158,14 @@ const Addpost = ({ type }) => {
                       <img
                         src={preview}
                         alt={`Preview ${index + 1}`}
-                        className='h-[300px] w-[500px] rounded-lg object-cover'
+                        className='h-[300px] w-[500px] rounded-lg object-fill'
                       />
                     ) : (
                       <video
                         ref={(el) => (videoRefs.current[index] = el)}
                         controlsList='nodownload'
                         src={preview}
-                        className='h-[300px] w-[500px] rounded-lg object-cover'
+                        className='h-[300px] w-[500px] rounded-lg object-fill'
                         playsInline
                         onClick={() => handleVideoClick(index)}
                       />
@@ -172,9 +181,9 @@ const Addpost = ({ type }) => {
             className={`bg-blue-500 text-white px-4 py-2 rounded-md w-full ${
               !isFormValid && 'opacity-50 cursor-not-allowed'
             }`}
-            disabled={!isFormValid}
+            disabled={!isFormValid || addLoading}
             onClick={addPost}>
-            + Add Post
+            {addLoading ? <LoadingAnimation /> : '+ Add Post'}
           </button>
         </form>
       </div>

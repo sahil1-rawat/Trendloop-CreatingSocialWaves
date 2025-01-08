@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import { useUserStore } from '../../store';
+import Loading from '../components/Loading';
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -13,12 +14,6 @@ const Register = () => {
   const [filePrev, setFilePrev] = useState('');
   const { setIsLoading, isLoading, setUsersData, setIsAuth } = useUserStore();
   const navigate = useNavigate();
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
-    return () => clearTimeout(timeout);
-  }, []);
 
   const changeFileHandler = (e) => {
     const file = e.target.files[0];
@@ -60,9 +55,7 @@ const Register = () => {
   return (
     <>
       {isLoading ? (
-        <div className='flex items-center justify-center min-h-screen bg-gray-100'>
-          <div className='w-16 h-16 border-4 border-blue-500 border-solid rounded-full animate-spin border-t-transparent'></div>
-        </div>
+        <Loading />
       ) : (
         <div className='min-h-screen bg-gradient-to-b from-blue-50 to-indigo-100 flex items-center justify-center'>
           <div className='bg-white shadow-xl rounded-2xl overflow-hidden w-full max-w-4xl flex flex-col md:flex-row'>
