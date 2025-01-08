@@ -34,6 +34,8 @@ const PostCard = ({ type, value }) => {
   // Handle adding a comment
   const handleAddComment = async (e) => {
     e.preventDefault();
+    console.log(e);
+
     try {
       const res = await axios.post(`/api/post/comment/${value._id}`, {
         comment,
