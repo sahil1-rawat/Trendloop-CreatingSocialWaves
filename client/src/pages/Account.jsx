@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FiEdit2 } from 'react-icons/fi';
 import { AiOutlineLogout } from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom';
-import { useUserStore } from '../../store';
+import { usePostStore, useUserStore } from '../../store';
 import toast from 'react-hot-toast';
 
 const Account = () => {
@@ -48,7 +48,7 @@ const Account = () => {
   formData.append('name', name);
   formData.append('file', file);
 
-  const handleFormSubmit = async (e) => {
+  const handleProfileUpdate = async (e) => {
     e.preventDefault();
     try {
       const res = await fetch(
@@ -137,7 +137,7 @@ const Account = () => {
             <div className='text-center space-y-4'>
               {isEditing ? (
                 <form
-                  onSubmit={handleFormSubmit}
+                  onSubmit={handleProfileUpdate}
                   className='flex flex-col items-center gap-4'>
                   <input
                     type='text'

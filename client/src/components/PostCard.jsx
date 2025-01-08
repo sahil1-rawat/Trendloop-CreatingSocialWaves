@@ -1,24 +1,29 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { BsChatFill, BsThreeDotsVertical } from 'react-icons/bs';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
 
+import axios from 'axios';
+import { toast } from 'react-hot-toast';
+import { useUserStore } from '../../store';
+import { format } from 'date-fns';
+
+import { Comment } from './Comment';
+
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-import axios from 'axios';
-import { toast } from 'react-hot-toast';
-import { usePostStore, useUserStore } from '../../store';
 
 const PostCard = ({ type, value }) => {
   const [isLike, setIsLike] = useState(false);
   const [show, setShow] = useState(false);
   const [comment, setNewComment] = useState('');
-  const [comments, setComments] = useState(value.comments || []);
-  const { posts, reels, setPosts, setReels } = usePostStore();
+  const [comments, setComments] = useState(value.comments.length);
   const { usersData } = useUserStore();
-
+  const formatDate = format(new Date(value.createdAt), 'MMMM do');
+  const formatTime = format(new Date(value.createdAt), 'HH:mm');
   useEffect(() => {
     for (let i = 0; i < value.likes.length; i++) {
       if (value.likes[i] === usersData._id) {
@@ -29,10 +34,6 @@ const PostCard = ({ type, value }) => {
   // Handle adding a comment
   const handleAddComment = async (e) => {
     e.preventDefault();
-    /*  if (comment.trim()) {
-       setComments([...comments, { user: 'You', text: comment }]);
-       setNewComment('');*/
-
     try {
       const res = await axios.post(`/api/post/comment/${value._id}`, {
         comment,
@@ -40,10 +41,16 @@ const PostCard = ({ type, value }) => {
       });
       if (res.status === 201) {
         const updatedComments = res.data.totalComments;
-        comments.length = updatedComments;
-        value.comments.profilePic = res.data.profilePic;
-        toast.success(res.data.message);
+        setComments(updatedComments);
+        value.comments.push({
+          comment,
+          profilePic: usersData.profilePic.url,
+          name: usersData.name,
+          user: usersData._id,
+        });
         setNewComment('');
+        setShow(false);
+        toast.success(res.data.message);
       }
     } catch (err) {
       console.log(err);
@@ -54,7 +61,6 @@ const PostCard = ({ type, value }) => {
       const res = await axios.post(`/api/post/likeunlike/${value._id}`, {
         withCredentials: true,
       });
-      console.log(res.data);
 
       if (res.status === 200) {
         setIsLike(!isLike);
@@ -74,13 +80,18 @@ const PostCard = ({ type, value }) => {
         {/* Header */}
         <div className='flex items-center justify-between mt-3 mx-2'>
           <div className='flex items-center gap-2'>
-            <img
-              src={value.owner.profilePic.url}
-              alt='Profile'
-              className='w-10 h-10 rounded-full'
-            />
+            <Link to={`/user/${value.owner._id}`}>
+              <img
+                src={value.owner.profilePic.url}
+                alt='Profile'
+                className='w-10 h-10 rounded-full'
+              />
+            </Link>
             <div>
               <p className='font-semibold text-gray-700'>{value.owner.name}</p>
+              <div className='text-gray-500 text-sm'>
+                {formatDate} | {formatTime}
+              </div>
             </div>
           </div>
           <button className='hover:bg-gray-50 rounded-full p-2 text-gray-500'>
@@ -144,7 +155,7 @@ const PostCard = ({ type, value }) => {
             className='flex items-center justify-center gap-2 px-2 hover:bg-gray-50 rounded-full p-1'
             onClick={() => setShow(!show)}>
             <BsChatFill />
-            <span>{comments.length} comments</span>
+            <span>{comments} comments</span>
           </button>
         </div>
 
@@ -166,13 +177,12 @@ const PostCard = ({ type, value }) => {
           </form>
         )}
 
-        {/* Comments */}
         <hr className='mt-2 mb-2' />
         <div className='px-4'>
           <p className='text-gray-800 font-semibold'>Comments</p>
           <hr className='mt-2 mb-2' />
           <div className='mt-4 max-h-56 overflow-y-auto'>
-            {value.comments.length > 0 ? (
+            {value.comments && value.comments.length > 0 ? (
               value.comments.map((comment, index) => (
                 <Comment key={index} value={comment} />
               ))
@@ -181,18 +191,6 @@ const PostCard = ({ type, value }) => {
             )}
           </div>
         </div>
-      </div>
-    </div>
-  );
-};
-
-export const Comment = ({ value }) => {
-  return (
-    <div className='flex items-center space-x-2 mt-2 mb-4'>
-      <img src={value.profilePic} alt='User' className='w-8 h-8 rounded-full' />
-      <div>
-        <p className='text-gray-800 font-semibold'>{value.name}</p>
-        <p className='text-gray-500 text-sm'>{value.comment}</p>
       </div>
     </div>
   );

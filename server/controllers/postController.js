@@ -111,11 +111,13 @@ export const getAllPosts = async (req, res) => {
     const posts = await Post.find({ type: 'post' })
       .sort({ createdAt: -1 })
       .select('-password')
-      .populate('owner', '-password');
+      .populate('owner', '-password')
+      .populate({ path: 'comments.user', select: '-password' });
     const reels = await Post.find({ type: 'reels' })
       .sort({ createdAt: -1 })
       .select('-password')
-      .populate('owner', '-password');
+      .populate('owner', '-password')
+      .populate({ path: 'comments.user', select: '-password' });
     res.json({ posts, reels });
   } catch (err) {
     res.status(500).json({
@@ -153,10 +155,6 @@ export const commentOnPost = async (req, res) => {
     return res.status(201).json({
       message: 'Comment Added Successfully',
       totalComments: post.comments.length,
-      user: req.user._id,
-      profilePic: req.user.profilePic.url,
-      name: req.user.name,
-      comment,
     });
   } catch (err) {
     res.status(500).json({
