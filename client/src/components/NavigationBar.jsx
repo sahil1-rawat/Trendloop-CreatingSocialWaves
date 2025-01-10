@@ -11,9 +11,10 @@ import { MdChatBubbleOutline, MdChatBubble } from 'react-icons/md';
 import { RiAccountCircleFill, RiAccountCircleLine } from 'react-icons/ri';
 
 import { Link } from 'react-router-dom';
+import { usePostStore } from '../../store';
 
 const NavigationBar = () => {
-  const [tab, setTab] = useState(window.location.pathname);
+  const { tab, setTab } = usePostStore();
 
   return (
     <div className='fixed bottom-0 left-0 w-full bg-white py-3 z-50'>

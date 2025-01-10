@@ -13,3 +13,20 @@
 .auth-btn {
   @apply bg-gradient-to-r from-purple-600 to-orange-500 text-white font-bold py-3 rounded-lg shadow-md hover:from-purple-700 hover:to-orange-600 transition-all ease-in-out duration-300;
 }
+
+/* Style navigation buttons */
+.swiper-button-next,
+.swiper-button-prev {
+  color: #007bff;
+
+  font-size: 0px;
+
+  opacity: 0.8;
+}
+
+/* Hover effect for navigation buttons */
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+  color: #ff5733;
+  opacity: 1;
+}

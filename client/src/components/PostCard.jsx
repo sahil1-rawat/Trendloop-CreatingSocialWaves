@@ -1,13 +1,18 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { BsChatFill, BsThreeDotsVertical } from 'react-icons/bs';
+import {
+  BsChatFill,
+  BsThreeDotsVertical,
+  BsVolumeMute,
+  BsVolumeUp,
+} from 'react-icons/bs';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
 
 import axios from 'axios';
-import { toast } from 'react-hot-toast';
-import { useUserStore } from '../../store';
+
+import { usePostStore, useUserStore } from '../../store';
 import { format } from 'date-fns';
 
 import { Comment } from './Comment';
@@ -15,15 +20,18 @@ import { Comment } from './Comment';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
+import { fetchPosts } from '../utills/FetchPost';
 
 const PostCard = ({ type, value }) => {
+  const { setPosts, setReels, isMuted, setIsMuted } = usePostStore();
+  const videoRefs = useRef([]);
   const [isLike, setIsLike] = useState(false);
   const [show, setShow] = useState(false);
   const [comment, setNewComment] = useState('');
-  const [comments, setComments] = useState(value.comments.length);
-  const { usersData } = useUserStore();
+  const { usersData, setIsLoading } = useUserStore();
   const formatDate = format(new Date(value.createdAt), 'MMMM do');
   const formatTime = format(new Date(value.createdAt), 'HH:mm');
+
   useEffect(() => {
     for (let i = 0; i < value.likes.length; i++) {
       if (value.likes[i] === usersData._id) {
@@ -31,6 +39,59 @@ const PostCard = ({ type, value }) => {
       }
     }
   }, [value, usersData._id]);
+  const handleSlideChange = (swiper) => {
+    videoRefs.current.forEach((video) => {
+      if (video) {
+        video.pause();
+        video.currentTime = 0;
+      }
+    });
+    const activeIndex = swiper.activeIndex;
+
+    const activeVideo = videoRefs.current[activeIndex];
+
+    if (activeVideo) activeVideo.play();
+  };
+
+  const handleVideoClick = (index) => {
+    const video = videoRefs.current[index];
+    if (video) {
+      if (video.paused) {
+        video.play();
+      } else {
+        video.pause();
+      }
+    }
+  };
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const video = entry.target;
+          if (entry.isIntersecting) {
+            video.play();
+          } else {
+            video.pause();
+            video.currentTime = 0;
+          }
+        });
+      },
+      { threshold: 0.7 }
+    );
+
+    // Attach observer to each video
+    videoRefs.current.forEach((video) => {
+      if (video) observer.observe(video);
+    });
+
+    // Cleanup observer on unmount
+    return () => {
+      videoRefs.current.forEach((video) => {
+        if (video) observer.unobserve(video);
+      });
+    };
+  }, []);
+
   // Handle adding a comment
   const handleAddComment = async (e) => {
     e.preventDefault();
@@ -41,17 +102,9 @@ const PostCard = ({ type, value }) => {
         withCredentials: true,
       });
       if (res.status === 201) {
-        const updatedComments = res.data.totalComments;
-        setComments(updatedComments);
-        value.comments.push({
-          comment,
-          profilePic: usersData.profilePic.url,
-          name: usersData.name,
-          user: usersData._id,
-        });
+        fetchPosts({ setPosts, setReels, setIsLoading });
         setNewComment('');
         setShow(false);
-        toast.success(res.data.message);
       }
     } catch (err) {
       console.log(err);
@@ -67,13 +120,13 @@ const PostCard = ({ type, value }) => {
         setIsLike(!isLike);
         const updatedLikes = res.data.totalLikes;
         value.likes.length = updatedLikes;
-
-        toast.dismiss();
-        toast.success(res.data.message);
       }
     } catch (err) {
       console.log(err);
     }
+  };
+  const toggleMute = () => {
+    setIsMuted(!isMuted);
   };
   return (
     <div className='bg-gray-100 flex items-center justify-center pt-3 pb-14'>
@@ -126,15 +179,30 @@ const PostCard = ({ type, value }) => {
                     <img
                       src={media.url}
                       alt={`Slide ${index + 1}`}
-                      className='w-[500px] h-[300px] object-fill rounded-md'
+                      className='w-[500px] h-[300px] object-scale-down rounded-md'
                     />
                   ) : (
-                    <video
-                      src={media.url}
-                      className='w-full h-56 object-cover rounded-md'
-                      autoPlay
-                      controls
-                    />
+                    <div className='relative'>
+                      <video
+                        src={media.url}
+                        ref={(el) => (videoRefs.current[index] = el)}
+                        controlsList='nodownload'
+                        className='h-[550px] w-[500px]   rounded-lg object-fill'
+                        playsInline
+                        muted={isMuted}
+                        loop
+                        onClick={() => handleVideoClick(index)}
+                      />
+                      <button
+                        onClick={toggleMute}
+                        className='absolute bottom-4 right-4 bg-black bg-opacity-50 text-white rounded-full p-2'>
+                        {isMuted ? (
+                          <BsVolumeMute title='Unmute' />
+                        ) : (
+                          <BsVolumeUp title='Mute' />
+                        )}
+                      </button>
+                    </div>
                   )}
                 </SwiperSlide>
               ))}
@@ -147,6 +215,7 @@ const PostCard = ({ type, value }) => {
           <div className='flex items-center space-x-2'>
             <span
               onClick={likeUnlikePost}
+              title={isLike ? 'Unlike' : 'Like'}
               className='text-red-500 text-2xl cursor-pointer'>
               {isLike ? <FaHeart /> : <FaRegHeart />}
             </span>
@@ -158,7 +227,7 @@ const PostCard = ({ type, value }) => {
             className='flex items-center justify-center gap-2 px-2 hover:bg-gray-50 rounded-full p-1'
             onClick={() => setShow(!show)}>
             <BsChatFill />
-            <span>{comments} comments</span>
+            <span>{value.comments.length} comments</span>
           </button>
         </div>
 
@@ -187,7 +256,13 @@ const PostCard = ({ type, value }) => {
           <div className='mt-4 max-h-56 overflow-y-auto'>
             {value.comments && value.comments.length > 0 ? (
               value.comments.map((comment, index) => (
-                <Comment key={index} value={comment} />
+                <Comment
+                  key={index}
+                  value={comment}
+                  postOwner={value.owner}
+                  postId={value._id}
+                  values={value}
+                />
               ))
             ) : (
               <p className='text-gray-500 text-sm mb-4'>No Comments</p>

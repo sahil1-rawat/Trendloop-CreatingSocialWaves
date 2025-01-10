@@ -35,13 +35,17 @@ const Login = () => {
 
       if (res.ok) {
         navigate('/');
+        toast.dismiss();
         toast.success(resData.message);
+
         setUsersData(resData.user);
         setIsAuth(true);
       } else {
+        toast.dismiss();
         toast.error(resData.message);
       }
     } catch (error) {
+      toast.dismiss();
       toast.error(error.response.data.message);
     }
   };

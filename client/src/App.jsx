@@ -14,7 +14,8 @@ import axios from 'axios';
 import NavigationBar from './components/NavigationBar.jsx';
 import NotFoundPage from './components/NotFoundPage.jsx';
 import Reels from './pages/Reels.jsx';
-import Loading from './components/Loading.jsx';
+import Header from './components/Header.jsx';
+
 const pathName = window.location.pathname;
 
 const App = () => {
@@ -48,6 +49,7 @@ const App = () => {
   return (
     <div>
       <Router>
+        {isAuth && <Header />}
         <Routes>
           <Route
             path='/'

@@ -42,13 +42,16 @@ const Register = () => {
       const data = await res.json();
       if (res.ok) {
         navigate('/');
-        toast.success(data.message);
         setIsAuth(true);
         setUsersData(data.user);
+        toast.dismiss();
+        toast.success(data.message);
       } else {
+        toast.dismiss();
         toast.error(data.message);
       }
     } catch (err) {
+      toast.dismiss();
       toast.error(err.response.data.message);
     }
   };

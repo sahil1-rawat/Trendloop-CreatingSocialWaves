@@ -113,7 +113,7 @@ export const getAllPosts = async (req, res) => {
       .select('-password')
       .populate('owner', '-password')
       .populate({ path: 'comments.user', select: '-password' });
-    const reels = await Post.find({ type: 'reels' })
+    const reels = await Post.find({ type: 'reel' })
       .sort({ createdAt: -1 })
       .select('-password')
       .populate('owner', '-password')
@@ -168,6 +168,7 @@ export const commentOnPost = async (req, res) => {
 export const deleteComment = async (req, res) => {
   try {
     const post = await Post.findById(req.params.id);
+
     if (!post) {
       return res.status(404).json({
         message: 'Post not found',
@@ -188,6 +189,7 @@ export const deleteComment = async (req, res) => {
       });
     }
     const comment = post.comments[commentIndex];
+
     if (
       post.owner.toString() === req.user._id.toString() ||
       comment.user.toString() === req.user._id.toString()

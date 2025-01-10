@@ -8,15 +8,21 @@ import { usePostStore, useUserStore } from '../../store';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { LoadingAnimation } from './Loading';
+import { fetchPosts } from '../utills/FetchPost';
+import { FaTimes } from 'react-icons/fa';
 
 const Addpost = ({ type }) => {
-  const { posts, reels, setPosts, setReels } = usePostStore();
-  const { isLoading, setIsLoading, addLoading, setAddLoading } = useUserStore();
+  const { reels, setPosts, setReels } = usePostStore();
+
+  const { setIsLoading, addLoading, setAddLoading } = useUserStore();
   const [caption, setCaption] = useState('');
   const [files, setFiles] = useState([]);
   const [filePreviews, setFilePreviews] = useState([]);
   const videoRefs = useRef([]);
-
+  const closeFilePrev = () => {
+    setFiles([]);
+    setFilePreviews([]);
+  };
   const changeFileHandler = (e) => {
     const selectedFiles = Array.from(e.target.files);
 
@@ -65,24 +71,10 @@ const Addpost = ({ type }) => {
   };
 
   const isFormValid = files.length > 0;
-  const fetchPosts = async () => {
-    try {
-      const res = await axios.get('/api/post/all', {
-        withCredentials: true,
-      });
-      if (res.status === 200) {
-        setPosts(res.data.posts);
-        setReels(res.data.reels);
-        setIsLoading(false);
-      }
-    } catch (err) {
-      console.log(err);
-      setIsLoading(false);
-    }
-  };
+
   useEffect(() => {
-    fetchPosts();
-  }, []);
+    fetchPosts({ setPosts, setReels, setIsLoading });
+  }, [setPosts, setReels, setIsLoading]);
   const addPost = async (e) => {
     e.preventDefault();
     setAddLoading(true);
@@ -102,8 +94,8 @@ const Addpost = ({ type }) => {
         setFiles([]);
         setFilePreviews([]);
         setAddLoading(false);
-        fetchPosts();
-
+        fetchPosts({ setPosts, setReels, setIsLoading });
+        toast.dismiss();
         toast.success(res.data.message);
       }
     } catch (err) {
@@ -112,7 +104,7 @@ const Addpost = ({ type }) => {
     }
   };
   return (
-    <div className='bg-gray-100 flex items-center justify-center min-h-screen px-4 py-8'>
+    <div className='bg-gray-100 flex items-center justify-center min-h-[50vh] px-4 py-4'>
       <div className='bg-white p-6 md:p-8 rounded-lg shadow-lg max-w-md w-full'>
         <h2 className='text-lg font-semibold text-gray-700 mb-4 text-center'>
           {type === 'post' ? 'Create New Post' : 'Create New Reel'}
@@ -132,8 +124,9 @@ const Addpost = ({ type }) => {
             <input
               type='file'
               className='custom-input'
-              multiple
-              accept={type === 'post' ? 'image/*' : 'video/*'}
+              {...(type === 'post'
+                ? { accept: 'image/*', multiple: true }
+                : { accept: 'video/*', multiple: false })}
               onChange={changeFileHandler}
               required
             />
@@ -155,20 +148,39 @@ const Addpost = ({ type }) => {
                     key={index}
                     className='flex justify-center items-center'>
                     {type === 'post' ? (
-                      <img
-                        src={preview}
-                        alt={`Preview ${index + 1}`}
-                        className='h-[300px] w-[500px] rounded-lg object-fill'
-                      />
+                      <div className='relative'>
+                        <img
+                          src={preview}
+                          alt={`Preview ${index + 1}`}
+                          className='h-[300px] w-[500px] rounded-lg object-scale-down'
+                        />
+                        {/* Close button */}
+                        <button
+                          className='absolute top-2 right-2 bg-gray-500 text-white p-2 rounded-full shadow-md hover:bg-red-500 transition-all duration-200'
+                          aria-label='Close'
+                          title='Close'
+                          onClick={closeFilePrev}>
+                          <FaTimes size={20} />
+                        </button>
+                      </div>
                     ) : (
-                      <video
-                        ref={(el) => (videoRefs.current[index] = el)}
-                        controlsList='nodownload'
-                        src={preview}
-                        className='h-[300px] w-[500px] rounded-lg object-fill'
-                        playsInline
-                        onClick={() => handleVideoClick(index)}
-                      />
+                      <div className='relative'>
+                        <video
+                          ref={(el) => (videoRefs.current[index] = el)}
+                          controlsList='nodownload'
+                          src={preview}
+                          className='h-[300px] w-[500px] rounded-lg object-fill'
+                          playsInline
+                          onClick={() => handleVideoClick(index)}
+                        />
+                        <button
+                          className='absolute top-2 right-2 bg-gray-500 text-white p-2 rounded-full shadow-md hover:bg-red-500 transition-all duration-200'
+                          aria-label='Close'
+                          title='Close'
+                          onClick={closeFilePrev}>
+                          <FaTimes size={20} />
+                        </button>
+                      </div>
                     )}
                   </SwiperSlide>
                 ))}
