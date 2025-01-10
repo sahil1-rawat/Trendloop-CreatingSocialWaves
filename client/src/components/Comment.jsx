@@ -45,7 +45,7 @@ export const Comment = ({ value, postOwner, postId }) => {
       <div className='flex-1'>
         <Link
           to={`${
-            value.user._id === usersData._id ? '/account' : '/user' / userId
+            value.user._id === usersData._id ? '/account' : `/user/${userId}`
           }`}
           className='text-gray-900 font-medium text-sm hover:underline'>
           {userName}

@@ -18,7 +18,7 @@ const Account = () => {
     isLoading,
     setIsLoading,
   } = useUserStore();
-  const { posts, reels, setPosts, setReels } = usePostStore();
+  const { posts, reels, setPosts, setReels, setTab } = usePostStore();
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState('');
   const [profilePic, setProfilePic] = useState('');
@@ -114,6 +114,9 @@ const Account = () => {
       if (res.ok) {
         setIsAuth(false);
         setUsersData([]);
+        setTab('/');
+        setPosts([]);
+        setReels([]);
         localStorage.removeItem('usersData');
         localStorage.removeItem('isAuth');
         navigate('/login');
