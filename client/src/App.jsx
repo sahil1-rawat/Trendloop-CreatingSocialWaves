@@ -15,8 +15,10 @@ import NavigationBar from './components/NavigationBar.jsx';
 import NotFoundPage from './components/NotFoundPage.jsx';
 import Reels from './pages/Reels.jsx';
 import Header from './components/Header.jsx';
+import UserAccount from './components/UserAccount.jsx';
 
 const pathName = window.location.pathname;
+console.log(pathName);
 
 const App = () => {
   const { isAuth, setUsersData, setIsAuth, setIsLoading, isLoading } =
@@ -79,6 +81,16 @@ const App = () => {
                 isAuth={isAuth}
                 redirectPath='/login'
                 Component={Account}
+              />
+            }
+          />
+          <Route
+            path='/user/:id'
+            element={
+              <PrivateRoute
+                isAuth={isAuth}
+                redirectPath='/login'
+                Component={UserAccount}
               />
             }
           />

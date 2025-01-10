@@ -128,21 +128,31 @@ const PostCard = ({ type, value }) => {
   const toggleMute = () => {
     setIsMuted(!isMuted);
   };
+
   return (
     <div className='bg-gray-100 flex items-center justify-center pt-3 pb-14'>
       <div className='bg-white rounded-lg shadow-md max-w-md w-full'>
         {/* Header */}
         <div className='flex items-center justify-between mt-3 mx-2'>
           <div className='flex items-center gap-2'>
-            <Link to={`/user/${value.owner._id}`}>
+            <Link to={value.owner.profilePic.url} target='_blank'>
               <img
                 src={value.owner.profilePic.url}
                 alt='Profile'
-                className='w-10 h-10 rounded-full'
+                title='View Profile'
+                className='w-12 h-12 rounded-full border border-gray-300 hover:ring-2 hover:ring-gray-400 transition-transform duration-200'
               />
             </Link>
             <div>
-              <p className='font-semibold text-gray-700'>{value.owner.name}</p>
+              <Link
+                to={`${
+                  value.owner._id === usersData._id
+                    ? '/account'
+                    : `/user/${value.owner._id}`
+                }`}
+                className='text-gray-700 font-semibold text-md hover:underline'>
+                {value.owner.name}
+              </Link>
               <div className='text-gray-500 text-sm'>
                 {formatDate} | {formatTime}
               </div>

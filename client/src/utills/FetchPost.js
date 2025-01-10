@@ -5,7 +5,6 @@ export const fetchPosts = async ({ setPosts, setReels, setIsLoading }) => {
     const res = await axios.get('/api/post/all', {
       withCredentials: true,
     });
-    console.log(res.data);
 
     if (res.status === 200) {
       setPosts(res.data.posts);
