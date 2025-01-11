@@ -16,6 +16,7 @@ import NotFoundPage from './components/NotFoundPage.jsx';
 import Reels from './pages/Reels.jsx';
 import Header from './components/Header.jsx';
 import UserAccount from './components/UserAccount.jsx';
+import { fetchUser } from './utills/FetchPost.js';
 
 const pathName = window.location.pathname;
 console.log(pathName);
@@ -24,22 +25,8 @@ const App = () => {
   const { isAuth, setUsersData, setIsAuth, setIsLoading, isLoading } =
     useUserStore();
 
-  async function fetchUser() {
-    try {
-      const { data } = await axios.get('/api/user/me', {
-        withCredentials: true,
-      });
-
-      setUsersData(data);
-      setIsAuth(true);
-    } catch (error) {
-      console.log(error.message);
-      setIsAuth(false);
-    }
-  }
-
   useEffect(() => {
-    fetchUser();
+    fetchUser({ setUsersData, setIsAuth });
   }, []);
   useEffect(() => {
     const timeout = setTimeout(() => {

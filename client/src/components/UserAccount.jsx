@@ -1,23 +1,36 @@
 import React, { useState, useEffect } from 'react';
-import { FiEdit2 } from 'react-icons/fi';
-import { AiOutlineFile, AiOutlineLogout } from 'react-icons/ai';
+import { FiUserPlus, FiUserCheck } from 'react-icons/fi';
+import { AiOutlineFile } from 'react-icons/ai';
 import { useNavigate, useParams } from 'react-router-dom';
 import { usePostStore, useUserStore } from '../../store';
 import toast from 'react-hot-toast';
 import Loading from '../components/Loading';
-import { fetchPosts } from '../utills/FetchPost';
+import { fetchPosts, fetchUser, fetchUsers } from '../utills/FetchPost';
 import PostCard from './../components/PostCard';
 import axios from 'axios';
-import { FaUserPlus } from 'react-icons/fa';
-// import Reels from './Reels';
 
 const UserAccount = () => {
-  const { usersData, isAuth, isLoading, setIsLoading } = useUserStore();
-  const { posts, reels, setPosts, setReels } = usePostStore();
+  const {
+    usersData,
+    isAuth,
+    isLoading,
+    setIsLoading,
+    setUsersData,
+    setIsAuth,
+  } = useUserStore();
+  const { posts, reels, setPosts, setReels, user, setUser } = usePostStore();
   const params = useParams();
-  const [user, setUser] = useState('');
+
   const [type, setType] = useState('post');
   const navigate = useNavigate();
+  const [isFollower, setIsFollower] = useState(false);
+  useEffect(() => {
+    if (usersData.followings.includes(params.id)) {
+      setIsFollower(true);
+    }
+  }, [usersData, params]);
+  console.log(isFollower);
+
   let myPosts, myReels;
   if (posts) {
     myPosts = posts.filter((post) => post.owner._id === params.id);
@@ -31,19 +44,22 @@ const UserAccount = () => {
     fetchPosts({ setPosts, setReels, setIsLoading });
   }, []);
 
-  const fetchUsers = async () => {
+  useEffect(() => {
+    fetchUsers({ setUser, params });
+  }, []);
+  const followandUnfollowUsers = async () => {
     try {
-      const res = await axios.get(`/api/user/${params.id}`);
+      const res = await axios.post(`/api/user/follow/${params.id}`);
       if (res.status === 200) {
-        setUser(res.data);
+        setIsFollower(!isFollower);
+        fetchUsers({ setUser, params });
+        fetchUser({ setUsersData, setIsAuth });
+        toast.success(res.data.message);
       }
     } catch (err) {
       console.log(err);
     }
   };
-  useEffect(() => {
-    fetchUsers();
-  }, []);
   return (
     <>
       {isLoading ? (
@@ -78,8 +94,19 @@ const UserAccount = () => {
                         {user.followings?.length} Following
                       </p>
                     </div>
-                    <button className='mt-6 bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white py-3 px-12 rounded-lg font-semibold flex items-center justify-center gap-2 transition duration-200 shadow-lg'>
-                      <FaUserPlus size={20} /> Follow
+
+                    <button
+                      className='mt-6 bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white py-3 px-12 rounded-lg font-semibold flex items-center justify-center gap-2 transition duration-200 shadow-lg'
+                      onClick={followandUnfollowUsers}>
+                      {isFollower ? (
+                        <>
+                          <FiUserCheck size={20} /> <span>Following</span>
+                        </>
+                      ) : (
+                        <>
+                          <FiUserPlus size={20} /> <span>Follow</span>
+                        </>
+                      )}
                     </button>
                   </>
                 </div>

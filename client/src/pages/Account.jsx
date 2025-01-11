@@ -18,6 +18,8 @@ const Account = () => {
     isLoading,
     setIsLoading,
   } = useUserStore();
+  console.log(usersData);
+
   const { posts, reels, setPosts, setReels, setTab } = usePostStore();
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState('');
@@ -26,12 +28,9 @@ const Account = () => {
   const [type, setType] = useState('post');
   const navigate = useNavigate();
   let myPosts, myReels;
-  if (posts) {
-    myPosts = posts.filter((post) => post.owner._id === usersData._id);
-  }
-  if (reels) {
-    myReels = reels.filter((reel) => reel.owner._id === usersData._id);
-  }
+  myPosts = posts?.filter((post) => post.owner._id === usersData._id) || [];
+  myReels = reels?.filter((reel) => reel.owner._id === usersData._id) || [];
+
   const totalPosts = myPosts?.length + myReels?.length;
 
   useEffect(() => {

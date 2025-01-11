@@ -7,4 +7,6 @@ export const createPostSlice = (set) => ({
   setTab: (tab) => set({ tab }),
   isMuted: false,
   setIsMuted: (isMuted) => set({ isMuted }),
+  user: '',
+  setUser: (user) => set({ user }),
 });
