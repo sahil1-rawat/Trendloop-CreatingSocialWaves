@@ -4,6 +4,7 @@ import toast from 'react-hot-toast';
 import axios from 'axios';
 import { useUserStore } from '../../store';
 import Loading from '../components/Loading';
+import { fetchPosts } from '../utills/FetchPost';
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -13,6 +14,7 @@ const Register = () => {
   const [file, setFile] = useState('');
   const [filePrev, setFilePrev] = useState('');
   const { setIsLoading, isLoading, setUsersData, setIsAuth } = useUserStore();
+  const { setPosts, setReels } = usePostStore();
   const navigate = useNavigate();
 
   const changeFileHandler = (e) => {
@@ -44,6 +46,8 @@ const Register = () => {
         navigate('/');
         setIsAuth(true);
         setUsersData(data.user);
+        fetchPosts({ setPosts, setReels, setIsLoading });
+
         toast.dismiss();
         toast.success(data.message);
       } else {

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Link, useNavigate } from 'react-router-dom';
-import { useUserStore } from '../../store/index.jsx';
+import { usePostStore, useUserStore } from '../../store/index.jsx';
 import Loading from '../components/Loading.jsx';
+import { fetchPosts } from '../utills/FetchPost.js';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -15,6 +16,7 @@ const Login = () => {
     setUsersData,
     setIsLoading,
   } = useUserStore();
+  const { setPosts, setReels } = usePostStore();
 
   const navigate = useNavigate();
   const handleSubmit = async (e) => {
@@ -37,7 +39,7 @@ const Login = () => {
         navigate('/');
         toast.dismiss();
         toast.success(resData.message);
-
+        fetchPosts({ setPosts, setReels, setIsLoading });
         setUsersData(resData.user);
         setIsAuth(true);
       } else {

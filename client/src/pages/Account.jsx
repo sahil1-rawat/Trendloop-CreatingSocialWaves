@@ -8,6 +8,8 @@ import Loading from '../components/Loading';
 import { fetchPosts } from '../utills/FetchPost';
 import PostCard from './../components/PostCard';
 import Reels from './Reels';
+import Modal from '../components/Modal';
+import axios from 'axios';
 
 const Account = () => {
   const {
@@ -18,7 +20,6 @@ const Account = () => {
     isLoading,
     setIsLoading,
   } = useUserStore();
-  console.log(usersData);
 
   const { posts, reels, setPosts, setReels, setTab } = usePostStore();
   const [isEditing, setIsEditing] = useState(false);
@@ -127,7 +128,28 @@ const Account = () => {
       toast.error(err.message);
     }
   };
+  const [followerModal, setFollowerModal] = useState(false);
+  const [followingModal, setFollowingModal] = useState(false);
+  const [followersData, setFollowersData] = useState([]);
+  const [followingsData, setFollowingsData] = useState([]);
+  const followData = async () => {
+    // console.log(usersData);
 
+    try {
+      const res = await axios.get(`/api/user/followData/${usersData._id}`);
+      console.log(res);
+
+      if (res.status === 200) {
+        setFollowersData(res.data.user.followers);
+        setFollowingsData(res.data.user.followings);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  useEffect(() => {
+    followData();
+  }, [usersData]);
   return (
     <>
       {isLoading ? (
@@ -136,6 +158,20 @@ const Account = () => {
         isAuth && (
           <div className='bg-gray-100 min-h-screen'>
             <div className='flex justify-center py-10'>
+              {followerModal && (
+                <Modal
+                  value={followersData}
+                  title='followers'
+                  setShow={setFollowerModal}
+                />
+              )}
+              {followingModal && (
+                <Modal
+                  value={followingsData}
+                  title='following'
+                  setShow={setFollowingModal}
+                />
+              )}
               <div className='bg-white rounded-3xl shadow-lg p-8 w-full max-w-2xl'>
                 <div className='relative flex flex-col items-center mb-6'>
                   <img
@@ -198,10 +234,14 @@ const Account = () => {
                       </p>
                       <div className='flex justify-center gap-6 text-gray-600'>
                         <p className='text-lg'>{totalPosts} Posts</p>
-                        <p className='text-lg'>
+                        <p
+                          className='text-lg cursor-pointer'
+                          onClick={() => setFollowerModal(true)}>
                           {usersData.followers?.length} Followers
                         </p>
-                        <p className='text-lg'>
+                        <p
+                          className='text-lg cursor-pointer'
+                          onClick={() => setFollowingModal(true)}>
                           {usersData.followings?.length} Following
                         </p>
                       </div>

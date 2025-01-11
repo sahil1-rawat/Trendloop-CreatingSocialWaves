@@ -8,6 +8,7 @@ import Loading from '../components/Loading';
 import { fetchPosts, fetchUser, fetchUsers } from '../utills/FetchPost';
 import PostCard from './../components/PostCard';
 import axios from 'axios';
+import Modal from './Modal';
 
 const UserAccount = () => {
   const {
@@ -24,12 +25,13 @@ const UserAccount = () => {
   const [type, setType] = useState('post');
   const navigate = useNavigate();
   const [isFollower, setIsFollower] = useState(false);
+  const [followerModal, setFollowerModal] = useState(false);
+  const [followingModal, setFollowingModal] = useState(false);
   useEffect(() => {
     if (usersData.followings.includes(params.id)) {
       setIsFollower(true);
     }
   }, [usersData, params]);
-  console.log(isFollower);
 
   let myPosts, myReels;
   if (posts) {
@@ -46,7 +48,7 @@ const UserAccount = () => {
 
   useEffect(() => {
     fetchUsers({ setUser, params });
-  }, []);
+  }, [params.id]);
   const followandUnfollowUsers = async () => {
     try {
       const res = await axios.post(`/api/user/follow/${params.id}`);
@@ -60,6 +62,25 @@ const UserAccount = () => {
       console.log(err);
     }
   };
+  const [followersData, setFollowersData] = useState([]);
+  const [followingsData, setFollowingsData] = useState([]);
+  const followData = async () => {
+    try {
+      const res = await axios.get(
+        `/api/user/followData/${user?._id || params.id}`
+      );
+
+      if (res.status === 200) {
+        setFollowersData(res.data.user.followers);
+        setFollowingsData(res.data.user.followings);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  useEffect(() => {
+    followData();
+  }, [user]);
   return (
     <>
       {isLoading ? (
@@ -68,6 +89,20 @@ const UserAccount = () => {
         isAuth && (
           <div className='bg-gray-100 min-h-screen'>
             <div className='flex justify-center py-10'>
+              {followerModal && (
+                <Modal
+                  value={followersData}
+                  title='followers'
+                  setShow={setFollowerModal}
+                />
+              )}
+              {followingModal && (
+                <Modal
+                  value={followingsData}
+                  title='following'
+                  setShow={setFollowingModal}
+                />
+              )}
               <div className='bg-white rounded-3xl shadow-lg p-8 w-full max-w-2xl'>
                 <div className='relative flex flex-col items-center mb-6'>
                   <img
@@ -87,10 +122,14 @@ const UserAccount = () => {
                     </p>
                     <div className='flex justify-center gap-6 text-gray-600'>
                       <p className='text-lg'>{totalPosts} Posts</p>
-                      <p className='text-lg'>
+                      <p
+                        className='text-lg cursor-pointer'
+                        onClick={() => setFollowerModal(true)}>
                         {user.followers?.length} Followers
                       </p>
-                      <p className='text-lg'>
+                      <p
+                        className='text-lg cursor-pointer'
+                        onClick={() => setFollowingModal(true)}>
                         {user.followings?.length} Following
                       </p>
                     </div>
