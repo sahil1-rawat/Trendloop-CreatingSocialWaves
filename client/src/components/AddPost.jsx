@@ -10,6 +10,7 @@ import toast from 'react-hot-toast';
 import { LoadingAnimation } from './Loading';
 import { fetchPosts } from '../utills/FetchPost';
 import { FaTimes } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
 
 const Addpost = ({ type }) => {
   const { reels, setPosts, setReels } = usePostStore();
@@ -71,10 +72,7 @@ const Addpost = ({ type }) => {
   };
 
   const isFormValid = files.length > 0;
-
-  useEffect(() => {
-    fetchPosts({ setPosts, setReels, setIsLoading });
-  }, [setPosts, setReels, setIsLoading]);
+  const navigate = useNavigate();
   const addPost = async (e) => {
     e.preventDefault();
     setAddLoading(true);
@@ -95,6 +93,7 @@ const Addpost = ({ type }) => {
         setFilePreviews([]);
         setAddLoading(false);
         fetchPosts({ setPosts, setReels, setIsLoading });
+        type === 'post' ? navigate('/') : navigate('/reels');
         toast.dismiss();
         toast.success(res.data.message);
       }
@@ -104,7 +103,7 @@ const Addpost = ({ type }) => {
     }
   };
   return (
-    <div className='bg-gray-100 flex items-center justify-center min-h-[50vh] px-4 py-4'>
+    <div className=' flex items-center justify-center min-h-[50vh] px-4 py-4'>
       <div className='bg-white p-6 md:p-8 rounded-lg shadow-lg max-w-md w-full'>
         <h2 className='text-lg font-semibold text-gray-700 mb-4 text-center'>
           {type === 'post' ? 'Create New Post' : 'Create New Reel'}
@@ -195,7 +194,13 @@ const Addpost = ({ type }) => {
             }`}
             disabled={!isFormValid || addLoading}
             onClick={addPost}>
-            {addLoading ? <LoadingAnimation /> : '+ Add Post'}
+            {addLoading ? (
+              <LoadingAnimation />
+            ) : type === 'post' ? (
+              '+ Add New Post'
+            ) : (
+              '+ Add New Reel'
+            )}
           </button>
         </form>
       </div>

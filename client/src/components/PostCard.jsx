@@ -9,6 +9,24 @@ import {
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
 import axios from 'axios';
 
@@ -21,6 +39,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { fetchPosts } from '../utills/FetchPost';
+import toast from 'react-hot-toast';
 
 const PostCard = ({ type, value }) => {
   const { setPosts, setReels, isMuted, setIsMuted } = usePostStore();
@@ -31,7 +50,7 @@ const PostCard = ({ type, value }) => {
   const { usersData, setIsLoading } = useUserStore();
   const formatDate = format(new Date(value.createdAt), 'MMMM do');
   const formatTime = format(new Date(value.createdAt), 'HH:mm');
-
+  const [caption, setCaption] = useState(value.caption || '');
   useEffect(() => {
     for (let i = 0; i < value.likes.length; i++) {
       if (value.likes[i] === usersData._id) {
@@ -39,18 +58,29 @@ const PostCard = ({ type, value }) => {
       }
     }
   }, [value, usersData._id]);
-  const handleSlideChange = (swiper) => {
-    videoRefs.current.forEach((video) => {
-      if (video) {
-        video.pause();
-        video.currentTime = 0;
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const handleEditClick = () => {
+    setDropdownOpen(false);
+
+    setDialogOpen(true);
+  };
+  //Edit Caption
+  const editCaption = async () => {
+    try {
+      const res = await axios.put(`/api/post/edit/${value._id}`, {
+        newCaption: caption,
+        withCredentials: true,
+      });
+      if (res.status === 200) {
+        toast.success(res.data.message);
+        fetchPosts({ setPosts, setReels, setIsLoading });
+        setDialogOpen(false);
       }
-    });
-    const activeIndex = swiper.activeIndex;
-
-    const activeVideo = videoRefs.current[activeIndex];
-
-    if (activeVideo) activeVideo.play();
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const handleVideoClick = (index) => {
@@ -129,6 +159,18 @@ const PostCard = ({ type, value }) => {
     setIsMuted(!isMuted);
   };
 
+  // Delete Post
+  const deletePost = async () => {
+    try {
+      const res = await axios.delete(`/api/post/delete/${value._id}`);
+      if (res.status === 200) {
+        toast.success(res.data.message);
+        fetchPosts({ setPosts, setReels, setIsLoading });
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <div className='bg-gray-100 flex items-center justify-center pt-3 pb-14'>
       <div className='bg-white rounded-lg shadow-md max-w-md w-full'>
@@ -159,9 +201,55 @@ const PostCard = ({ type, value }) => {
             </div>
           </div>
           {value.owner._id === usersData._id && (
-            <button className='hover:bg-gray-50 rounded-full p-2 text-gray-500'>
-              <BsThreeDotsVertical />
-            </button>
+            <>
+              <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
+                <DropdownMenuTrigger className='hover:bg-gray-50 rounded-full p-2 text-gray-500'>
+                  <BsThreeDotsVertical />
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem onSelect={handleEditClick}>
+                    Edit
+                  </DropdownMenuItem>
+
+                  <DropdownMenuItem
+                    onClick={() => {
+                      setDropdownOpen(false);
+                      deletePost();
+                    }}>
+                    Delete
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+
+                <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                  <DialogContent
+                    className='sm:max-w-[425px]'
+                    aria-describedby={undefined}>
+                    <DialogHeader>
+                      <DialogTitle>Edit Caption</DialogTitle>
+                    </DialogHeader>
+                    <div className='grid gap-4 py-4'>
+                      <div className='grid grid-cols-4 items-center gap-4'>
+                        <Label htmlFor='name' className='text-right'>
+                          Caption
+                        </Label>
+                        <Input
+                          id='name'
+                          value={caption}
+                          onChange={(e) => setCaption(e.target.value)}
+                          className='col-span-3'
+                          placeholder='Edit Caption'
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button type='submit' onClick={editCaption}>
+                        Edit
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </DropdownMenu>
+            </>
           )}
         </div>
 
@@ -197,7 +285,7 @@ const PostCard = ({ type, value }) => {
                         src={media.url}
                         ref={(el) => (videoRefs.current[index] = el)}
                         controlsList='nodownload'
-                        className='h-[550px] w-[500px]   rounded-lg object-fill'
+                        className='h-[550px] w-[500px]   rounded-lg '
                         playsInline
                         muted={isMuted}
                         loop

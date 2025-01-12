@@ -1,22 +1,25 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import PostCard from '../components/PostCard';
 import { usePostStore, useUserStore } from '../../store';
 import Loading from '../components/Loading';
 import Addpost from '../components/AddPost';
 import { AiOutlineFile } from 'react-icons/ai';
+import { fetchPosts } from '../utills/FetchPost';
 
 const Home = () => {
-  const { posts } = usePostStore();
-  const { isLoading } = useUserStore();
+  const { reels, setPosts, setReels, posts } = usePostStore();
 
+  const { setIsLoading, addLoading, setAddLoading, isLoading } = useUserStore();
+  useEffect(() => {
+    fetchPosts({ setPosts, setReels, setIsLoading });
+  }, [setPosts, setReels, setIsLoading]);
   return (
     <>
       {isLoading ? (
         <Loading />
       ) : (
         <div>
-          <Addpost type='post' />
           {posts && posts.length > 0 ? (
             posts.map((ele) => (
               <PostCard value={ele} key={ele._id} type='post' />

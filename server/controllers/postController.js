@@ -93,7 +93,7 @@ export const editCaption = async (req, res) => {
     }
     post.caption = newCaption;
     await post.save();
-    console.log(post);
+
     return res.status(200).json({
       message: 'Caption Edited',
     });

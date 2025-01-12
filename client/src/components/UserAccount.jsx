@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { FiUserPlus, FiUserCheck } from 'react-icons/fi';
-import { AiOutlineFile } from 'react-icons/ai';
 import { useNavigate, useParams } from 'react-router-dom';
 import { usePostStore, useUserStore } from '../../store';
 import toast from 'react-hot-toast';
 import Loading from '../components/Loading';
 import { fetchPosts, fetchUser, fetchUsers } from '../utills/FetchPost';
-import PostCard from './../components/PostCard';
 import axios from 'axios';
 import Modal from './Modal';
-
+import SwitchTabs from '../utills/SwitchTabs';
 const UserAccount = () => {
   const {
     usersData,
@@ -22,7 +20,7 @@ const UserAccount = () => {
   const { posts, reels, setPosts, setReels, user, setUser } = usePostStore();
   const params = useParams();
 
-  const [type, setType] = useState('post');
+  const [text, setText] = useState('Following');
   const navigate = useNavigate();
   const [isFollower, setIsFollower] = useState(false);
   const [followerModal, setFollowerModal] = useState(false);
@@ -32,7 +30,11 @@ const UserAccount = () => {
       setIsFollower(true);
     }
   }, [usersData, params]);
-
+  useEffect(() => {
+    if (usersData._id === params.id) {
+      navigate('/account');
+    }
+  }, [usersData, params]);
   let myPosts, myReels;
   if (posts) {
     myPosts = posts.filter((post) => post.owner._id === params.id);
@@ -44,11 +46,11 @@ const UserAccount = () => {
 
   useEffect(() => {
     fetchPosts({ setPosts, setReels, setIsLoading });
-  }, []);
+  }, [setPosts, setReels, setIsLoading]);
 
   useEffect(() => {
     fetchUsers({ setUser, params });
-  }, [params.id]);
+  }, [setUser, params]);
   const followandUnfollowUsers = async () => {
     try {
       const res = await axios.post(`/api/user/follow/${params.id}`);
@@ -56,6 +58,7 @@ const UserAccount = () => {
         setIsFollower(!isFollower);
         fetchUsers({ setUser, params });
         fetchUser({ setUsersData, setIsAuth });
+        toast.dismiss();
         toast.success(res.data.message);
       }
     } catch (err) {
@@ -136,10 +139,13 @@ const UserAccount = () => {
 
                     <button
                       className='mt-6 bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white py-3 px-12 rounded-lg font-semibold flex items-center justify-center gap-2 transition duration-200 shadow-lg'
-                      onClick={followandUnfollowUsers}>
-                      {isFollower ? (
+                      onClick={followandUnfollowUsers}
+                      onMouseEnter={() => setText('Unfollow')}
+                      onMouseLeave={() => setText('Following')}>
+                      {usersData.followings.includes(params.id) &&
+                      isFollower ? (
                         <>
-                          <FiUserCheck size={20} /> <span>Following</span>
+                          <FiUserCheck size={20} /> <span>{text}</span>
                         </>
                       ) : (
                         <>
@@ -152,53 +158,7 @@ const UserAccount = () => {
               </div>
             </div>
             <div className='flex justify-center items-center p-4 gap-6 mt-6'>
-              <button
-                className={` py-2 px-6 rounded-lg text-lg font-semibold ${
-                  type === 'post'
-                    ? ' bg-indigo-500 text-white'
-                    : 'bg-gray-400 text-black '
-                }`}
-                onClick={() => setType('post')}>
-                Posts
-              </button>
-              <button
-                className={` py-2 px-6 rounded-lg text-lg font-semibold ${
-                  type === 'reel'
-                    ? ' bg-indigo-500 text-white'
-                    : 'bg-gray-400 text-black'
-                }`}
-                onClick={() => setType('reel')}>
-                Reels
-              </button>
-            </div>
-            <div className='mt-6'>
-              {type === 'post' ? (
-                <>
-                  {myPosts && myPosts.length > 0 ? (
-                    myPosts.map((post) => (
-                      <PostCard key={post._id} value={post} type='post' />
-                    ))
-                  ) : (
-                    <div className='flex justify-center flex-col items-center mb-[43px] text-4xl md:text-6xl  font-semibold'>
-                      <AiOutlineFile className='text-gray-600' />
-                      <p className='pb-4 text-black'>No Posts Yet</p>
-                    </div>
-                  )}
-                </>
-              ) : (
-                <>
-                  {myReels && myReels.length > 0 ? (
-                    myReels.map((reel) => (
-                      <PostCard key={reel._id} value={reel} type='reel' />
-                    ))
-                  ) : (
-                    <div className='flex justify-center flex-col items-center mb-[43px] text-4xl md:text-6xl  font-semibold'>
-                      <AiOutlineFile className='text-gray-600' />
-                      <p className='pb-4 text-black'>No Reels Yet</p>
-                    </div>
-                  )}
-                </>
-              )}
+              <SwitchTabs myPosts={myPosts} myReels={myReels} />
             </div>
           </div>
         )

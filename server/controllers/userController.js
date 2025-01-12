@@ -123,13 +123,30 @@ export const updateProfile = async (req, res) => {
 export const updatePassword = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
-    const { oldPassword, newPassword } = req.body;
+    const { oldPassword, newPassword, confirmPassword } = req.body;
+    if (oldPassword === '' || newPassword === '' || confirmPassword === '') {
+      return res.status(400).json({
+        message: 'All Fields are required',
+      });
+    }
     const comparePassword = await bcrypt.compare(oldPassword, user.password);
     if (!comparePassword) {
       return res.status(400).json({
         message: 'Wrong old Password',
       });
     }
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({
+        message: 'New password and confirm password must match.',
+      });
+    }
+
+    if (newPassword === oldPassword) {
+      return res.status(400).json({
+        message: 'New password cannot be the same as the old password.',
+      });
+    }
+
     user.password = await bcrypt.hash(newPassword, 10);
     await user.save();
     res.status(200).json({

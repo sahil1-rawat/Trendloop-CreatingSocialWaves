@@ -17,9 +17,9 @@ import Reels from './pages/Reels.jsx';
 import Header from './components/Header.jsx';
 import UserAccount from './components/UserAccount.jsx';
 import { fetchUser } from './utills/FetchPost.js';
+import NewPost from './components/NewPost.jsx';
 
 const pathName = window.location.pathname;
-console.log(pathName);
 
 const App = () => {
   const { isAuth, setUsersData, setIsAuth, setIsLoading, isLoading } =
@@ -57,6 +57,16 @@ const App = () => {
                 isAuth={isAuth}
                 redirectPath='/login'
                 Component={Reels}
+              />
+            }
+          />
+          <Route
+            path='/new-post'
+            element={
+              <PrivateRoute
+                isAuth={isAuth}
+                redirectPath='/login'
+                Component={NewPost}
               />
             }
           />

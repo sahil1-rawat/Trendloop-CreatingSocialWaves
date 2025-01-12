@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FiEdit2 } from 'react-icons/fi';
 import { AiOutlineFile, AiOutlineLogout } from 'react-icons/ai';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { usePostStore, useUserStore } from '../../store';
 import toast from 'react-hot-toast';
 import Loading from '../components/Loading';
@@ -10,7 +10,20 @@ import PostCard from './../components/PostCard';
 import Reels from './Reels';
 import Modal from '../components/Modal';
 import axios from 'axios';
+import { Button } from '@/components/ui/button';
+import SwitchTabs from '../utills/SwitchTabs';
 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 const Account = () => {
   const {
     usersData,
@@ -26,8 +39,14 @@ const Account = () => {
   const [name, setName] = useState('');
   const [profilePic, setProfilePic] = useState('');
   const [file, setFile] = useState('');
-  const [type, setType] = useState('post');
+  const [passwordDetails, setPasswordDetails] = useState({
+    oldPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  });
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const navigate = useNavigate();
+
   let myPosts, myReels;
   myPosts = posts?.filter((post) => post.owner._id === usersData._id) || [];
   myReels = reels?.filter((reel) => reel.owner._id === usersData._id) || [];
@@ -60,7 +79,36 @@ const Account = () => {
       reader.readAsDataURL(file);
     }
   };
-
+  const handlePassword = (e) => {
+    const { name, value } = e.target;
+    setPasswordDetails({
+      ...passwordDetails,
+      [name]: value,
+    });
+  };
+  // Change Password
+  const handlePasswordChange = async () => {
+    try {
+      const res = await axios.post(`/api/user/${usersData._id}`, {
+        oldPassword: passwordDetails.oldPassword,
+        newPassword: passwordDetails.newPassword,
+        confirmPassword: passwordDetails.confirmPassword,
+      });
+      if (res.status === 200) {
+        toast.dismiss();
+        toast.success(res.data.message);
+        setPasswordDetails({
+          oldPassword: '',
+          newPassword: '',
+          confirmPassword: '',
+        });
+        setIsDialogOpen(false);
+      }
+    } catch (err) {
+      toast.dismiss();
+      toast.error(err.response.data.message);
+    }
+  };
   const formData = new FormData();
   formData.append('name', name);
   formData.append('file', file);
@@ -137,7 +185,6 @@ const Account = () => {
 
     try {
       const res = await axios.get(`/api/user/followData/${usersData._id}`);
-      console.log(res);
 
       if (res.status === 200) {
         setFollowersData(res.data.user.followers);
@@ -174,11 +221,14 @@ const Account = () => {
               )}
               <div className='bg-white rounded-3xl shadow-lg p-8 w-full max-w-2xl'>
                 <div className='relative flex flex-col items-center mb-6'>
-                  <img
-                    src={profilePic}
-                    alt='Profile'
-                    className='w-40 h-40 rounded-full border-4 border-indigo-600 shadow-lg cursor-pointer'
-                  />
+                  <Link to={profilePic} target='_blank'>
+                    <img
+                      src={profilePic}
+                      alt='Profile'
+                      className='w-40 h-40 rounded-full border-4 border-indigo-600 shadow-lg cursor-pointer'
+                    />
+                  </Link>
+
                   {isEditing && (
                     <>
                       <div className='absolute bottom-14 right-70 p-2'>
@@ -254,11 +304,91 @@ const Account = () => {
                       Cancel
                     </button>
                   ) : (
-                    <button
-                      onClick={handleEditToggle}
-                      className='bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-6 rounded-lg font-medium transition duration-200'>
-                      Edit Profile
-                    </button>
+                    <div className='flex gap-2 justify-center'>
+                      <button
+                        onClick={handleEditToggle}
+                        className='bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-6 rounded-lg font-medium transition duration-200'>
+                        Edit Profile
+                      </button>
+                      <Dialog
+                        open={isDialogOpen}
+                        onOpenChange={setIsDialogOpen}>
+                        <DialogTrigger
+                          asChild
+                          className='bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-6 rounded-lg font-medium transition duration-200'>
+                          <Button onClick={() => setIsDialogOpen(true)}>
+                            Update Password
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent
+                          className='sm:max-w-[500px]'
+                          aria-describedby={undefined}>
+                          <DialogHeader>
+                            <DialogTitle>Change password</DialogTitle>
+                          </DialogHeader>
+                          <div className='grid gap-4 py-4'>
+                            <div className='grid grid-cols-4 items-center gap-4'>
+                              <Label
+                                htmlFor='oldPassword'
+                                className='text-right'>
+                                Old Password
+                              </Label>
+                              <Input
+                                type='password'
+                                id='oldPassword'
+                                name='oldPassword'
+                                placeholder='Enter Old Password'
+                                className='col-span-3'
+                                value={passwordDetails.oldPassword}
+                                onChange={handlePassword}
+                                required
+                              />
+                            </div>
+                            <div className='grid grid-cols-4 items-center gap-4'>
+                              <Label
+                                htmlFor='newPassword'
+                                className='text-right'>
+                                New Password
+                              </Label>
+                              <Input
+                                type='password'
+                                id='newPassword'
+                                name='newPassword'
+                                placeholder='Enter New Password'
+                                className='col-span-3'
+                                value={passwordDetails.newPassword}
+                                onChange={handlePassword}
+                                required
+                              />
+                            </div>
+                            <div className='grid grid-cols-4 items-center gap-4'>
+                              <Label
+                                htmlFor='confirmPassword'
+                                className='text-right'>
+                                Confirm Password
+                              </Label>
+                              <Input
+                                type='password'
+                                id='confirmPassword'
+                                name='confirmPassword'
+                                placeholder='Retype New Password'
+                                className='col-span-3'
+                                value={passwordDetails.confirmPassword}
+                                onChange={handlePassword}
+                                required
+                              />
+                            </div>
+                          </div>
+                          <DialogFooter>
+                            <Button
+                              type='submit'
+                              onClick={handlePasswordChange}>
+                              Save changes
+                            </Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
                   )}
                   <button
                     className='mt-6 bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white py-3 px-12 rounded-lg font-semibold flex items-center justify-center gap-2 transition duration-200 shadow-lg'
@@ -268,54 +398,8 @@ const Account = () => {
                 </div>
               </div>
             </div>
-            <div className='flex justify-center items-center p-4 gap-6 mt-6'>
-              <button
-                className={` py-2 px-6 rounded-lg text-lg font-semibold ${
-                  type === 'post'
-                    ? ' bg-indigo-500 text-white'
-                    : 'bg-gray-400 text-black '
-                }`}
-                onClick={() => setType('post')}>
-                Posts
-              </button>
-              <button
-                className={` py-2 px-6 rounded-lg text-lg font-semibold ${
-                  type === 'reel'
-                    ? ' bg-indigo-500 text-white'
-                    : 'bg-gray-400 text-black'
-                }`}
-                onClick={() => setType('reel')}>
-                Reels
-              </button>
-            </div>
-            <div className='mt-6'>
-              {type === 'post' ? (
-                <>
-                  {myPosts && myPosts.length > 0 ? (
-                    myPosts.map((post) => (
-                      <PostCard key={post._id} value={post} type='post' />
-                    ))
-                  ) : (
-                    <div className='flex justify-center flex-col items-center mb-[43px] text-4xl md:text-6xl  font-semibold'>
-                      <AiOutlineFile className='text-gray-600' />
-                      <p className='pb-4 text-black'>No Posts Yet</p>
-                    </div>
-                  )}
-                </>
-              ) : (
-                <>
-                  {myReels && myReels.length > 0 ? (
-                    myReels.map((reel) => (
-                      <PostCard key={reel._id} value={reel} type='reel' />
-                    ))
-                  ) : (
-                    <div className='flex justify-center flex-col items-center mb-[43px] text-4xl md:text-6xl  font-semibold'>
-                      <AiOutlineFile className='text-gray-600' />
-                      <p className='pb-4 text-black'>No Reels Yet</p>
-                    </div>
-                  )}
-                </>
-              )}
+            <div className='flex justify-center items-center p-4 gap-6 mt-6 '>
+              <SwitchTabs myPosts={myPosts} myReels={myReels} />
             </div>
           </div>
         )

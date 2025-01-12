@@ -1,14 +1,19 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import PostCard from '../components/PostCard';
 import { usePostStore, useUserStore } from '../../store';
 import Loading from '../components/Loading';
 import Addpost from '../components/AddPost';
 import { AiOutlineFile } from 'react-icons/ai';
+import { fetchPosts } from '../utills/FetchPost';
 
 const Reels = () => {
-  const { reels } = usePostStore();
-  const { isLoading } = useUserStore();
+  const { reels, setPosts, setReels, posts } = usePostStore();
+
+  const { setIsLoading, addLoading, setAddLoading, isLoading } = useUserStore();
+  useEffect(() => {
+    fetchPosts({ setPosts, setReels, setIsLoading });
+  }, [setPosts, setReels, setIsLoading]);
 
   return (
     <>
@@ -16,7 +21,6 @@ const Reels = () => {
         <Loading />
       ) : (
         <div>
-          <Addpost type='reel' />
           {reels && reels.length > 0 ? (
             reels.map((ele) => (
               <PostCard value={ele} key={ele._id} type='reel' />
