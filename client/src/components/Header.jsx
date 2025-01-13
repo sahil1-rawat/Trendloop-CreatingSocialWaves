@@ -17,15 +17,15 @@ const Header = () => {
         </div>
 
         {/* Search Bar */}
-        {/* <div className='relative w-1/3 max-w-lg'>
+        <div className='relative w-1/3 max-w-lg'>
           <input
             type='text'
             placeholder='Search'
-            className='w-full py-2 px-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400'
+            className='w-full py-2 pr-7 pl-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400'
           />
-          <FaSearch className='absolute top-2 right-3 text-gray-400' />
+          <FaSearch className='absolute top-3 right-3 text-gray-400' />
         </div>
- */}
+
         {/* <div className='flex items-center space-x-6'>
           
           <FaBell className='text-2xl cursor-pointer text-gray-700' />

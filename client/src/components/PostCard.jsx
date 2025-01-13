@@ -18,23 +18,17 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-
 import axios from 'axios';
-
 import { usePostStore, useUserStore } from '../../store';
 import { format } from 'date-fns';
-
 import { Comment } from './Comment';
-
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
@@ -51,6 +45,10 @@ const PostCard = ({ type, value }) => {
   const formatDate = format(new Date(value.createdAt), 'MMMM do');
   const formatTime = format(new Date(value.createdAt), 'HH:mm');
   const [caption, setCaption] = useState(value.caption || '');
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  // Effect to check if the post is liked by the user
   useEffect(() => {
     for (let i = 0; i < value.likes.length; i++) {
       if (value.likes[i] === usersData._id) {
@@ -58,15 +56,14 @@ const PostCard = ({ type, value }) => {
       }
     }
   }, [value, usersData._id]);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [dialogOpen, setDialogOpen] = useState(false);
 
+  // Function to handle edit click
   const handleEditClick = () => {
     setDropdownOpen(false);
-
     setDialogOpen(true);
   };
-  //Edit Caption
+
+  // Function to edit caption
   const editCaption = async () => {
     try {
       const res = await axios.put(`/api/post/edit/${value._id}`, {
@@ -83,6 +80,7 @@ const PostCard = ({ type, value }) => {
     }
   };
 
+  // Function to handle video click
   const handleVideoClick = (index) => {
     const video = videoRefs.current[index];
     if (video) {
@@ -93,6 +91,8 @@ const PostCard = ({ type, value }) => {
       }
     }
   };
+
+  // Effect to handle video play/pause based on visibility
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -122,7 +122,7 @@ const PostCard = ({ type, value }) => {
     };
   }, []);
 
-  // Handle adding a comment
+  // Function to handle adding a comment
   const handleAddComment = async (e) => {
     e.preventDefault();
 
@@ -140,6 +140,8 @@ const PostCard = ({ type, value }) => {
       console.log(err);
     }
   };
+
+  // Function to like/unlike a post
   const likeUnlikePost = async () => {
     try {
       const res = await axios.post(`/api/post/likeunlike/${value._id}`, {
@@ -155,11 +157,13 @@ const PostCard = ({ type, value }) => {
       console.log(err);
     }
   };
+
+  // Function to toggle mute
   const toggleMute = () => {
     setIsMuted(!isMuted);
   };
 
-  // Delete Post
+  // Function to delete a post
   const deletePost = async () => {
     try {
       const res = await axios.delete(`/api/post/delete/${value._id}`);
@@ -171,6 +175,7 @@ const PostCard = ({ type, value }) => {
       console.log(err);
     }
   };
+
   return (
     <div className='bg-gray-100 flex items-center justify-center pt-3 pb-14'>
       <div className='bg-white rounded-lg shadow-md max-w-md w-full'>
@@ -253,7 +258,6 @@ const PostCard = ({ type, value }) => {
           )}
         </div>
 
-        {/* Caption */}
         <div className='px-4 my-2'>
           <p className='text-gray-800'>{value.caption}</p>
         </div>
@@ -308,7 +312,6 @@ const PostCard = ({ type, value }) => {
           )}
         </div>
 
-        {/* Actions */}
         <div className='flex items-center justify-between text-gray-500 px-4'>
           <div className='flex items-center space-x-2'>
             <span

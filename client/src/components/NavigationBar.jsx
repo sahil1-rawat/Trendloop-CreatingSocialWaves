@@ -1,12 +1,7 @@
 import React, { useState } from 'react';
 import { AiFillHome, AiOutlineHome } from 'react-icons/ai';
 import { BsCameraReels, BsCameraReelsFill } from 'react-icons/bs';
-import {
-  RiSearchLine,
-  RiSearchFill,
-  RiAddBoxFill,
-  RiAddBoxLine,
-} from 'react-icons/ri';
+import { RiSearchLine, RiSearchFill } from 'react-icons/ri';
 import { MdChatBubbleOutline, MdChatBubble } from 'react-icons/md';
 import { RiAccountCircleFill, RiAccountCircleLine } from 'react-icons/ri';
 
@@ -15,9 +10,6 @@ import { usePostStore } from '../../store';
 
 import { FaCirclePlus } from 'react-icons/fa6';
 import { FiPlusCircle } from 'react-icons/fi';
-
-import Addpost from './AddPost';
-import { VisuallyHidden } from './../utills/VisuallyHidden';
 
 const NavigationBar = () => {
   const { tab, setTab } = usePostStore();
@@ -29,7 +21,7 @@ const NavigationBar = () => {
           to='/'
           onClick={() => setTab('/')}
           className='flex flex-col items-center text-2xl'>
-          <span title='Posts'>
+          <span title='Home'>
             {tab === '/' ? <AiFillHome /> : <AiOutlineHome />}
           </span>
         </Link>
@@ -42,14 +34,6 @@ const NavigationBar = () => {
           </span>
         </Link>
 
-        <Link
-          to='/search'
-          onClick={() => setTab('/search')}
-          className='flex flex-col items-center text-2xl'>
-          <span title='Search'>
-            {tab === '/search' ? <RiSearchFill /> : <RiSearchLine />}
-          </span>
-        </Link>
         <Link
           to='/new-post'
           onClick={() => setTab('/new-post')}

@@ -18,6 +18,7 @@ import Header from './components/Header.jsx';
 import UserAccount from './components/UserAccount.jsx';
 import { fetchUser } from './utills/FetchPost.js';
 import NewPost from './components/NewPost.jsx';
+import SearchUser from './components/SearchUser.jsx';
 
 const pathName = window.location.pathname;
 
@@ -57,6 +58,16 @@ const App = () => {
                 isAuth={isAuth}
                 redirectPath='/login'
                 Component={Reels}
+              />
+            }
+          />
+          <Route
+            path='/search'
+            element={
+              <PrivateRoute
+                isAuth={isAuth}
+                redirectPath='/login'
+                Component={SearchUser}
               />
             }
           />
