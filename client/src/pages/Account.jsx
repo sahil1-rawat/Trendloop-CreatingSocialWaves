@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { FiEdit2 } from 'react-icons/fi';
-import { AiOutlineFile, AiOutlineLogout } from 'react-icons/ai';
+import { AiOutlineLogout } from 'react-icons/ai';
 import { Link, useNavigate } from 'react-router-dom';
 import { usePostStore, useUserStore } from '../../store';
 import toast from 'react-hot-toast';
 import Loading from '../components/Loading';
-import { fetchPosts } from '../utills/FetchPost';
-import PostCard from './../components/PostCard';
-import Reels from './Reels';
+import { fetchPosts, fetchUser } from '../utills/FetchPost';
 import Modal from '../components/Modal';
 import axios from 'axios';
 import { Button } from '@/components/ui/button';
@@ -16,7 +14,6 @@ import SwitchTabs from '../utills/SwitchTabs';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -165,8 +162,7 @@ const Account = () => {
         setTab('/');
         setPosts([]);
         setReels([]);
-        localStorage.removeItem('usersData');
-        localStorage.removeItem('isAuth');
+        fetchUser({ setUsersData, setIsAuth });
         navigate('/login');
         toast.dismiss();
         toast.success('Logged out successfully');
@@ -181,8 +177,6 @@ const Account = () => {
   const [followersData, setFollowersData] = useState([]);
   const [followingsData, setFollowingsData] = useState([]);
   const followData = async () => {
-    // console.log(usersData);
-
     try {
       const res = await axios.get(`/api/user/followData/${usersData._id}`);
 

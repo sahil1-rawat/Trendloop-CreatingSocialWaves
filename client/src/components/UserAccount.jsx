@@ -8,6 +8,7 @@ import { fetchPosts, fetchUser, fetchUsers } from '../utills/FetchPost';
 import axios from 'axios';
 import Modal from './Modal';
 import SwitchTabs from '../utills/SwitchTabs';
+
 const UserAccount = () => {
   const {
     usersData,
@@ -19,30 +20,27 @@ const UserAccount = () => {
   } = useUserStore();
   const { posts, reels, setPosts, setReels, user, setUser } = usePostStore();
   const params = useParams();
+  const navigate = useNavigate();
 
   const [text, setText] = useState('Following');
-  const navigate = useNavigate();
   const [isFollower, setIsFollower] = useState(false);
   const [followerModal, setFollowerModal] = useState(false);
   const [followingModal, setFollowingModal] = useState(false);
+  const [followersData, setFollowersData] = useState([]);
+  const [followingsData, setFollowingsData] = useState([]);
+
+  // Effects
   useEffect(() => {
     if (usersData.followings.includes(params.id)) {
       setIsFollower(true);
     }
   }, [usersData, params]);
+
   useEffect(() => {
     if (usersData._id === params.id) {
       navigate('/account');
     }
   }, [usersData, params]);
-  let myPosts, myReels;
-  if (posts) {
-    myPosts = posts.filter((post) => post.owner._id === params.id);
-  }
-  if (reels) {
-    myReels = reels.filter((reel) => reel.owner._id === params.id);
-  }
-  const totalPosts = myPosts?.length + myReels?.length;
 
   useEffect(() => {
     fetchPosts({ setPosts, setReels, setIsLoading });
@@ -51,6 +49,12 @@ const UserAccount = () => {
   useEffect(() => {
     fetchUsers({ setUser, params });
   }, [setUser, params]);
+
+  useEffect(() => {
+    followData();
+  }, [user]);
+
+  // function to handle Follow and Unfollow events
   const followandUnfollowUsers = async () => {
     try {
       const res = await axios.post(`/api/user/follow/${params.id}`);
@@ -65,14 +69,12 @@ const UserAccount = () => {
       console.log(err);
     }
   };
-  const [followersData, setFollowersData] = useState([]);
-  const [followingsData, setFollowingsData] = useState([]);
+
   const followData = async () => {
     try {
       const res = await axios.get(
         `/api/user/followData/${user?._id || params.id}`
       );
-
       if (res.status === 200) {
         setFollowersData(res.data.user.followers);
         setFollowingsData(res.data.user.followings);
@@ -81,9 +83,18 @@ const UserAccount = () => {
       console.log(err);
     }
   };
-  useEffect(() => {
-    followData();
-  }, [user]);
+
+  // Filter posts and reels by the param user
+  let myPosts, myReels;
+  if (posts) {
+    myPosts = posts.filter((post) => post.owner._id === params.id);
+  }
+  if (reels) {
+    myReels = reels.filter((reel) => reel.owner._id === params.id);
+  }
+  const totalPosts = myPosts?.length + myReels?.length;
+
+  // Render
   return (
     <>
       {isLoading ? (

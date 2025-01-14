@@ -1,29 +1,35 @@
+import axios from 'axios';
 import React, { useState, useRef, useEffect } from 'react';
+import { FaTimes } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import { Navigation, Pagination } from 'swiper/modules';
 import { usePostStore, useUserStore } from '../../store';
-import axios from 'axios';
-import toast from 'react-hot-toast';
-import { LoadingAnimation } from './Loading';
 import { fetchPosts } from '../utills/FetchPost';
-import { FaTimes } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import { LoadingAnimation } from './Loading';
 
 const Addpost = ({ type }) => {
-  const { reels, setPosts, setReels } = usePostStore();
-
+  const { setPosts, setReels } = usePostStore();
   const { setIsLoading, addLoading, setAddLoading } = useUserStore();
   const [caption, setCaption] = useState('');
   const [files, setFiles] = useState([]);
   const [filePreviews, setFilePreviews] = useState([]);
   const videoRefs = useRef([]);
+
+  const navigate = useNavigate();
+  const isFormValid = files.length > 0;
+
+  // Function to clear file previews
   const closeFilePrev = () => {
     setFiles([]);
     setFilePreviews([]);
   };
+
+  // Function to handle file input change
   const changeFileHandler = (e) => {
     const selectedFiles = Array.from(e.target.files);
 
@@ -42,6 +48,7 @@ const Addpost = ({ type }) => {
     });
   };
 
+  // Function to handle slide change in Swiper
   const handleSlideChange = (swiper) => {
     videoRefs.current.forEach((video) => {
       if (video) {
@@ -55,6 +62,7 @@ const Addpost = ({ type }) => {
     if (activeVideo) activeVideo.play();
   };
 
+  // Function to handle video click (play/pause)
   const handleVideoClick = (index) => {
     const video = videoRefs.current[index];
     if (video) {
@@ -66,13 +74,13 @@ const Addpost = ({ type }) => {
     }
   };
 
+  // Function to handle Swiper initialization
   const handleSwiperInit = (swiper) => {
     const firstVideo = videoRefs.current[0];
     if (firstVideo) firstVideo.play();
   };
 
-  const isFormValid = files.length > 0;
-  const navigate = useNavigate();
+  // Function to handle add new post or reels
   const addPost = async (e) => {
     e.preventDefault();
     setAddLoading(true);
@@ -102,9 +110,10 @@ const Addpost = ({ type }) => {
       setAddLoading(false);
     }
   };
+
   return (
     <div className=' flex items-center justify-center min-h-[50vh] px-4 py-4'>
-      <div className='bg-white p-6 md:p-8 rounded-lg shadow-lg max-w-md w-full'>
+      <div className='bg-white p-6 md:p-8 rounded-lg  max-w-md w-full'>
         <h2 className='text-lg font-semibold text-gray-700 mb-4 text-center'>
           {type === 'post' ? 'Create New Post' : 'Create New Reel'}
         </h2>
