@@ -5,15 +5,23 @@ import { RiSearchLine, RiSearchFill } from 'react-icons/ri';
 import { MdChatBubbleOutline, MdChatBubble } from 'react-icons/md';
 import { RiAccountCircleFill, RiAccountCircleLine } from 'react-icons/ri';
 
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { usePostStore } from '../../store';
 
 import { FaCirclePlus } from 'react-icons/fa6';
 import { FiPlusCircle } from 'react-icons/fi';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 const NavigationBar = () => {
   const { tab, setTab } = usePostStore();
-
+  const navigate = useNavigate();
   return (
     <div className='fixed bottom-0 left-0 w-full bg-white py-3 z-50'>
       <div className='flex justify-evenly px-4'>
@@ -34,14 +42,36 @@ const NavigationBar = () => {
           </span>
         </Link>
 
-        <Link
-          to='/new-post'
-          onClick={() => setTab('/new-post')}
-          className='flex flex-col items-center text-2xl'>
-          <span title='New Post'>
-            {tab === '/new-post' ? <FaCirclePlus /> : <FiPlusCircle />}
-          </span>
-        </Link>
+        {/*  */}
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <span
+              title='New Post'
+              className='flex flex-col items-center text-2xl'>
+              {tab === '/new-post' || tab === '/new-reel' ? (
+                <FaCirclePlus />
+              ) : (
+                <FiPlusCircle />
+              )}
+            </span>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem
+              onClick={() => {
+                navigate('/new-post');
+                setTab('/new-post');
+              }}>
+              Post
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                navigate('/new-reel');
+                setTab('/new-reel');
+              }}>
+              Reel
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         <Link
           to='/chat'

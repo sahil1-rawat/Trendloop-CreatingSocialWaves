@@ -4,9 +4,18 @@ import { usePostStore, useUserStore } from '../../store';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import { fetchPosts } from '../utills/FetchPost';
+import { BsThreeDots } from 'react-icons/bs';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 export const Comment = ({ value, postOwner, postId }) => {
-  const { posts, reels, setPosts, setReels } = usePostStore();
+  const { setPosts, setReels } = usePostStore();
 
   const { usersData, setIsLoading } = useUserStore();
   const commentId = value._id;
@@ -55,13 +64,24 @@ export const Comment = ({ value, postOwner, postId }) => {
       </div>
       {(value.user._id === usersData._id ||
         postOwner._id === usersData._id) && (
-        <button
-          className='text-red-500 hover:text-red-700 hover:bg-red-100 p-2 rounded-full transition-colors duration-150'
-          aria-label='Delete comment'
-          title='Delete comment'
-          onClick={deleteComment}>
-          <AiFillDelete size={20} />
-        </button>
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <button className='text-gray-500 hover:text-gray-700 hover:bg-gray-100 p-2 rounded-full transition-colors duration-150'>
+              <BsThreeDots size={20} />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            {value.user._id === usersData._id && (
+              <DropdownMenuItem>Edit</DropdownMenuItem>
+            )}
+            {(value.user._id === usersData._id ||
+              postOwner._id === usersData._id) && (
+              <DropdownMenuItem onClick={deleteComment}>
+                Delete
+              </DropdownMenuItem>
+            )}
+          </DropdownMenuContent>
+        </DropdownMenu>
       )}
     </div>
   );

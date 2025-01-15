@@ -2,10 +2,13 @@ import React from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import PostCard from '../components/PostCard';
 import { AiOutlineFile } from 'react-icons/ai';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useUserStore } from '../../store';
 
 const SwitchTabs = ({ myPosts, myReels }) => {
   const navigate = useNavigate();
+  const params = useParams();
+  const { usersData } = useUserStore();
   return (
     <Tabs defaultValue='posts' className='xs:w-[400px] w-[300px]'>
       {/* Tab Navigation */}
@@ -35,17 +38,21 @@ const SwitchTabs = ({ myPosts, myReels }) => {
               <h2 className='text-xl sm:text-2xl text-gray-600 font-semibold'>
                 No Posts Yet
               </h2>
-              <p className='text-sm sm:text-base text-gray-500 mt-2'>
-                It looks like you haven’t shared any posts yet. Start posting to
-                see them here!
-              </p>
-              <button
-                className='mt-6 px-4 py-2 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 transition-all duration-200'
-                onClick={() => {
-                  navigate('/new-post');
-                }}>
-                Create a Post
-              </button>
+              {!params.id && (
+                <>
+                  <p className='text-sm sm:text-base text-gray-500 mt-2'>
+                    It looks like you haven’t shared any posts yet. Start
+                    posting to see them here!
+                  </p>
+                  <button
+                    className='mt-6 px-4 py-2 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 transition-all duration-200'
+                    onClick={() => {
+                      navigate('/new-post');
+                    }}>
+                    Create a Post
+                  </button>
+                </>
+              )}
             </div>
           )}
         </>
@@ -63,17 +70,21 @@ const SwitchTabs = ({ myPosts, myReels }) => {
               <h2 className='text-xl sm:text-2xl text-gray-600 font-semibold'>
                 No Reels Yet
               </h2>
-              <p className='text-sm sm:text-base text-gray-500 mt-2'>
-                Share your first reel to show it here. Let the world see your
-                creativity!
-              </p>
-              <button
-                className='mt-6 px-4 py-2 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 transition-all duration-200'
-                onClick={() => {
-                  navigate('/new-post');
-                }}>
-                Add a Reel
-              </button>
+              {!params.id && (
+                <>
+                  <p className='text-sm sm:text-base text-gray-500 mt-2'>
+                    Share your first reel to show it here. Let the world see
+                    your creativity!
+                  </p>
+                  <button
+                    className='mt-6 px-4 py-2 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 transition-all duration-200'
+                    onClick={() => {
+                      navigate('/new-reel');
+                    }}>
+                    Add a Reel
+                  </button>
+                </>
+              )}
             </div>
           )}
         </>

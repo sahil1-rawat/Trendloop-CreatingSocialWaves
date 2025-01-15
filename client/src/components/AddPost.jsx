@@ -112,8 +112,8 @@ const Addpost = ({ type }) => {
   };
 
   return (
-    <div className=' flex items-center justify-center min-h-[50vh] px-4 py-4'>
-      <div className='bg-white p-6 md:p-8 rounded-lg  max-w-md w-full'>
+    <div className=' flex items-center justify-center min-h-[40vh] px-4 py-4'>
+      <div className='bg-white p-6 md:p-8 rounded-lg shadow-lg max-w-md w-full'>
         <h2 className='text-lg font-semibold text-gray-700 mb-4 text-center'>
           {type === 'post' ? 'Create New Post' : 'Create New Reel'}
         </h2>

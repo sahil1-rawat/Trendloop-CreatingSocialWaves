@@ -165,7 +165,7 @@ const Account = () => {
         fetchUser({ setUsersData, setIsAuth });
         navigate('/login');
         toast.dismiss();
-        toast.success('Logged out successfully');
+        toast.success('Good bye for now!');
       }
     } catch (err) {
       toast.dismiss();

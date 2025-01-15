@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import axios from 'axios';
-import { useUserStore } from '../../store';
+import { usePostStore, useUserStore } from '../../store';
 import Loading from '../components/Loading';
 import { fetchPosts } from '../utills/FetchPost';
+import { FaEdit, FaPen } from 'react-icons/fa';
+import { FiEdit2 } from 'react-icons/fi';
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -107,11 +109,14 @@ const Register = () => {
                     ) : (
                       <div className='flex justify-center mb-4'>
                         <div
-                          className='w-28 h-28 rounded-full bg-[#f007f0] flex items-center justify-center text-purple-100 cursor-pointer'
+                          className='w-28 h-28 rounded-full bg-gray-200 flex items-center justify-center text-black cursor-pointer'
                           onClick={() =>
                             document.getElementById('profile-pic').click()
-                          }>
-                          <span className='text-4xl'>A</span>
+                          }
+                          title='Profile Pic'>
+                          <span className='text-center'>
+                            <FiEdit2 size={15} />
+                          </span>
                         </div>
                       </div>
                     )}
@@ -122,7 +127,6 @@ const Register = () => {
                       id='profile-pic'
                       onChange={changeFileHandler}
                       accept='image/*'
-                      required
                     />
                   </div>
 

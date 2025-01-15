@@ -9,9 +9,14 @@ export const registerUser = async (req, res) => {
   try {
     const { name, email, password, gender } = req.body;
     const file = req.file;
-    if (!name || !email || !password || !gender || !file) {
+    if (!name || !email || !password || !gender) {
       return res.status(400).json({
         message: 'Please give all values',
+      });
+    }
+    if (!file) {
+      return res.status(400).json({
+        message: 'Profile Picture is required',
       });
     }
     let user = await User.findOne({ email });

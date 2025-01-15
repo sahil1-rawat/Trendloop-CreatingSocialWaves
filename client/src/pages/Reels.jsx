@@ -38,7 +38,7 @@ const Reels = () => {
               <button
                 className='mt-6 px-4  py-2 bg-blue-500 text-white rounded-md shadow hover:bg-blue-600 transition-all duration-200'
                 onClick={() => {
-                  navigate('/new-post');
+                  navigate('/new-reel');
                 }}>
                 Add a Reel
               </button>
