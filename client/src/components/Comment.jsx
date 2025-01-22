@@ -9,11 +9,10 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useState } from 'react';
+import { format } from 'date-fns';
 
 export const Comment = ({
   value,
@@ -24,6 +23,8 @@ export const Comment = ({
   setIsEdited,
 }) => {
   const { setPosts, setReels } = usePostStore();
+  const formatTime = format(new Date(value.createdAt), 'HH:mm');
+  console.log(formatTime);
 
   const { usersData, setIsLoading } = useUserStore();
   const commentId = value._id;
@@ -49,7 +50,7 @@ export const Comment = ({
     }
   };
 
-  const [newComment, setNewComment] = useState('');
+  const [newComment, setNewComment] = useState(value.comment);
 
   const editOldComment = async () => {
     try {
@@ -65,7 +66,8 @@ export const Comment = ({
         setIsEdited(false);
       }
     } catch (err) {
-      console.log(err);
+      toast.error('Something went wrong');
+      setIsEdited(false);
     }
   };
   return (
@@ -89,12 +91,20 @@ export const Comment = ({
         </Link>
         {isEdited ? (
           <>
-            <input
-              type='text'
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-            />
-            <button onClick={editOldComment}>Edit</button>
+            <div className='flex items-center space-x-2 mt-2'>
+              <input
+                type='text'
+                value={newComment}
+                onChange={(e) => setNewComment(e.target.value)}
+                className='flex-1 px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200'
+                placeholder='Edit your comment...'
+              />
+              <button
+                onClick={editOldComment}
+                className='px-4 py-2 text-sm text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200'>
+                Save
+              </button>
+            </div>
           </>
         ) : (
           <p className='text-gray-700 text-sm mt-1'>{value.comment}</p>
