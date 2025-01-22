@@ -176,6 +176,11 @@ const PostCard = ({ type, value }) => {
     }
   };
 
+  const [isEdited, setIsEdited] = useState(false);
+  const handleEdit = () => {
+    setIsEdited(true);
+  };
+
   return (
     <div className='bg-gray-100 flex items-center justify-center pt-3 pb-14'>
       <div className='bg-white rounded-lg shadow-md max-w-md w-full'>

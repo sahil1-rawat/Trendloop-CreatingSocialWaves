@@ -5,6 +5,7 @@ import {
   deleteComment,
   deletePost,
   editCaption,
+  editComment,
   getAllPosts,
   likeUnlikePost,
   newPost,
@@ -18,4 +19,5 @@ postRoutes.put('/edit/:id', isAuth, editCaption);
 postRoutes.post('/comment/:id', isAuth, commentOnPost);
 postRoutes.post('/likeunlike/:id', isAuth, likeUnlikePost);
 postRoutes.delete('/comment/:id', isAuth, deleteComment);
+postRoutes.put('/comment/:id', isAuth, editComment);
 export default postRoutes;

@@ -238,3 +238,44 @@ export const likeUnlikePost = async (req, res) => {
     });
   }
 };
+
+// Edit a comment
+export const editComment = async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+    if (!post) {
+      return res.status(404).json({
+        message: 'Post not found',
+      });
+    }
+    const { commentId, newComment } = req.body;
+    if (!commentId || !newComment) {
+      return res.status(400).json({
+        message: 'Please provide commentId and newComment',
+      });
+    }
+    const commentIndex = post.comments.findIndex(
+      (item) => item._id.toString() === commentId.toString()
+    );
+    if (commentIndex === -1) {
+      return res.status(404).json({
+        message: 'Comment not found',
+      });
+    }
+    const comment = post.comments[commentIndex];
+    if (comment.user.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        message: 'You are not authorized to edit this comment',
+      });
+    }
+    post.comments[commentIndex].comment = newComment;
+    await post.save();
+    res.json({
+      message: 'Comment edited',
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: err.message,
+    });
+  }
+};
