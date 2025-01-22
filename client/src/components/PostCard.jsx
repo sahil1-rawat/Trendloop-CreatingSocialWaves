@@ -175,9 +175,8 @@ const PostCard = ({ type, value }) => {
       console.log(err);
     }
   };
-
   const [isEdited, setIsEdited] = useState(false);
-  const handleEdit = () => {
+  const handleEdit = async () => {
     setIsEdited(true);
   };
 
@@ -367,7 +366,9 @@ const PostCard = ({ type, value }) => {
                   value={comment}
                   postOwner={value.owner}
                   postId={value._id}
-                  values={value}
+                  Click={handleEdit}
+                  isEdited={isEdited}
+                  setIsEdited={setIsEdited}
                 />
               ))
             ) : (

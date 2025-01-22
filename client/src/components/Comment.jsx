@@ -13,8 +13,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useState } from 'react';
 
-export const Comment = ({ value, postOwner, postId }) => {
+export const Comment = ({
+  value,
+  postOwner,
+  postId,
+  Click,
+  isEdited,
+  setIsEdited,
+}) => {
   const { setPosts, setReels } = usePostStore();
 
   const { usersData, setIsLoading } = useUserStore();
@@ -40,6 +48,26 @@ export const Comment = ({ value, postOwner, postId }) => {
       console.log(err);
     }
   };
+
+  const [newComment, setNewComment] = useState('');
+
+  const editOldComment = async () => {
+    try {
+      const res = await axios.put(`/api/post/comment/${postId}`, {
+        commentId: value._id,
+        newComment,
+        withCredentials: true,
+      });
+      if (res.status === 200) {
+        fetchPosts({ setPosts, setReels, setIsLoading });
+        toast.dismiss();
+        toast.success(res.data.message);
+        setIsEdited(false);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <div className='flex items-start space-x-4 mt-3 mb-4 p-3 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200'>
       <Link to={profilePicUrl} target='_blank'>
@@ -59,8 +87,18 @@ export const Comment = ({ value, postOwner, postId }) => {
           className='text-gray-900 font-medium text-sm hover:underline'>
           {userName}
         </Link>
-
-        <p className='text-gray-700 text-sm mt-1'>{value.comment}</p>
+        {isEdited ? (
+          <>
+            <input
+              type='text'
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+            />
+            <button onClick={editOldComment}>Edit</button>
+          </>
+        ) : (
+          <p className='text-gray-700 text-sm mt-1'>{value.comment}</p>
+        )}
       </div>
       {(value.user._id === usersData._id ||
         postOwner._id === usersData._id) && (
@@ -72,7 +110,7 @@ export const Comment = ({ value, postOwner, postId }) => {
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             {value.user._id === usersData._id && (
-              <DropdownMenuItem>Edit</DropdownMenuItem>
+              <DropdownMenuItem onClick={Click}>Edit</DropdownMenuItem>
             )}
             {(value.user._id === usersData._id ||
               postOwner._id === usersData._id) && (
