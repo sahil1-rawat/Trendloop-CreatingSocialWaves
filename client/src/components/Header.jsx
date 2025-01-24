@@ -26,7 +26,7 @@ const Header = () => {
           <FaSearch className='absolute top-3 right-3 text-gray-400' />
         </div>
 
-        {/* <div className='flex items-center space-x-6'>
+        <div className='flex items-center space-x-6'>
           <FaBell className='text-2xl cursor-pointer text-gray-700' />
           <Link to='/account'>
             <FaUserCircle
@@ -34,7 +34,7 @@ const Header = () => {
               title='Profile'
             />
           </Link>
-        </div> */}
+        </div>
       </div>
     </div>
   );
