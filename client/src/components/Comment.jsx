@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { AiFillDelete } from 'react-icons/ai';
 import { usePostStore, useUserStore } from '../../store';
@@ -11,8 +12,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useState } from 'react';
-import { format } from 'date-fns';
 
 export const Comment = ({
   value,
@@ -23,20 +22,31 @@ export const Comment = ({
   setIsEdited,
 }) => {
   const { setPosts, setReels } = usePostStore();
-  // const formatTime = format(new Date(value.createdAt), 'HH:mm');
-  const formatTime = new Date(value.createdAt);
-  const now = new Date();
-
-  const diff = now - formatTime;
-  const minutes = Math.floor(diff / (1000 * 60));
-  console.log(minutes);
-
   const { usersData, setIsLoading } = useUserStore();
   const commentId = value._id;
 
   const profilePicUrl = value?.user?.profilePic?.url || value?.profilePic;
   const userName = value?.user?.name || value?.name;
   const userId = value?.user?._id || '';
+
+  const [newComment, setNewComment] = useState(value.comment);
+
+  const [minutes, setMinutes] = useState(0);
+
+  useEffect(() => {
+    const formatTime = new Date(value.createdAt);
+    const now = new Date();
+    const diff = now - formatTime;
+    setMinutes(Math.floor(diff / (1000 * 60)));
+
+    const interval = setInterval(() => {
+      const diff = new Date() - formatTime;
+      setMinutes(Math.floor(diff / (1000 * 60)));
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, [value.createdAt]);
+
   const deleteComment = async () => {
     try {
       const res = await axios.delete(`/api/post/comment/${postId}`, {
@@ -46,7 +56,6 @@ export const Comment = ({
 
       if (res.status === 200) {
         fetchPosts({ setPosts, setReels, setIsLoading });
-
         toast.dismiss();
         toast.success(res.data.message);
       }
@@ -54,8 +63,6 @@ export const Comment = ({
       console.log(err);
     }
   };
-
-  const [newComment, setNewComment] = useState(value.comment);
 
   const editOldComment = async () => {
     try {
@@ -75,6 +82,7 @@ export const Comment = ({
       setIsEdited(false);
     }
   };
+
   return (
     <div className='flex items-start space-x-4 mt-3 mb-4 p-3 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200'>
       <Link to={profilePicUrl} target='_blank'>
@@ -115,6 +123,7 @@ export const Comment = ({
           <p className='text-gray-700 text-sm mt-1'>{value.comment}</p>
         )}
       </div>
+
       {(value.user._id === usersData._id ||
         postOwner._id === usersData._id) && (
         <DropdownMenu>
