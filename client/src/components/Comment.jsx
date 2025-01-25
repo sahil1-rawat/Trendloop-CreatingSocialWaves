@@ -23,8 +23,13 @@ export const Comment = ({
   setIsEdited,
 }) => {
   const { setPosts, setReels } = usePostStore();
-  const formatTime = format(new Date(value.createdAt), 'HH:mm');
-  console.log(formatTime);
+  // const formatTime = format(new Date(value.createdAt), 'HH:mm');
+  const formatTime = new Date(value.createdAt);
+  const now = new Date();
+
+  const diff = now - formatTime;
+  const minutes = Math.floor(diff / (1000 * 60));
+  console.log(minutes);
 
   const { usersData, setIsLoading } = useUserStore();
   const commentId = value._id;
@@ -119,7 +124,7 @@ export const Comment = ({
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            {value.user._id === usersData._id && (
+            {value.user._id === usersData._id && minutes < 2 && (
               <DropdownMenuItem onClick={Click}>Edit</DropdownMenuItem>
             )}
             {(value.user._id === usersData._id ||
