@@ -194,6 +194,7 @@ const PostCard = ({ type, value }) => {
                 className='w-12 h-12 rounded-full border border-gray-300 hover:ring-2 hover:ring-gray-400 transition-transform duration-200'
               />
             </Link>
+
             <div>
               <Link
                 to={`${

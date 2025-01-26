@@ -2,7 +2,12 @@ import React, { useState } from 'react';
 import { AiFillHome, AiOutlineHome } from 'react-icons/ai';
 import { BsCameraReels, BsCameraReelsFill } from 'react-icons/bs';
 import { RiSearchLine, RiSearchFill } from 'react-icons/ri';
-import { MdChatBubbleOutline, MdChatBubble } from 'react-icons/md';
+import {
+  MdChatBubbleOutline,
+  MdChatBubble,
+  MdOutlineSlowMotionVideo,
+  MdSlowMotionVideo,
+} from 'react-icons/md';
 import { RiAccountCircleFill, RiAccountCircleLine } from 'react-icons/ri';
 
 import { Link, useNavigate } from 'react-router-dom';
@@ -10,6 +15,8 @@ import { usePostStore } from '../../store';
 
 import { FaCirclePlus } from 'react-icons/fa6';
 import { FiPlusCircle } from 'react-icons/fi';
+import { PiVideo, PiVideoFill } from 'react-icons/pi';
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,7 +37,11 @@ const NavigationBar = () => {
           onClick={() => setTab('/')}
           className='flex flex-col items-center text-2xl'>
           <span title='Home'>
-            {tab === '/' ? <AiFillHome /> : <AiOutlineHome />}
+            {tab === '/' ? (
+              <AiFillHome color='#FF5733' size={30} />
+            ) : (
+              <AiOutlineHome size={30} />
+            )}
           </span>
         </Link>
         <Link
@@ -38,7 +49,11 @@ const NavigationBar = () => {
           onClick={() => setTab('/reels')}
           className='flex flex-col items-center text-2xl'>
           <span title='Reels'>
-            {tab === '/reels' ? <BsCameraReelsFill /> : <BsCameraReels />}
+            {tab === '/reels' ? (
+              <PiVideoFill color='#FF5733' size={30} />
+            ) : (
+              <PiVideo size={30} />
+            )}
           </span>
         </Link>
 
@@ -49,9 +64,9 @@ const NavigationBar = () => {
               title='New Post'
               className='flex flex-col items-center text-2xl'>
               {tab === '/new-post' || tab === '/new-reel' ? (
-                <FaCirclePlus />
+                <FaCirclePlus color='#FF5733' size={30} />
               ) : (
-                <FiPlusCircle />
+                <FiPlusCircle size={30} />
               )}
             </span>
           </DropdownMenuTrigger>
@@ -78,7 +93,11 @@ const NavigationBar = () => {
           onClick={() => setTab('/chat')}
           className='flex flex-col items-center text-2xl'>
           <span title='Message'>
-            {tab === '/chat' ? <MdChatBubble /> : <MdChatBubbleOutline />}
+            {tab === '/chat' ? (
+              <MdChatBubble color='#FF5733' size={30} />
+            ) : (
+              <MdChatBubbleOutline size={30} />
+            )}
           </span>
         </Link>
         <Link
@@ -87,9 +106,9 @@ const NavigationBar = () => {
           className='flex flex-col items-center text-2xl'>
           <span title='Profile'>
             {tab === '/account' ? (
-              <RiAccountCircleFill />
+              <RiAccountCircleFill color='#FF5733' size={30} />
             ) : (
-              <RiAccountCircleLine />
+              <RiAccountCircleLine size={30} />
             )}
           </span>
         </Link>
