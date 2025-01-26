@@ -15,12 +15,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
+  DialogTrigger,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -182,20 +185,26 @@ const PostCard = ({ type, value }) => {
 
   // follow unfollow users
   const params = useParams();
-  const id = value.owner._id;
-
+  const [followStatus, setFollowStatus] = useState({});
   useEffect(() => {
-    if (usersData.followings.includes(id)) {
+    if (usersData.followings.includes(value.owner._id)) {
       setIsFollower(true);
     }
+    const likesSet = new Set(value.likes);
+    const isUserLiked = likesSet.has(usersData._id);
+
+    console.log(isUserLiked);
   }, [usersData, params]);
-  const followandUnfollowUsers = async () => {
+  const followandUnfollowUsers = async (id) => {
     try {
       const res = await axios.post(`/api/user/follow/${id}`);
 
       if (res.status === 200) {
         setIsFollower(!isFollower);
-
+        setFollowStatus((prevStatus) => ({
+          ...prevStatus,
+          [id]: !prevStatus[id],
+        }));
         fetchUser({ setUsersData, setIsAuth });
         toast.dismiss();
         toast.success(res.data.message);
@@ -204,6 +213,22 @@ const PostCard = ({ type, value }) => {
       console.log(err);
     }
   };
+  // Likes Data
+  const [likesData, setLikesData] = useState([]);
+  const postsLikesData = async () => {
+    try {
+      const res = await axios.post(`/api/post/likes/${value._id}`);
+      if (res.status === 200) {
+        setLikesData(res.data.posts.likes);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    postsLikesData();
+  }, [value]);
 
   return (
     <div className='bg-gray-100 flex items-center justify-center pt-3 pb-14'>
@@ -232,11 +257,11 @@ const PostCard = ({ type, value }) => {
                 </Link>
                 {value.owner._id !== usersData._id && (
                   <div>
-                    <button
-                      className=' text-blue-400 px-4  ml-4 rounded-lg  hover:text-blue-600 transition duration-300'
-                      onClick={followandUnfollowUsers}>
+                    <div
+                      className=' text-blue-600 px-4  ml-4 rounded-lg  hover:text-blue-800 transition duration-300 cursor-pointer'
+                      onClick={() => followandUnfollowUsers(value.owner._id)}>
                       {isFollower ? 'Following' : 'Follow'}
-                    </button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -304,7 +329,6 @@ const PostCard = ({ type, value }) => {
           <p className='text-gray-800'>{value.caption}</p>
         </div>
 
-        {/* Media Section */}
         <div className='mb-4'>
           {value.post.length > 0 && (
             // Carousel for multiple posts
@@ -362,9 +386,50 @@ const PostCard = ({ type, value }) => {
               className='text-red-500 text-2xl cursor-pointer'>
               {isLike ? <FaHeart /> : <FaRegHeart />}
             </span>
-            <button className='hover:bg-gray-50 rounded-full p-1'>
-              {value.likes.length} likes
-            </button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <div className='hover:bg-gray-50 rounded-full p-2 cursor-pointer'>
+                  {value.likes.length} likes
+                </div>
+              </DialogTrigger>
+              {likesData.length > 0 && (
+                <DialogContent
+                  className='sm:max-w-[425px] sm:w-full p-4 rounded-lg bg-white shadow-lg'
+                  aria-describedby={undefined}>
+                  <DialogHeader>
+                    <DialogTitle className='text-xl font-semibold text-gray-800'>
+                      Likes
+                    </DialogTitle>
+                  </DialogHeader>
+                  <div className='grid gap-4 py-4 overflow-y-auto max-h-[300px]'>
+                    {likesData.map((like, index) => (
+                      <div
+                        key={like._id}
+                        className='flex items-center space-x-4 p-2 hover:bg-gray-100 rounded-lg'>
+                        <img
+                          src={like.profilePic.url}
+                          alt={like.name}
+                          className='w-12 h-12 rounded-full object-cover shadow-sm'
+                        />
+                        <div className='flex-1'>
+                          <p className='text-gray-800 font-medium'>
+                            {like.name}
+                          </p>
+                          <p className='text-sm text-gray-500'>{like.email}</p>
+                        </div>
+                        {like._id !== usersData._id && (
+                          <button
+                            className='mt-4 bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white py-2 px-6 rounded-lg font-semibold '
+                            onClick={() => followandUnfollowUsers(like._id)}>
+                            {followStatus[like._id] ? 'Following' : 'Follow'}
+                          </button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </DialogContent>
+              )}
+            </Dialog>
           </div>
           <button
             className='flex items-center justify-center gap-2 px-2 hover:bg-gray-50 rounded-full p-1'
