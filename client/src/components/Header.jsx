@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import logo from '../assets/logo1.gif';
-import { FaSearch, FaBell, FaUserCircle } from 'react-icons/fa'; // Importing social media icons
+import { FaSearch } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 
 const Header = () => {
   const [search, setSearch] = useState('');
   const [results, setResults] = useState([]);
+  const divRef = useRef(null);
+  const searchRef = useRef(null);
 
   const handleSearch = async (e) => {
     try {
@@ -14,27 +16,50 @@ const Header = () => {
       setSearch(searchTerm);
 
       if (searchTerm) {
-        // Only make the API call if there's a search term
         const res = await axios.get(
           `/api/user/get/alluser?search=${searchTerm}`
         );
 
-        const users = res.data.users || []; // Extract users from response
-        setResults(users); // Set the search results
+        const users = res.data.users || [];
+        setResults(users);
       } else {
-        setResults([]); // Clear results if the search term is empty
+        setResults([]);
       }
     } catch (err) {
       console.log(err);
     }
   };
+
   const handleUserClick = () => {
     setResults([]);
     setSearch('');
   };
+
+  const handleOutsideClick = (event) => {
+    if (
+      divRef.current &&
+      !divRef.current.contains(event.target) &&
+      searchRef.current &&
+      !searchRef.current.contains(event.target)
+    ) {
+      setResults([]);
+      setSearch('');
+    }
+  };
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleOutsideClick);
+
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, []);
+
   return (
     <div className='w-full bg-white py-3 z-50 shadow-md'>
-      <div className='container mx-auto flex justify-between items-center'>
+      <div
+        className='container mx-auto flex justify-between items-center'
+        ref={divRef}>
         <div className='flex items-center'>
           <img
             src={logo}
@@ -45,7 +70,7 @@ const Header = () => {
         </div>
 
         {/* Search Bar */}
-        <div className='relative w-1/3 max-w-lg'>
+        <div className='relative w-1/3 max-w-lg' ref={searchRef}>
           <input
             type='text'
             placeholder='Search'
@@ -56,7 +81,7 @@ const Header = () => {
           <FaSearch className='absolute top-3 right-3 text-gray-400' />
 
           {search && results.length > 0 && (
-            <div className='absolute w-full bg-white border border-gray-300 shadow-lg mt-2 rounded-lg max-h-60 overflow-y-auto'>
+            <div className='absolute w-full bg-white border border-gray-300 shadow-lg mt-2 rounded-lg max-h-60 overflow-y-auto z-[1000]'>
               <ul className='text-sm text-gray-700'>
                 {results.map((user) => (
                   <li

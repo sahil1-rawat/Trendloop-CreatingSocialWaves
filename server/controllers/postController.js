@@ -1,4 +1,5 @@
 import { Post } from '../models/postModel.js';
+import { User } from '../models/userModel.js';
 import getDataUrl from '../utils/urlGenerator.js';
 import cloudinary from 'cloudinary';
 
@@ -272,6 +273,23 @@ export const editComment = async (req, res) => {
     await post.save();
     res.json({
       message: 'Comment edited',
+    });
+  } catch (err) {
+    res.status(500).json({
+      message: err.message,
+    });
+  }
+};
+
+// get the posts likes data
+export const postLikesData = async (req, res) => {
+  try {
+    const posts = await Post.findById(req.params.id)
+      .select('-password')
+      .populate('likes', '-password');
+
+    res.status(200).json({
+      posts,
     });
   } catch (err) {
     res.status(500).json({

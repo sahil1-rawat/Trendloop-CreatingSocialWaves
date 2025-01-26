@@ -78,8 +78,6 @@ export const userFollowerandFollowingData = async (req, res) => {
       .select('-password')
       .populate('followers', '-password')
       .populate('followings', '-password');
-    const followers = user.followers;
-    const followings = user.followings;
     res.json({
       user,
     });
