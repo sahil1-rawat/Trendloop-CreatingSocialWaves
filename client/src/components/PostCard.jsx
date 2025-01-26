@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import {
   BsChatFill,
   BsThreeDotsVertical,
@@ -32,22 +32,22 @@ import { Comment } from './Comment';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-import { fetchPosts } from '../utills/FetchPost';
+import { fetchPosts, fetchUser, fetchUsers } from '../utills/FetchPost';
 import toast from 'react-hot-toast';
 
 const PostCard = ({ type, value }) => {
-  const { setPosts, setReels, isMuted, setIsMuted } = usePostStore();
+  const { setPosts, setReels, isMuted, setIsMuted, setUser } = usePostStore();
   const videoRefs = useRef([]);
   const [isLike, setIsLike] = useState(false);
   const [show, setShow] = useState(false);
   const [comment, setNewComment] = useState('');
-  const { usersData, setIsLoading } = useUserStore();
+  const { usersData, setIsLoading, setUsersData, setIsAuth } = useUserStore();
   const formatDate = format(new Date(value.createdAt), 'MMMM do');
   const formatTime = format(new Date(value.createdAt), 'HH:mm');
   const [caption, setCaption] = useState(value.caption || '');
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
-
+  const [isFollower, setIsFollower] = useState(false);
   // Effect to check if the post is liked by the user
   useEffect(() => {
     for (let i = 0; i < value.likes.length; i++) {
@@ -180,10 +180,34 @@ const PostCard = ({ type, value }) => {
     setIsEdited(true);
   };
 
+  // follow unfollow users
+  const params = useParams();
+  const id = value.owner._id;
+
+  useEffect(() => {
+    if (usersData.followings.includes(id)) {
+      setIsFollower(true);
+    }
+  }, [usersData, params]);
+  const followandUnfollowUsers = async () => {
+    try {
+      const res = await axios.post(`/api/user/follow/${id}`);
+
+      if (res.status === 200) {
+        setIsFollower(!isFollower);
+
+        fetchUser({ setUsersData, setIsAuth });
+        toast.dismiss();
+        toast.success(res.data.message);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div className='bg-gray-100 flex items-center justify-center pt-3 pb-14'>
       <div className='bg-white rounded-lg shadow-md max-w-md w-full'>
-        {/* Header */}
         <div className='flex items-center justify-between mt-3 mx-2'>
           <div className='flex items-center gap-2'>
             <Link to={value.owner.profilePic.url} target='_blank'>
@@ -195,16 +219,27 @@ const PostCard = ({ type, value }) => {
               />
             </Link>
 
-            <div>
-              <Link
-                to={`${
-                  value.owner._id === usersData._id
-                    ? '/account'
-                    : `/user/${value.owner._id}`
-                }`}
-                className='text-gray-700 font-semibold text-md hover:underline'>
-                {value.owner.name}
-              </Link>
+            <div className='flex justify-between flex-col  bg-white rounded-lg'>
+              <div className='flex'>
+                <Link
+                  to={`${
+                    value.owner._id === usersData._id
+                      ? '/account'
+                      : `/user/${value.owner._id}`
+                  }`}
+                  className='text-gray-700 font-semibold text-md hover:underline'>
+                  {value.owner.name}
+                </Link>
+                {value.owner._id !== usersData._id && (
+                  <div>
+                    <button
+                      className=' text-blue-400 px-4  ml-4 rounded-lg  hover:text-blue-600 transition duration-300'
+                      onClick={followandUnfollowUsers}>
+                      {isFollower ? 'Following' : 'Follow'}
+                    </button>
+                  </div>
+                )}
+              </div>
               <div className='text-gray-500 text-sm'>
                 {formatDate} | {formatTime}
               </div>
@@ -213,8 +248,10 @@ const PostCard = ({ type, value }) => {
           {value.owner._id === usersData._id && (
             <>
               <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
-                <DropdownMenuTrigger className='hover:bg-gray-50 rounded-full p-2 text-gray-500'>
-                  <BsThreeDotsVertical />
+                <DropdownMenuTrigger asChild>
+                  <button className='text-gray-500 hover:text-gray-700 hover:bg-gray-100 p-2 rounded-full transition-colors duration-150'>
+                    <BsThreeDotsVertical size={20} />
+                  </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent>
                   <DropdownMenuItem onSelect={handleEditClick}>
