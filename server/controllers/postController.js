@@ -232,6 +232,7 @@ export const likeUnlikePost = async (req, res) => {
     res.status(200).json({
       message: isLiked ? 'Post Unliked' : 'Post liked',
       totalLikes: post.likes.length,
+      userid: _id,
     });
   } catch (err) {
     res.status(500).json({

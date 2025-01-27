@@ -6,7 +6,7 @@ const Modal = ({ value, title, setShow }) => {
   const navigate = useNavigate();
   const { usersData } = useUserStore();
   const modalRef = useRef(null);
-
+  const { setTab } = usePostStore();
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredValue = value?.filter(
@@ -61,14 +61,11 @@ const Modal = ({ value, title, setShow }) => {
                 <li key={index} className='flex items-center space-x-4'>
                   <button
                     onClick={() => {
-                      navigate(
-                        `${
-                          usersData._id === elem._id
-                            ? '/account'
-                            : `/user/${elem._id}`
-                        }`
-                      );
+                      navigate(`${`/user/${elem._id}`}`);
                       setShow(false);
+                      usersData._id === elem._id
+                        ? setTab('/account')
+                        : setTab(`user/${elem._id}`);
                     }}
                     className='flex items-center space-x-3 w-full p-2 rounded-lg hover:bg-gray-100 transition'>
                     <img

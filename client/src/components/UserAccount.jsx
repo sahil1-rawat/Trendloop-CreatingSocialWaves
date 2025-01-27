@@ -28,6 +28,10 @@ const UserAccount = () => {
   const [followingModal, setFollowingModal] = useState(false);
   const [followersData, setFollowersData] = useState([]);
   const [followingsData, setFollowingsData] = useState([]);
+  useEffect(() => {
+    // Scroll to the top of the page when the component is rendered
+    window.scrollTo(0, 0);
+  }, []);
 
   // Effects
   useEffect(() => {
@@ -43,6 +47,7 @@ const UserAccount = () => {
   }, [usersData, params]);
 
   useEffect(() => {
+    setIsLoading(true);
     fetchPosts({ setPosts, setReels, setIsLoading });
   }, [setPosts, setReels, setIsLoading]);
 

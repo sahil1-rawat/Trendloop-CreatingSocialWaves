@@ -31,7 +31,7 @@ const Account = () => {
     setIsLoading,
   } = useUserStore();
 
-  const { posts, reels, setPosts, setReels, setTab } = usePostStore();
+  const { posts, reels, setPosts, setReels, setTab, setUser } = usePostStore();
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState('');
   const [profilePic, setProfilePic] = useState('');
@@ -49,6 +49,10 @@ const Account = () => {
   myReels = reels?.filter((reel) => reel.owner._id === usersData._id) || [];
 
   const totalPosts = myPosts?.length + myReels?.length;
+  useEffect(() => {
+    // Scroll to the top of the page when the component is rendered
+    window.scrollTo(0, 0);
+  }, []);
 
   useEffect(() => {
     if (usersData) {
@@ -58,6 +62,7 @@ const Account = () => {
   }, [usersData]);
 
   useEffect(() => {
+    setIsLoading(true);
     fetchPosts({ setPosts, setReels, setIsLoading });
   }, []);
 
@@ -162,7 +167,7 @@ const Account = () => {
         setTab('/');
         setPosts([]);
         setReels([]);
-        fetchUser({ setUsersData, setIsAuth });
+        setUser('');
         navigate('/login');
         toast.dismiss();
         toast.success('Good bye for now!');

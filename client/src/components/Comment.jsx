@@ -22,7 +22,7 @@ export const Comment = ({
   isEdited,
   setIsEdited,
 }) => {
-  const { setPosts, setReels } = usePostStore();
+  const { setPosts, setReels, setTab } = usePostStore();
   const { usersData, setIsLoading } = useUserStore();
   const commentId = value._id;
 
@@ -97,10 +97,13 @@ export const Comment = ({
 
       <div className='flex-1'>
         <Link
-          to={
-            value.user?._id === usersData?._id ? '/account' : `/user/${userId}`
-          }
-          className='text-gray-900 font-medium text-sm hover:underline'>
+          to={`/user/${userId}`}
+          className='text-gray-900 font-medium text-sm hover:underline'
+          onClick={() =>
+            usersData._id === userId
+              ? setTab('/account')
+              : setTab(`user/${userId}`)
+          }>
           {userName}
         </Link>
         {isEdited ? (

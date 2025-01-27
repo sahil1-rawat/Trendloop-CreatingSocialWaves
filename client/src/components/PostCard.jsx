@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import {
   BsChatFill,
   BsThreeDotsVertical,
@@ -39,7 +39,8 @@ import { fetchPosts, fetchUser, fetchUsers } from '../utills/FetchPost';
 import toast from 'react-hot-toast';
 
 const PostCard = ({ type, value }) => {
-  const { setPosts, setReels, isMuted, setIsMuted, setUser } = usePostStore();
+  const { setPosts, setReels, isMuted, setIsMuted, setUser, setTab } =
+    usePostStore();
   const videoRefs = useRef([]);
   const [isLike, setIsLike] = useState(false);
   const [show, setShow] = useState(false);
@@ -51,6 +52,7 @@ const PostCard = ({ type, value }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [isFollower, setIsFollower] = useState(false);
+  const navigate = useNavigate();
   // Effect to check if the post is liked by the user
   useEffect(() => {
     for (let i = 0; i < value.likes.length; i++) {
@@ -145,6 +147,9 @@ const PostCard = ({ type, value }) => {
   };
 
   // Function to like/unlike a post
+  const [likesData, setLikesData] = useState([]);
+  const [totalLikes, setTotalLikes] = useState(value.likes.length);
+
   const likeUnlikePost = async () => {
     try {
       const res = await axios.post(`/api/post/likeunlike/${value._id}`, {
@@ -153,8 +158,9 @@ const PostCard = ({ type, value }) => {
 
       if (res.status === 200) {
         setIsLike(!isLike);
+
         const updatedLikes = res.data.totalLikes;
-        value.likes.length = updatedLikes;
+        setTotalLikes(updatedLikes);
       }
     } catch (err) {
       console.log(err);
@@ -184,26 +190,36 @@ const PostCard = ({ type, value }) => {
   };
 
   // follow unfollow users
-  const params = useParams();
-  const [followStatus, setFollowStatus] = useState({});
+
+  const [isFollowing, setIsFollowing] = useState({});
   useEffect(() => {
     if (usersData.followings.includes(value.owner._id)) {
       setIsFollower(true);
     }
-    const likesSet = new Set(value.likes);
-    const isUserLiked = likesSet.has(usersData._id);
+    if (usersData?.followings && likesData.length > 0) {
+      const initialFollowStatus = likesData.reduce(
+        (isFollowingStatus, like) => {
+          isFollowingStatus[like._id] = usersData.followings.includes(like._id);
 
-    console.log(isUserLiked);
-  }, [usersData, params]);
+          return isFollowingStatus;
+        },
+        {}
+      );
+      setIsFollowing(initialFollowStatus);
+    }
+  }, [usersData, value.owner, likesData]);
   const followandUnfollowUsers = async (id) => {
     try {
       const res = await axios.post(`/api/user/follow/${id}`);
 
       if (res.status === 200) {
         setIsFollower(!isFollower);
-        setFollowStatus((prevStatus) => ({
-          ...prevStatus,
-          [id]: !prevStatus[id],
+
+        //! 'like._id':true/false
+        // ? toggle follower status
+        setIsFollowing((prev) => ({
+          ...prev,
+          [id]: !prev[id],
         }));
         fetchUser({ setUsersData, setIsAuth });
         toast.dismiss();
@@ -213,8 +229,7 @@ const PostCard = ({ type, value }) => {
       console.log(err);
     }
   };
-  // Likes Data
-  const [likesData, setLikesData] = useState([]);
+
   const postsLikesData = async () => {
     try {
       const res = await axios.post(`/api/post/likes/${value._id}`);
@@ -240,19 +255,20 @@ const PostCard = ({ type, value }) => {
                 src={value.owner.profilePic.url}
                 alt='Profile'
                 title='View Profile'
-                className='w-12 h-12 rounded-full border border-gray-300 hover:ring-2 hover:ring-gray-400 transition-transform duration-200'
+                className='w-12 h-12 rounded-full border border-gray-300 hover:ring-2 hover:ring-gray-400 transition-transform duration-200 object-cover'
               />
             </Link>
 
             <div className='flex justify-between flex-col  bg-white rounded-lg'>
               <div className='flex'>
                 <Link
-                  to={`${
-                    value.owner._id === usersData._id
-                      ? '/account'
-                      : `/user/${value.owner._id}`
-                  }`}
-                  className='text-gray-700 font-semibold text-md hover:underline'>
+                  to={`${`/user/${value.owner._id}`}`}
+                  className='text-gray-700 font-semibold text-md hover:underline'
+                  onClick={() =>
+                    usersData._id === value.owner._id
+                      ? setTab('/account')
+                      : setTab(`user/${value.owner._id}`)
+                  }>
                   {value.owner.name}
                 </Link>
                 {value.owner._id !== usersData._id && (
@@ -260,7 +276,10 @@ const PostCard = ({ type, value }) => {
                     <div
                       className=' text-blue-600 px-4  ml-4 rounded-lg  hover:text-blue-800 transition duration-300 cursor-pointer'
                       onClick={() => followandUnfollowUsers(value.owner._id)}>
-                      {isFollower ? 'Following' : 'Follow'}
+                      {isFollower &&
+                      usersData.followings.includes(value.owner._id)
+                        ? 'Following'
+                        : 'Follow'}
                     </div>
                   </div>
                 )}
@@ -388,21 +407,22 @@ const PostCard = ({ type, value }) => {
             </span>
             <Dialog>
               <DialogTrigger asChild>
-                <div className='hover:bg-gray-50 rounded-full p-2 cursor-pointer'>
-                  {value.likes.length} likes
-                </div>
+                <button className='hover:bg-gray-50 rounded-full p-2 cursor-pointer'>
+                  {totalLikes} likes
+                </button>
               </DialogTrigger>
               {likesData.length > 0 && (
-                <DialogContent
-                  className='sm:max-w-[425px] sm:w-full p-4 rounded-lg bg-white shadow-lg'
-                  aria-describedby={undefined}>
+                <DialogContent className='sm:max-w-[425px] sm:w-full p-4 rounded-lg bg-white shadow-lg'>
                   <DialogHeader>
                     <DialogTitle className='text-xl font-semibold text-gray-800'>
                       Likes
                     </DialogTitle>
+                    <DialogDescription className='sr-only'>
+                      Total Likes
+                    </DialogDescription>
                   </DialogHeader>
                   <div className='grid gap-4 py-4 overflow-y-auto max-h-[300px]'>
-                    {likesData.map((like, index) => (
+                    {likesData.map((like) => (
                       <div
                         key={like._id}
                         className='flex items-center space-x-4 p-2 hover:bg-gray-100 rounded-lg'>
@@ -412,16 +432,27 @@ const PostCard = ({ type, value }) => {
                           className='w-12 h-12 rounded-full object-cover shadow-sm'
                         />
                         <div className='flex-1'>
-                          <p className='text-gray-800 font-medium'>
+                          <Link
+                            to={`/user/${like._id}`}
+                            className='text-gray-900 font-medium text-sm hover:underline'
+                            onClick={() =>
+                              usersData._id === like._id
+                                ? setTab('/account')
+                                : setTab(`user/${like._id}`)
+                            }>
                             {like.name}
-                          </p>
+                          </Link>
                           <p className='text-sm text-gray-500'>{like.email}</p>
                         </div>
                         {like._id !== usersData._id && (
                           <button
-                            className='mt-4 bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white py-2 px-6 rounded-lg font-semibold '
+                            className={`mt-4 ${
+                              isFollowing[like._id]
+                                ? 'bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600'
+                                : 'bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600'
+                            } text-white py-2 px-6 rounded-lg font-semibold`}
                             onClick={() => followandUnfollowUsers(like._id)}>
-                            {followStatus[like._id] ? 'Following' : 'Follow'}
+                            {isFollowing[like._id] ? 'Following' : 'Follow'}
                           </button>
                         )}
                       </div>

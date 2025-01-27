@@ -14,6 +14,12 @@ const Home = () => {
 
   const { setIsLoading, addLoading, setAddLoading, isLoading } = useUserStore();
   useEffect(() => {
+    // Scroll to the top of the page when the component is rendered
+    window.scrollTo(0, 0);
+  }, []);
+
+  useEffect(() => {
+    setIsLoading(true);
     fetchPosts({ setPosts, setReels, setIsLoading });
   }, [setPosts, setReels, setIsLoading]);
   return (
