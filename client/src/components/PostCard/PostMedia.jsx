@@ -101,12 +101,12 @@ const PostMedia = ({ value, type }) => {
                   className='w-[500px] h-[300px] object-scale-down rounded-md'
                 />
               ) : (
-                <div className='relative'>
+                <div className='relative bg-black/20 h-[500px] rounded-none'>
                   <video
                     src={media.url}
                     ref={(el) => (videoRefs.current[index] = el)}
                     controlsList='nodownload'
-                    className='h-[550px] w-[500px] rounded-lg'
+                    className='h-[550px] w-[500px] object-scale-down'
                     playsInline
                     muted={isMuted} // Muted for autoplay to work
                     loop
