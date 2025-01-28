@@ -1,22 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Link, useNavigate } from 'react-router-dom';
-import { usePostStore, useUserStore } from '../../store/index.jsx';
+import { useUserStore } from '../../store/index.jsx';
 import Loading from '../components/Loading.jsx';
-import { fetchPosts } from '../utills/FetchPost.js';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const {
-    isLoading,
-    isAuth,
-    setIsAuth,
-    usersData,
-    setUsersData,
-    setIsLoading,
-  } = useUserStore();
-  const { setPosts, setReels } = usePostStore();
+  const { isLoading, setIsAuth, setUsersData } = useUserStore();
 
   const navigate = useNavigate();
   const handleSubmit = async (e) => {
@@ -36,12 +27,11 @@ const Login = () => {
       const resData = await res.json();
 
       if (res.ok) {
+        setUsersData(resData.user);
+        setIsAuth(true);
         navigate('/');
         toast.dismiss();
         toast.success(resData.message);
-        fetchPosts({ setPosts, setReels, setIsLoading });
-        setUsersData(resData.user);
-        setIsAuth(true);
       } else {
         toast.dismiss();
         toast.error(resData.message);
