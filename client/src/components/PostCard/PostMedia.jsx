@@ -89,7 +89,7 @@ const PostMedia = ({ value, type }) => {
           pagination={{ clickable: true }}
           spaceBetween={20}
           slidesPerView={1}
-          className='rounded-lg shadow-md'>
+          className=' shadow-md'>
           {value.post.map((media, index) => (
             <SwiperSlide
               key={index}
@@ -101,12 +101,12 @@ const PostMedia = ({ value, type }) => {
                   className='w-[500px] h-[300px] object-scale-down rounded-md'
                 />
               ) : (
-                <div className='relative bg-black/20 h-[500px] rounded-none'>
+                <div className='relative bg-black/20 h-[500px]'>
                   <video
                     src={media.url}
                     ref={(el) => (videoRefs.current[index] = el)}
                     controlsList='nodownload'
-                    className='h-[550px] w-[500px] object-scale-down'
+                    className='h-[550px] w-[500px] rounded-lg object-scale-down'
                     playsInline
                     muted={isMuted} // Muted for autoplay to work
                     loop

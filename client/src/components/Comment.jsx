@@ -14,14 +14,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { fetchPosts } from '../utills/FetchPost';
 
-export const Comment = ({
-  value,
-  postOwner,
-  postId,
-  Click,
-  isEdited,
-  setIsEdited,
-}) => {
+export const Comment = ({ value, postOwner, postId }) => {
   const { setPosts, setReels, setTab } = usePostStore();
   const { usersData, setIsLoading } = useUserStore();
   const commentId = value._id;
@@ -32,6 +25,7 @@ export const Comment = ({
 
   const [newComment, setNewComment] = useState(value.comment);
   const [minutes, setMinutes] = useState(0);
+  const [editedCommentId, setEditedCommentId] = useState(null); // Track which comment is being edited
 
   useEffect(() => {
     const formatTime = new Date(value.createdAt);
@@ -53,8 +47,10 @@ export const Comment = ({
         withCredentials: true,
       });
       if (res.status === 200) {
-        fetchPosts({ setPosts, setReels, setIsLoading });
-        toast.success(res.data.message);
+        setTimeout(() => {
+          fetchPosts({ setPosts, setReels, setIsLoading });
+          toast.success(res.data.message);
+        }, 500);
       }
     } catch (err) {
       console.error(err);
@@ -76,14 +72,14 @@ export const Comment = ({
       if (res.status === 200) {
         fetchPosts({ setPosts, setReels, setIsLoading });
         toast.success(res.data.message);
-        setIsEdited(false);
+        setEditedCommentId(null);
       }
     } catch (err) {
       toast.error('Something went wrong');
-      setIsEdited(false);
+      setEditedCommentId(null);
     }
   };
-
+  const isDisabled = newComment.trim() === value.comment || !newComment.trim();
   return (
     <div className='flex items-start space-x-4 mt-3 mb-4 p-3 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200'>
       <Link to={userId ? `/user/${userId}` : '/profile'} target='_blank'>
@@ -106,20 +102,35 @@ export const Comment = ({
           }>
           {userName}
         </Link>
-        {isEdited ? (
-          <div className='flex items-center space-x-2 mt-2'>
+        {editedCommentId === commentId ? ( // Only show the edit input for the currently edited comment
+          <div className='flex items-center flex-col space-y-4 mt-2'>
             <input
               type='text'
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
-              className='flex-1 px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200'
+              className='w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200'
               placeholder='Edit your comment...'
             />
-            <button
-              onClick={editOldComment}
-              className='px-4 py-2 text-sm text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200'>
-              Save
-            </button>
+            <div className='flex space-x-4 w-full justify-end'>
+              <button
+                onClick={() => {
+                  setEditedCommentId(null);
+                  setNewComment(value.comment);
+                }}
+                className='px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200'>
+                Cancel
+              </button>
+              <button
+                onClick={editOldComment}
+                className={`px-4 py-2 text-sm text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200 ${
+                  isDisabled
+                    ? 'cursor-not-allowed opacity-50'
+                    : 'cursor-pointer '
+                }`}
+                disabled={isDisabled}>
+                Save
+              </button>
+            </div>
           </div>
         ) : (
           <p className='text-gray-700 text-sm mt-1'>{value.comment}</p>
@@ -136,7 +147,9 @@ export const Comment = ({
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             {value.user?._id === usersData?._id && minutes < 2 && (
-              <DropdownMenuItem onClick={() => setIsEdited(true)}>
+              <DropdownMenuItem
+                onClick={() => setEditedCommentId(commentId)} // Set the edited comment ID on click
+              >
                 Edit
               </DropdownMenuItem>
             )}

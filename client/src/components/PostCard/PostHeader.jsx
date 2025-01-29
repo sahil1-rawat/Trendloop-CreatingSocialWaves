@@ -29,7 +29,7 @@ const PostHeader = ({ value }) => {
   const [isFollower, setIsFollower] = useState(false);
   const { usersData, setUsersData, setIsAuth, setIsLoading } = useUserStore();
   const { setPosts, setReels, setTab } = usePostStore();
-  const [caption, setCaption] = useState(value.caption || '');
+  const [caption, setCaption] = useState(value.caption);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   useEffect(() => {
@@ -58,6 +58,7 @@ const PostHeader = ({ value }) => {
   const handleEditClick = () => {
     setDropdownOpen(false);
     setDialogOpen(true);
+    setCaption(value.caption);
   };
 
   // Function to edit caption
@@ -177,7 +178,17 @@ const PostHeader = ({ value }) => {
                     </div>
                   </div>
                   <DialogFooter>
-                    <Button type='submit' onClick={editCaption}>
+                    <Button
+                      type='cancel'
+                      onClick={() => setDialogOpen(false)}
+                      className='bg-gray-300 text-black hover:bg-gray-400'>
+                      Cancel
+                    </Button>
+                    <Button
+                      type='submit'
+                      onClick={editCaption}
+                      className='bg-blue-500 text-white hover:bg-blue-700'
+                      disabled={caption.trim() === value.caption}>
                       Edit
                     </Button>
                   </DialogFooter>

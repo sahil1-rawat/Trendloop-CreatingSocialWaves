@@ -7,12 +7,14 @@ import PostHeader from './PostCard/PostHeader';
 import PostMedia from './PostCard/PostMedia';
 import PostActions from './PostCard/PostActions';
 
+import { LoadingAnimation } from './Loading';
+import toast from 'react-hot-toast';
 const PostCard = ({ type, value }) => {
   const { setPosts, setReels } = usePostStore();
 
   const [show, setShow] = useState(false);
   const [comment, setNewComment] = useState('');
-  const { setIsLoading } = useUserStore();
+  const { setIsLoading, addLoading, setAddLoading } = useUserStore();
 
   const [isEdited, setIsEdited] = useState(false);
   const handleEdit = async () => {
@@ -22,19 +24,25 @@ const PostCard = ({ type, value }) => {
   // Function to handle adding a comment
   const handleAddComment = async (e) => {
     e.preventDefault();
-
+    setAddLoading(true);
     try {
       const res = await axios.post(`/api/post/comment/${value._id}`, {
         comment,
         withCredentials: true,
       });
       if (res.status === 201) {
-        fetchPosts({ setPosts, setReels, setIsLoading });
-        setNewComment('');
-        setShow(false);
+        setTimeout(() => {
+          setAddLoading(false);
+          fetchPosts({ setPosts, setReels, setIsLoading });
+          setNewComment('');
+          setShow(false);
+        }, 500);
       }
     } catch (err) {
-      console.log(err);
+      setTimeout(() => {
+        setAddLoading(false);
+        toast.error(err.response.data.message);
+      }, 500);
     }
   };
   const showComments = () => {
@@ -53,7 +61,7 @@ const PostCard = ({ type, value }) => {
 
         {/* Add Comment */}
         {show && (
-          <form className='flex gap-3 p-4 border-t' onSubmit={handleAddComment}>
+          <form className='flex gap-3 p-4 border-t'>
             <input
               type='text'
               className='custom-input flex-1 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
@@ -63,8 +71,14 @@ const PostCard = ({ type, value }) => {
             />
             <button
               type='submit'
-              className='bg-blue-500 text-white rounded-md px-4 py-2'>
-              Add
+              className={`bg-blue-500 text-white rounded-md px-4 py-2 ${
+                !comment.trim()
+                  ? 'cursor-not-allowed opacity-50'
+                  : 'cursor-pointer'
+              }`}
+              onClick={handleAddComment}
+              disabled={!comment.trim()}>
+              {addLoading ? <LoadingAnimation /> : 'Comment'}
             </button>
           </form>
         )}
