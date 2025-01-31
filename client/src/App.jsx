@@ -20,6 +20,7 @@ import { fetchUser } from './utills/FetchPost.js';
 import NewPost from './components/NewPost.jsx';
 import SearchUser from './components/SearchUser.jsx';
 import NewReel from './components/NewReel.jsx';
+import SharePost from './components/SharePost';
 
 const pathName = window.location.pathname;
 
@@ -110,6 +111,16 @@ const App = () => {
                 isAuth={isAuth}
                 redirectPath='/login'
                 Component={UserAccount}
+              />
+            }
+          />
+          <Route
+            path='/post/:id'
+            element={
+              <PrivateRoute
+                isAuth={isAuth}
+                redirectPath='/login'
+                Component={SharePost}
               />
             }
           />

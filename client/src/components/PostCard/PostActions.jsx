@@ -3,18 +3,20 @@ import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import { BsChatFill, BsShareFill } from 'react-icons/bs';
 import { useUserStore } from '../../../store';
 import axios from 'axios';
+import { sharePost as updateSharePost } from '../../utills/FetchPost';
 
 import LikesData from './LikesData';
 
-const PostActions = ({ value, showComments }) => {
+const PostActions = ({ value, showComments, setValue }) => {
   const [isLike, setIsLike] = useState(false);
   const { usersData } = useUserStore();
   const [totalLikes, setTotalLikes] = useState(value.likes.length);
 
   // Check if the post is liked by the user
   useEffect(() => {
-    setIsLike(value.likes.includes(usersData._id));
-  }, [value.likes, usersData._id]);
+    if (value.likes && usersData._id)
+      setIsLike(value.likes.includes(usersData._id));
+  }, [value, value.likes, usersData._id]);
 
   // Like/Unlike a post
   const likeUnlikePost = async () => {
@@ -26,6 +28,14 @@ const PostActions = ({ value, showComments }) => {
       if (res.status === 200) {
         setIsLike(!isLike);
         setTotalLikes(res.data.totalLikes);
+        if (setValue) {
+          setValue((prevValue) => ({
+            ...prevValue,
+            likes: !isLike
+              ? [...prevValue.likes, usersData._id] // Add user ID to likes array
+              : prevValue.likes.filter((id) => id !== usersData._id), // Remove user ID from likes array
+          }));
+        }
       }
     } catch (err) {
       console.error(err);
@@ -37,7 +47,7 @@ const PostActions = ({ value, showComments }) => {
     navigator.share
       ? navigator.share({
           title: 'Check out this post!',
-          url: window.location.href,
+          url: `/post/${value._id}`,
         })
       : alert('Share API is not supported in your browser.');
   };
@@ -77,14 +87,16 @@ const PostActions = ({ value, showComments }) => {
       </div>
 
       {/* Share Section */}
-      <div className='flex flex-col items-center'>
-        <button
-          onClick={sharePost}
-          className='flex items-center justify-center w-12 h-12 rounded-full  hover:bg-gray-200 text-blue-500 transition'>
-          <BsShareFill className='text-2xl' />
-        </button>
-        <span className='mt-1 text-sm text-blue-500 font-medium'>Share</span>
-      </div>
+      <>
+        <div className='flex flex-col items-center'>
+          <button
+            onClick={sharePost}
+            className='flex items-center justify-center w-12 h-12 rounded-full  hover:bg-gray-200 text-blue-500 transition'>
+            <BsShareFill className='text-2xl' />
+          </button>
+          <span className='mt-1 text-sm text-blue-500 font-medium'>Share</span>
+        </div>
+      </>
     </div>
   );
 };

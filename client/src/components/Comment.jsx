@@ -12,10 +12,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { fetchPosts } from '../utills/FetchPost';
+import { fetchPosts, sharePost } from '../utills/FetchPost';
 
-export const Comment = ({ value, postOwner, postId }) => {
+export const Comment = ({
+  value,
+  postOwner,
+  postId,
+  setType,
+  setValue,
+  params,
+}) => {
   const { setPosts, setReels, setTab } = usePostStore();
+
   const { usersData, setIsLoading } = useUserStore();
   const commentId = value._id;
 
@@ -49,6 +57,9 @@ export const Comment = ({ value, postOwner, postId }) => {
       if (res.status === 200) {
         setTimeout(() => {
           fetchPosts({ setPosts, setReels, setIsLoading });
+          if (setValue && setType && params)
+            sharePost({ setValue, setType, params });
+
           toast.success(res.data.message);
         }, 500);
       }
@@ -72,6 +83,8 @@ export const Comment = ({ value, postOwner, postId }) => {
       if (res.status === 200) {
         fetchPosts({ setPosts, setReels, setIsLoading });
         toast.success(res.data.message);
+        if (setValue && setType && params)
+          sharePost({ setValue, setType, params });
         setEditedCommentId(null);
       }
     } catch (err) {

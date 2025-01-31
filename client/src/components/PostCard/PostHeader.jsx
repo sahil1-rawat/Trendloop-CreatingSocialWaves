@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { usePostStore, useUserStore } from '../../../store';
 import { format } from 'date-fns';
 import axios from 'axios';
-import { fetchPosts, fetchUser } from '../../utills/FetchPost';
+import { fetchPosts, fetchUser, sharePost } from '../../utills/FetchPost';
 import toast from 'react-hot-toast';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
@@ -23,7 +23,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { BsThreeDotsVertical } from 'react-icons/bs';
-const PostHeader = ({ value }) => {
+import SharePost from '../SharePost';
+const PostHeader = ({ value, setValue, setType, params }) => {
   const formatDate = format(new Date(value.createdAt), 'MMMM do');
   const formatTime = format(new Date(value.createdAt), 'HH:mm');
   const [isFollower, setIsFollower] = useState(false);
@@ -32,6 +33,7 @@ const PostHeader = ({ value }) => {
   const [caption, setCaption] = useState(value.caption);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const navigate = useNavigate();
   useEffect(() => {
     if (usersData.followings.includes(value.owner._id)) {
       setIsFollower(true);
@@ -46,6 +48,7 @@ const PostHeader = ({ value }) => {
       if (res.status === 200) {
         setIsFollower(!isFollower);
         fetchUser({ setUsersData, setIsAuth });
+        SharePost({ setValue, setType, params });
         toast.dismiss();
         toast.success(res.data.message);
       }
@@ -71,6 +74,8 @@ const PostHeader = ({ value }) => {
       if (res.status === 200) {
         toast.success(res.data.message);
         fetchPosts({ setPosts, setReels, setIsLoading });
+        if (setValue && setType && params)
+          sharePost({ setValue, setType, params });
         setDialogOpen(false);
       }
     } catch (err) {
@@ -84,6 +89,9 @@ const PostHeader = ({ value }) => {
       const res = await axios.delete(`/api/post/delete/${value._id}`);
       if (res.status === 200) {
         toast.success(res.data.message);
+        if (setValue && setType && params) {
+          navigate('/');
+        }
         fetchPosts({ setPosts, setReels, setIsLoading });
       }
     } catch (err) {
