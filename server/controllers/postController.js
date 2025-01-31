@@ -298,3 +298,24 @@ export const postLikesData = async (req, res) => {
     });
   }
 };
+
+// share the post with another
+export const sharePost = async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id)
+      .select('-password')
+      .populate('owner', '-password')
+      .populate('comments.user', '-password');
+
+    if (!post) {
+      return res.status(404).json({
+        message: 'Post not found',
+      });
+    }
+    res.json({ post });
+  } catch (err) {
+    res.status(500).json({
+      message: err.message,
+    });
+  }
+};
