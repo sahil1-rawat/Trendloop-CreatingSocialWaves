@@ -18,7 +18,7 @@ const SharePost = () => {
   const { setPosts, setReels } = usePostStore();
   const [show, setShow] = useState(false);
   const [comment, setNewComment] = useState('');
-  const { setIsLoading, addLoading, setAddLoading } = useUserStore();
+  const { setIsLoading, addLoading, setAddLoading, isAuth } = useUserStore();
   const [isEdited, setIsEdited] = useState(false);
   const [loading, setLoading] = useState(true); // Added loading state
 
@@ -45,7 +45,7 @@ const SharePost = () => {
       if (res.status === 201) {
         setTimeout(() => {
           setAddLoading(false);
-          fetchPosts({ setPosts, setReels, setIsLoading });
+          fetchPosts({ setPosts, setReels, setIsLoading, isAuth });
           setNewComment('');
           sharePost({ setType, setValue, params });
           setShow(false);

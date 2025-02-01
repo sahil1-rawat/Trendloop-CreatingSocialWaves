@@ -24,7 +24,7 @@ export const Comment = ({
 }) => {
   const { setPosts, setReels, setTab } = usePostStore();
 
-  const { usersData, setIsLoading } = useUserStore();
+  const { usersData, setIsLoading, isAuth } = useUserStore();
   const commentId = value._id;
 
   const profilePicUrl = value?.user?.profilePic?.url || value?.profilePic;
@@ -56,7 +56,7 @@ export const Comment = ({
       });
       if (res.status === 200) {
         setTimeout(() => {
-          fetchPosts({ setPosts, setReels, setIsLoading });
+          fetchPosts({ setPosts, setReels, setIsLoading, isAuth });
           if (setValue && setType && params)
             sharePost({ setValue, setType, params });
 
@@ -81,7 +81,7 @@ export const Comment = ({
         withCredentials: true,
       });
       if (res.status === 200) {
-        fetchPosts({ setPosts, setReels, setIsLoading });
+        fetchPosts({ setPosts, setReels, setIsLoading, isAuth });
         toast.success(res.data.message);
         if (setValue && setType && params)
           sharePost({ setValue, setType, params });

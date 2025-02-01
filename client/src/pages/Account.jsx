@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-const Account = () => {
+const Account = ({ pathName }) => {
   const {
     usersData,
     isAuth,
@@ -29,6 +29,7 @@ const Account = () => {
     setIsAuth,
     isLoading,
     setIsLoading,
+    setPathName,
   } = useUserStore();
 
   const { posts, reels, setPosts, setReels, setTab, setUser } = usePostStore();
@@ -63,7 +64,7 @@ const Account = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetchPosts({ setPosts, setReels, setIsLoading });
+    fetchPosts({ setPosts, setReels, setIsLoading, isAuth });
   }, []);
 
   const handleEditToggle = () => {
@@ -165,6 +166,7 @@ const Account = () => {
         setIsAuth(false);
         setUsersData([]);
         setTab('/');
+        setPathName('/');
         setPosts([]);
         setReels([]);
         setUser('');

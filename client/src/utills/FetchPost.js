@@ -1,7 +1,13 @@
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-export const fetchPosts = async ({ setPosts, setReels, setIsLoading }) => {
+export const fetchPosts = async ({
+  setPosts,
+  setReels,
+  setIsLoading,
+  isAuth,
+}) => {
+  if (!isAuth) setIsLoading(true);
   try {
     const res = await axios.get('/api/post/all', {
       withCredentials: true,
@@ -10,6 +16,7 @@ export const fetchPosts = async ({ setPosts, setReels, setIsLoading }) => {
     if (res.status === 200) {
       setPosts(res.data.posts);
       setReels(res.data.reels);
+      // setIsLoading(false);
     }
   } catch (err) {
     console.error('Failed to fetch posts:', err);
@@ -31,12 +38,16 @@ export const fetchUsers = async ({ setUser, params }) => {
 
 export const fetchUser = async ({ setUsersData, setIsAuth }) => {
   try {
-    const { data } = await axios.get('/api/user/me', {
+    const res = await axios.get('/api/user/me', {
       withCredentials: true,
     });
 
-    setUsersData(data);
-    setIsAuth(true);
+    if (res.status === 200) {
+      setUsersData(res.data);
+      setIsAuth(true);
+    } else {
+      setIsAuth(false);
+    }
   } catch (error) {
     console.log(error.message);
     setIsAuth(false);

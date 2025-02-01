@@ -14,7 +14,7 @@ import { LoadingAnimation } from './Loading';
 
 const Addpost = ({ type }) => {
   const { setPosts, setReels } = usePostStore();
-  const { setIsLoading, addLoading, setAddLoading } = useUserStore();
+  const { setIsLoading, addLoading, setAddLoading, isAuth } = useUserStore();
   const [caption, setCaption] = useState('');
   const [files, setFiles] = useState([]);
   const [filePreviews, setFilePreviews] = useState([]);
@@ -100,7 +100,7 @@ const Addpost = ({ type }) => {
         setFiles([]);
         setFilePreviews([]);
         setAddLoading(false);
-        fetchPosts({ setPosts, setReels, setIsLoading });
+        fetchPosts({ setPosts, setReels, setIsLoading, isAuth });
         type === 'post' ? navigate('/') : navigate('/reels');
         toast.dismiss();
         toast.success(res.data.message);

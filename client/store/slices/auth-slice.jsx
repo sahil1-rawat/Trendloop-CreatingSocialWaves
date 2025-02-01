@@ -7,4 +7,6 @@ export const createAuthSlice = (set) => ({
   setAddLoading: (addLoading) => set({ addLoading }),
   usersData: [],
   setUsersData: (usersData) => set({ usersData }),
+  pathName: window.location.pathname,
+  setPathName: (pathName) => set({ pathName }),
 });

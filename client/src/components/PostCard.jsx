@@ -14,7 +14,7 @@ const PostCard = ({ type, value }) => {
 
   const [show, setShow] = useState(false);
   const [comment, setNewComment] = useState('');
-  const { setIsLoading, addLoading, setAddLoading } = useUserStore();
+  const { setIsLoading, addLoading, setAddLoading, isAuth } = useUserStore();
 
   const [isEdited, setIsEdited] = useState(false);
   const handleEdit = async () => {
@@ -33,7 +33,7 @@ const PostCard = ({ type, value }) => {
       if (res.status === 201) {
         setTimeout(() => {
           setAddLoading(false);
-          fetchPosts({ setPosts, setReels, setIsLoading });
+          fetchPosts({ setPosts, setReels, setIsLoading, isAuth });
           setNewComment('');
           setShow(false);
         }, 500);

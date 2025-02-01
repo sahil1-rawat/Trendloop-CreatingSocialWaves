@@ -11,7 +11,8 @@ import { useNavigate } from 'react-router-dom';
 const Reels = () => {
   const { reels, setPosts, setReels, posts } = usePostStore();
 
-  const { setIsLoading, addLoading, setAddLoading, isLoading } = useUserStore();
+  const { setIsLoading, addLoading, setAddLoading, isLoading, isAuth } =
+    useUserStore();
   useEffect(() => {
     // Scroll to the top of the page when the component is rendered
     window.scrollTo(0, 0);
@@ -20,7 +21,7 @@ const Reels = () => {
   useEffect(() => {
     setIsLoading(true);
 
-    fetchPosts({ setPosts, setReels, setIsLoading });
+    fetchPosts({ setPosts, setReels, setIsLoading, isAuth });
   }, [setPosts, setReels, setIsLoading]);
   const navigate = useNavigate();
   return (

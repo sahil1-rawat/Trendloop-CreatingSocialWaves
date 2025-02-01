@@ -48,8 +48,8 @@ const UserAccount = () => {
 
   useEffect(() => {
     setIsLoading(true);
-    fetchPosts({ setPosts, setReels, setIsLoading });
-  }, [setPosts, setReels, setIsLoading]);
+    fetchPosts({ setPosts, setReels, setIsLoading, isAuth });
+  }, [setPosts, setReels, setIsLoading, isAuth]);
 
   useEffect(() => {
     fetchUsers({ setUser, params });

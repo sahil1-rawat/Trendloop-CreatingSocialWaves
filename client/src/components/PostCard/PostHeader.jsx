@@ -28,7 +28,8 @@ const PostHeader = ({ value, setValue, setType, params }) => {
   const formatDate = format(new Date(value.createdAt), 'MMMM do');
   const formatTime = format(new Date(value.createdAt), 'HH:mm');
   const [isFollower, setIsFollower] = useState(false);
-  const { usersData, setUsersData, setIsAuth, setIsLoading } = useUserStore();
+  const { usersData, setUsersData, setIsAuth, setIsLoading, isAuth } =
+    useUserStore();
   const { setPosts, setReels, setTab } = usePostStore();
   const [caption, setCaption] = useState(value.caption);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -73,7 +74,7 @@ const PostHeader = ({ value, setValue, setType, params }) => {
       });
       if (res.status === 200) {
         toast.success(res.data.message);
-        fetchPosts({ setPosts, setReels, setIsLoading });
+        fetchPosts({ setPosts, setReels, setIsLoading, isAuth });
         if (setValue && setType && params)
           sharePost({ setValue, setType, params });
         setDialogOpen(false);
@@ -92,7 +93,7 @@ const PostHeader = ({ value, setValue, setType, params }) => {
         if (setValue && setType && params) {
           navigate('/');
         }
-        fetchPosts({ setPosts, setReels, setIsLoading });
+        fetchPosts({ setPosts, setReels, setIsLoading, isAuth });
       }
     } catch (err) {
       console.log(err);

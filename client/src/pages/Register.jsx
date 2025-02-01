@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import axios from 'axios';
 import { usePostStore, useUserStore } from '../../store';
 import Loading from '../components/Loading';
-import { fetchPosts } from '../utills/FetchPost';
+
 import { FaEdit, FaPen } from 'react-icons/fa';
 import { FiEdit2 } from 'react-icons/fi';
 
@@ -48,7 +48,6 @@ const Register = () => {
         navigate('/');
         setIsAuth(true);
         setUsersData(data.user);
-        fetchPosts({ setPosts, setReels, setIsLoading });
 
         toast.dismiss();
         toast.success(data.message);

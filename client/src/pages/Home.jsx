@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import PostCard from '../components/PostCard';
 import { usePostStore, useUserStore } from '../../store';
 import Loading from '../components/Loading';
-import Addpost from '../components/AddPost';
+
 import { AiOutlineFile } from 'react-icons/ai';
 import { fetchPosts } from '../utills/FetchPost';
 import { useNavigate } from 'react-router-dom';
@@ -12,15 +12,15 @@ const Home = () => {
   const { setPosts, setReels, posts } = usePostStore();
   const navigate = useNavigate();
 
-  const { setIsLoading, addLoading, setAddLoading, isLoading } = useUserStore();
+  const { setIsLoading, addLoading, setAddLoading, isLoading, isAuth } =
+    useUserStore();
   useEffect(() => {
-    // Scroll to the top of the page when the component is rendered
     window.scrollTo(0, 0);
   }, []);
 
   useEffect(() => {
     setIsLoading(true);
-    fetchPosts({ setPosts, setReels, setIsLoading });
+    fetchPosts({ setPosts, setReels, setIsLoading, isAuth });
   }, [setPosts, setReels, setIsLoading]);
   return (
     <>
