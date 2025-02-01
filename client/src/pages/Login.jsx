@@ -30,6 +30,8 @@ const Login = () => {
         setUsersData(resData.user);
         setIsAuth(true);
         navigate('/');
+        localStorage.setItem('isAuth', 'true');
+
         toast.dismiss();
         toast.success(resData.message);
       } else {

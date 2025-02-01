@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import {
   BrowserRouter as Router,
   Routes,
@@ -22,17 +22,27 @@ import SharePost from './components/SharePost';
 import Chat from './pages/Chat.jsx';
 
 const App = () => {
-  const { isAuth, setUsersData, setIsAuth, setIsLoading, isLoading } =
-    useUserStore();
+  const { isAuth, setUsersData, setIsAuth, setIsLoading } = useUserStore();
 
   useEffect(() => {
-    fetchUser({ setUsersData, setIsAuth });
+    const storedAuth = localStorage.getItem('isAuth');
+    if (storedAuth === 'true') {
+      setIsAuth(true);
+      fetchUser({ setUsersData, setIsAuth });
+    } else {
+      setIsAuth(false);
+    }
   }, []);
-
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000);
+    return () => clearTimeout(timeout);
+  }, []);
   return (
     <div>
       <Router>
-        {isAuth ? <Header /> : <Login />}
+        {isAuth && <Header />}
         <Routes>
           <Route
             path='/'
@@ -54,7 +64,6 @@ const App = () => {
               />
             }
           />
-
           <Route
             path='/new-post'
             element={
@@ -75,7 +84,6 @@ const App = () => {
               />
             }
           />
-
           <Route
             path='/account'
             element={
@@ -83,6 +91,16 @@ const App = () => {
                 isAuth={isAuth}
                 redirectPath='/login'
                 Component={Account}
+              />
+            }
+          />
+          <Route
+            path='/chat'
+            element={
+              <PrivateRoute
+                isAuth={isAuth}
+                redirectPath='/login'
+                Component={Chat}
               />
             }
           />
@@ -107,16 +125,6 @@ const App = () => {
             }
           />
           <Route
-            path='/chat'
-            element={
-              <PrivateRoute
-                isAuth={isAuth}
-                redirectPath='/login'
-                Component={Chat}
-              />
-            }
-          />
-          <Route
             path='/login'
             element={<RedirectToHome isAuth={isAuth} Component={Login} />}
           />
@@ -133,7 +141,7 @@ const App = () => {
                 Component={NotFoundPage}
               />
             }
-          />
+          />{' '}
         </Routes>
         {isAuth && <NavigationBar />}
       </Router>
@@ -150,7 +158,6 @@ const PrivateRoute = ({ isAuth, redirectPath, Component }) => {
       navigate(redirectPath);
     }
   }, [isAuth, navigate, redirectPath, isLoading]);
-
   return isAuth ? <Component /> : null;
 };
 
@@ -164,7 +171,6 @@ const RedirectToHome = ({ isAuth, Component }) => {
       );
     }
   }, [isAuth, navigate]);
-
   return isAuth ? null : <Component />;
 };
 

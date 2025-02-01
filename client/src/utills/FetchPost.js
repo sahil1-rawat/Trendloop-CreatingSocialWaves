@@ -7,7 +7,9 @@ export const fetchPosts = async ({
   setIsLoading,
   isAuth,
 }) => {
-  if (!isAuth) setIsLoading(true);
+  if (!isAuth) {
+    setIsLoading(true);
+  }
   try {
     const res = await axios.get('/api/post/all', {
       withCredentials: true,

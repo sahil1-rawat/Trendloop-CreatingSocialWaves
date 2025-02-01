@@ -23,7 +23,6 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { BsThreeDotsVertical } from 'react-icons/bs';
-import SharePost from '../SharePost';
 const PostHeader = ({ value, setValue, setType, params }) => {
   const formatDate = format(new Date(value.createdAt), 'MMMM do');
   const formatTime = format(new Date(value.createdAt), 'HH:mm');
@@ -49,7 +48,7 @@ const PostHeader = ({ value, setValue, setType, params }) => {
       if (res.status === 200) {
         setIsFollower(!isFollower);
         fetchUser({ setUsersData, setIsAuth });
-        SharePost({ setValue, setType, params });
+        if (setValue) sharePost({ setValue, setType, params });
         toast.dismiss();
         toast.success(res.data.message);
       }

@@ -163,6 +163,8 @@ const Account = ({ pathName }) => {
         credentials: 'include',
       });
       if (res.ok) {
+        localStorage.removeItem('isAuth');
+
         setIsAuth(false);
         setUsersData([]);
         setTab('/');

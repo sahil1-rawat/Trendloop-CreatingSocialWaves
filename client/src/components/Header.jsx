@@ -1,5 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
-import logo from '../assets/logo1.gif';
+import logo from '../assets/logo.png';
 import { FaSearch } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
@@ -76,9 +76,11 @@ const Header = () => {
           <img
             src={logo}
             alt='Logo'
-            className='w-12 h-12 mr-3 cursor-pointer'
+            className='w-8 h-8 sm:w-10 sm:h-10 mr-3 ml-3 cursor-pointer rounded-3xl'
           />
-          <span className='font-bold text-xl text-gray-800'>Trendloop</span>
+          <span className='font-extrabold text-3xl text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500'>
+            Trendloop
+          </span>
         </div>
 
         {/* Search Bar */}
