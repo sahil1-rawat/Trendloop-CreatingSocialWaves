@@ -3,7 +3,7 @@ import {
   getAllMessages,
   getChatMessages,
   sendMessage,
-} from '../controller/messageController.js';
+} from '../controllers/messageController.js';
 import { isAuth } from '../middlewares/isAuth.js';
 const messageRoutes = express.Router();
 messageRoutes.post('/', isAuth, sendMessage);
