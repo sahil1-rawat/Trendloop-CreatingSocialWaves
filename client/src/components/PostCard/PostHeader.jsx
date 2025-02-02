@@ -35,7 +35,7 @@ const PostHeader = ({ value, setValue, setType, params }) => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const navigate = useNavigate();
   useEffect(() => {
-    if (usersData.followings.includes(value.owner._id)) {
+    if (usersData?.followings?.includes(value.owner._id)) {
       setIsFollower(true);
     }
   }, [usersData, value.owner]);

@@ -359,7 +359,7 @@ export const replyComment = async (req, res) => {
     await post.save();
     return res.status(201).json({
       message: 'Comment Added Successfully',
-      // totalComments: post.comments.length,
+      totalComments: post.comments[commentIndex].replies.length,
     });
   } catch (err) {
     console.log(err);

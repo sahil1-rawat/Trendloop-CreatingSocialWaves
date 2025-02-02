@@ -237,22 +237,30 @@ export const Comment = ({
         {value.replies && value.replies.length > 0 && (
           <div className='ml-6 mt-4'>
             {value.replies.map((reply, index) => (
-              <div key={index} className='flex items-start space-x-3 mt-3'>
-                {/* Profile Picture for Reply */}
-                <Link to={`/user/${reply.user}`}>
-                  <img
-                    src={reply.profilePic || 'default-pic.jpg'}
-                    alt={`${reply.user.name}'s profile`}
-                    className='w-8 h-8 rounded-full border border-gray-300'
-                  />
-                </Link>
+              <div>
+                <div key={index} className='flex items-start space-x-3 mt-3'>
+                  {/* Profile Picture for Reply */}
+                  <Link to={`/user/${reply.user}`}>
+                    <img
+                      src={reply.profilePic || 'default-pic.jpg'}
+                      alt={`${reply.user.name}'s profile`}
+                      className='w-8 h-8 rounded-full border border-gray-300'
+                    />
+                  </Link>
 
-                {/* Reply Text */}
-                <div className='flex-1'>
-                  <p className='text-gray-900 font-medium text-sm'>
-                    {reply.user.name}
-                  </p>
-                  <p className='text-gray-800 text-sm'>{reply.comment}</p>
+                  {/* Reply Text */}
+                  <div className='flex-1'>
+                    <p className='text-gray-900 font-medium text-sm'>
+                      {reply.name}
+                    </p>
+                    <p className='text-gray-800 text-sm'>{reply.comment}</p>
+                  </div>
+                </div>
+                <div className='flex items-center space-x-4 text-xs text-gray-500 mt-2'>
+                  <button className='flex items-center space-x-1 hover:text-blue-500'>
+                    <span>👍</span> {/* Like Icon */}
+                    <span>{value.likes?.length || 0} Likes</span>
+                  </button>
                 </div>
               </div>
             ))}
