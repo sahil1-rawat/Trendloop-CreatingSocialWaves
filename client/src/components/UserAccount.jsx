@@ -35,7 +35,7 @@ const UserAccount = () => {
 
   // Effects
   useEffect(() => {
-    if (usersData.followings.includes(params.id)) {
+    if (usersData?.followings?.includes(params.id)) {
       setIsFollower(true);
     }
   }, [usersData, params]);

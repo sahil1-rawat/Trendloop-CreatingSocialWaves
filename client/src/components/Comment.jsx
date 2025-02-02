@@ -1,11 +1,10 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { AiFillDelete } from 'react-icons/ai';
+import { BsThreeDots } from 'react-icons/bs';
 import { usePostStore, useUserStore } from '../../store';
 import toast from 'react-hot-toast';
 import axios from 'axios';
-
-import { BsThreeDots } from 'react-icons/bs';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,24 +21,26 @@ export const Comment = ({
   setValue,
   params,
 }) => {
+  console.log(value.replies);
+
   const { setPosts, setReels, setTab } = usePostStore();
-
   const { usersData, setIsLoading, isAuth } = useUserStore();
-  const commentId = value._id;
-
-  const profilePicUrl = value?.user?.profilePic?.url || value?.profilePic;
-  const userName = value?.user?.name || value?.name;
-  const userId = value?.user?._id || '';
 
   const [newComment, setNewComment] = useState(value.comment);
   const [minutes, setMinutes] = useState(0);
-  const [editedCommentId, setEditedCommentId] = useState(null); // Track which comment is being edited
+  const [editedCommentId, setEditedCommentId] = useState(null);
+  const [replyText, setReplyText] = useState(''); // State to hold reply text
+  const [showReplyInput, setShowReplyInput] = useState(false); // Toggle for showing reply input
+
+  const commentId = value._id;
+  const profilePicUrl = value?.user?.profilePic?.url || value?.profilePic;
+  const userName = value?.user?.name || value?.name;
+  const userId = value?.user?._id || '';
 
   useEffect(() => {
     const formatTime = new Date(value.createdAt);
     const now = new Date();
     setMinutes(Math.floor((now - formatTime) / (1000 * 60)));
-
     const interval = setInterval(() => {
       const diff = new Date() - formatTime;
       setMinutes(Math.floor(diff / (1000 * 60)));
@@ -48,23 +49,21 @@ export const Comment = ({
     return () => clearInterval(interval);
   }, [value.createdAt]);
 
-  const deleteComment = async () => {
+  const handleReply = async (e) => {
+    e.preventDefault();
     try {
-      const res = await axios.delete(`/api/post/comment/${postId}`, {
-        data: { commentId },
+      const res = await axios.post(`/api/post/reply/${postId}`, {
+        commentId: value._id,
+        replyComment: replyText,
         withCredentials: true,
       });
-      if (res.status === 200) {
-        setTimeout(() => {
-          fetchPosts({ setPosts, setReels, setIsLoading, isAuth });
-          if (setValue && setType && params)
-            sharePost({ setValue, setType, params });
-
-          toast.success(res.data.message);
-        }, 500);
+      if (res.status === 201) {
+        setReplyText(''); // Clear reply input
+        setShowReplyInput(false); // Close the reply input after submission
+        fetchPosts({ setPosts, setReels, setIsLoading, isAuth }); // Refresh posts
       }
     } catch (err) {
-      console.error(err);
+      toast.error('Failed to reply');
     }
   };
 
@@ -92,19 +91,41 @@ export const Comment = ({
       setEditedCommentId(null);
     }
   };
-  const isDisabled = newComment.trim() === value.comment || !newComment.trim();
+
+  const deleteComment = async () => {
+    try {
+      const res = await axios.delete(`/api/post/comment/${postId}`, {
+        data: { commentId },
+        withCredentials: true,
+      });
+      if (res.status === 200) {
+        setTimeout(() => {
+          fetchPosts({ setPosts, setReels, setIsLoading, isAuth });
+          if (setValue && setType && params)
+            sharePost({ setValue, setType, params });
+
+          toast.success(res.data.message);
+        }, 500);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   return (
-    <div className='flex items-start space-x-4 mt-3 mb-4 p-3 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200'>
-      <Link to={userId ? `/user/${userId}` : '/profile'} target='_blank'>
+    <div className='flex items-start space-x-3 mt-3 mb-4 p-3 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200'>
+      {/* Profile Picture */}
+      <Link to={userId ? `/user/${userId}` : '/profile'}>
         <img
           src={profilePicUrl}
           alt={`${userName}'s profile`}
           title='View Profile'
-          className='w-12 h-12 rounded-full border border-gray-300 hover:ring-2 hover:ring-gray-400 transition-transform duration-200'
+          className='w-10 h-10 rounded-full border border-gray-300 hover:ring-2 hover:ring-gray-400 transition-transform duration-200'
         />
       </Link>
 
       <div className='flex-1'>
+        {/* User Name */}
         <Link
           to={`/user/${userId}`}
           className='text-gray-900 font-medium text-sm hover:underline'
@@ -115,16 +136,19 @@ export const Comment = ({
           }>
           {userName}
         </Link>
-        {editedCommentId === commentId ? ( // Only show the edit input for the currently edited comment
-          <div className='flex items-center flex-col space-y-4 mt-2'>
-            <input
-              type='text'
+
+        {/* Editable Comment */}
+        {editedCommentId === commentId ? (
+          <div className='flex flex-col space-y-2 mt-2'>
+            <textarea
+              className='w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none'
+              placeholder='Edit your comment...'
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
-              className='w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200'
-              placeholder='Edit your comment...'
+              rows='2'
+              style={{ minHeight: '50px' }}
             />
-            <div className='flex space-x-4 w-full justify-end'>
+            <div className='flex justify-end space-x-4'>
               <button
                 onClick={() => {
                   setEditedCommentId(null);
@@ -136,20 +160,107 @@ export const Comment = ({
               <button
                 onClick={editOldComment}
                 className={`px-4 py-2 text-sm text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200 ${
-                  isDisabled
+                  newComment.trim() === value.comment || !newComment.trim()
                     ? 'cursor-not-allowed opacity-50'
                     : 'cursor-pointer '
                 }`}
-                disabled={isDisabled}>
+                disabled={
+                  newComment.trim() === value.comment || !newComment.trim()
+                }>
                 Save
               </button>
             </div>
           </div>
         ) : (
-          <p className='text-gray-700 text-sm mt-1'>{value.comment}</p>
+          // Displaying Comment Text
+          <div className='flex flex-col'>
+            <p className='text-gray-900 text-sm bg-gray-100 px-4 py-2 rounded-2xl shadow-sm border border-gray-200 w-full break-words leading-relaxed hover:bg-gray-200 transition duration-200'>
+              {value.comment}
+            </p>
+          </div>
+        )}
+
+        {/* Time Ago */}
+        <span className='text-xs text-gray-500 mt-1'>
+          {minutes > 0 ? `${minutes}m ago` : 'Just now'}
+        </span>
+
+        {/* Like, Comment, Reply Actions */}
+        <div className='flex items-center space-x-4 text-xs text-gray-500 mt-2'>
+          <button className='flex items-center space-x-1 hover:text-blue-500'>
+            <span>👍</span> {/* Like Icon */}
+            <span>{value.likes?.length || 0} Likes</span>
+          </button>
+
+          <button
+            className='flex items-center space-x-1 hover:text-blue-500'
+            onClick={() => setShowReplyInput(!showReplyInput)} // Toggle reply input
+          >
+            <span>↩️</span> {/* Reply Icon */}
+            <span>Reply</span>
+          </button>
+        </div>
+
+        {/* Reply Input */}
+        {showReplyInput && (
+          <form onSubmit={handleReply} className='mt-2'>
+            <textarea
+              className='w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none'
+              placeholder='Write a reply...'
+              value={replyText}
+              onChange={(e) => setReplyText(e.target.value)}
+              rows='2'
+              style={{ minHeight: '50px' }}
+            />
+            <div className='flex justify-end space-x-4 mt-2'>
+              <button
+                type='button'
+                onClick={() => setShowReplyInput(false)}
+                className='px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200'>
+                Cancel
+              </button>
+              <button
+                type='submit'
+                className={`px-4 py-2 text-sm text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200 ${
+                  !replyText.trim()
+                    ? 'cursor-not-allowed opacity-50'
+                    : 'cursor-pointer'
+                }`}
+                disabled={!replyText.trim()}>
+                Reply
+              </button>
+            </div>
+          </form>
+        )}
+
+        {/* Displaying Replies */}
+        {value.replies && value.replies.length > 0 && (
+          <div className='ml-6 mt-4'>
+            {value.replies.map((reply, index) => (
+              <div key={index} className='flex items-start space-x-3 mt-3'>
+                {/* Profile Picture for Reply */}
+                <Link to={`/user/${reply.user}`}>
+                  <img
+                    src={reply.profilePic || 'default-pic.jpg'}
+                    alt={`${reply.user.name}'s profile`}
+                    className='w-8 h-8 rounded-full border border-gray-300'
+                  />
+                </Link>
+
+                {/* Reply Text */}
+                <div className='flex-1'>
+                  <p className='text-gray-900 font-medium text-sm'>
+                    {reply.user.name}
+                  </p>
+                  <p className='text-gray-800 text-sm'>{reply.comment}</p>
+                </div>
+              </div>
+            ))}
+          </div>
         )}
       </div>
 
+      {/* Dropdown for actions */}
       {(value.user?._id === usersData?._id ||
         postOwner?._id === usersData?._id) && (
         <DropdownMenu>
@@ -160,9 +271,7 @@ export const Comment = ({
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             {value.user?._id === usersData?._id && minutes < 2 && (
-              <DropdownMenuItem
-                onClick={() => setEditedCommentId(commentId)} // Set the edited comment ID on click
-              >
+              <DropdownMenuItem onClick={() => setEditedCommentId(commentId)}>
                 Edit
               </DropdownMenuItem>
             )}

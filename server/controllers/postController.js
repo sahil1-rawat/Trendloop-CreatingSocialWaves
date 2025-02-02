@@ -320,3 +320,48 @@ export const sharePost = async (req, res) => {
     });
   }
 };
+
+// Reply of the comment
+export const replyComment = async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+
+    if (!post) {
+      return res.status(404).json({
+        message: 'Post not found',
+      });
+    }
+    const { commentId, replyComment } = req.body;
+
+    if (!commentId || !replyComment) {
+      return res.status(404).json({
+        message: 'Comment Id and Reply Comment not found',
+      });
+    }
+    const commentIndex = post.comments.findIndex(
+      (item) => item._id.toString() === commentId.toString()
+    );
+    // console.log(commentIndex);
+
+    if (commentIndex === -1) {
+      return res.status(404).json({
+        message: 'Comment not found',
+      });
+    }
+
+    post.comments[commentIndex].replies.push({
+      user: req.user._id,
+      profilePic: req.user.profilePic.url,
+      name: req.user.name,
+      comment: replyComment,
+    });
+
+    await post.save();
+    return res.status(201).json({
+      message: 'Comment Added Successfully',
+      // totalComments: post.comments.length,
+    });
+  } catch (err) {
+    console.log(err);
+  }
+};

@@ -10,6 +10,7 @@ import {
   likeUnlikePost,
   newPost,
   postLikesData,
+  replyComment,
   sharePost,
 } from '../controllers/postController.js';
 import uploadFile from '../middlewares/multer.js';
@@ -24,4 +25,5 @@ postRoutes.delete('/comment/:id', isAuth, deleteComment);
 postRoutes.put('/comment/:id', isAuth, editComment);
 postRoutes.post('/likes/:id', isAuth, postLikesData);
 postRoutes.post('/share/:id', isAuth, sharePost);
+postRoutes.post('/reply/:id', isAuth, replyComment);
 export default postRoutes;

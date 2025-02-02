@@ -61,17 +61,23 @@ const PostCard = ({ type, value }) => {
 
         {/* Add Comment */}
         {show && (
-          <form className='flex gap-3 p-4 border-t'>
-            <input
-              type='text'
-              className='custom-input flex-1 border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500'
+          <form className='flex items-center gap-3 p-4 border-t justify-center'>
+            {/* Comment Input (Textarea) */}
+            <textarea
+              className='custom-input flex-1 border border-gray-300 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none'
               placeholder='Enter Comment'
               value={comment}
               onChange={(e) => setNewComment(e.target.value)}
+              rows='2' // Adjust to a smaller, reasonable height for the textarea
+              style={{
+                minHeight: '45px', // Ensure the height is consistent and compact
+              }}
             />
+
+            {/* Submit Button */}
             <button
               type='submit'
-              className={`bg-blue-500 text-white rounded-md px-4 py-2 ${
+              className={`bg-blue-500 text-white rounded-md px-6 py-3 ${
                 !comment.trim()
                   ? 'cursor-not-allowed opacity-50'
                   : 'cursor-pointer'

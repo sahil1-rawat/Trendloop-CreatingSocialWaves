@@ -186,15 +186,17 @@ const Account = ({ pathName }) => {
   const [followersData, setFollowersData] = useState([]);
   const [followingsData, setFollowingsData] = useState([]);
   const followData = async () => {
-    try {
-      const res = await axios.get(`/api/user/followData/${usersData._id}`);
+    if (usersData._id) {
+      try {
+        const res = await axios.get(`/api/user/followData/${usersData?._id}`);
 
-      if (res.status === 200) {
-        setFollowersData(res.data.user.followers);
-        setFollowingsData(res.data.user.followings);
+        if (res.status === 200) {
+          setFollowersData(res.data.user.followers);
+          setFollowingsData(res.data.user.followings);
+        }
+      } catch (err) {
+        console.log(err);
       }
-    } catch (err) {
-      console.log(err);
     }
   };
   useEffect(() => {
