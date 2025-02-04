@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { fetchPosts, sharePost } from '../utills/FetchPost';
+import { FaHeart, FaReply } from 'react-icons/fa';
 
 export const Comment = ({
   value,
@@ -20,6 +21,8 @@ export const Comment = ({
   setType,
   setValue,
   params,
+  showReplyInput,
+  setShowReplyInput,
 }) => {
   console.log(value.replies);
 
@@ -30,7 +33,7 @@ export const Comment = ({
   const [minutes, setMinutes] = useState(0);
   const [editedCommentId, setEditedCommentId] = useState(null);
   const [replyText, setReplyText] = useState(''); // State to hold reply text
-  const [showReplyInput, setShowReplyInput] = useState(false); // Toggle for showing reply input
+  // Toggle for showing reply input
 
   const commentId = value._id;
   const profilePicUrl = value?.user?.profilePic?.url || value?.profilePic;
@@ -113,14 +116,14 @@ export const Comment = ({
   };
 
   return (
-    <div className='flex items-start space-x-3 mt-3 mb-4 p-3 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200'>
+    <div className='flex items-start space-x-3 mt-3 mb-4 p-3 rounded-lg   transition-shadow duration-200'>
       {/* Profile Picture */}
       <Link to={userId ? `/user/${userId}` : '/profile'}>
         <img
           src={profilePicUrl}
           alt={`${userName}'s profile`}
           title='View Profile'
-          className='w-10 h-10 rounded-full border border-gray-300 hover:ring-2 hover:ring-gray-400 transition-transform duration-200'
+          className='w-10 h-10 rounded-full border  ring-gray-400 transition-transform duration-200'
         />
       </Link>
 
@@ -174,7 +177,7 @@ export const Comment = ({
         ) : (
           // Displaying Comment Text
           <div className='flex flex-col'>
-            <p className='text-gray-900 text-sm bg-gray-100 px-4 py-2 rounded-2xl shadow-sm border border-gray-200 w-full break-words leading-relaxed hover:bg-gray-200 transition duration-200'>
+            <p className='text-gray-900 text-sm bg-gray-100 px-4 py-2 rounded-2xl  border border-gray-200 w-full break-words leading-relaxed  transition duration-200'>
               {value.comment}
             </p>
           </div>
@@ -188,7 +191,10 @@ export const Comment = ({
         {/* Like, Comment, Reply Actions */}
         <div className='flex items-center space-x-4 text-xs text-gray-500 mt-2'>
           <button className='flex items-center space-x-1 hover:text-blue-500'>
-            <span>👍</span> {/* Like Icon */}
+            <span>
+              <FaHeart />
+            </span>
+            {/* Like Icon */}
             <span>{value.likes?.length || 0} Likes</span>
           </button>
 
@@ -196,13 +202,15 @@ export const Comment = ({
             className='flex items-center space-x-1 hover:text-blue-500'
             onClick={() => setShowReplyInput(!showReplyInput)} // Toggle reply input
           >
-            <span>↩️</span> {/* Reply Icon */}
+            <span>
+              <FaReply />
+            </span>
             <span>Reply</span>
           </button>
         </div>
 
         {/* Reply Input */}
-        {showReplyInput && (
+        {/* {showReplyInput && (
           <form onSubmit={handleReply} className='mt-2'>
             <textarea
               className='w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none'
@@ -231,14 +239,16 @@ export const Comment = ({
               </button>
             </div>
           </form>
-        )}
+        )} */}
 
         {/* Displaying Replies */}
         {value.replies && value.replies.length > 0 && (
           <div className='ml-6 mt-4'>
             {value.replies.map((reply, index) => (
               <div>
-                <div key={index} className='flex items-start space-x-3 mt-3'>
+                <div
+                  key={reply._id}
+                  className='flex items-start space-x-3 mt-3'>
                   {/* Profile Picture for Reply */}
                   <Link to={`/user/${reply.user}`}>
                     <img
@@ -258,7 +268,9 @@ export const Comment = ({
                 </div>
                 <div className='flex items-center space-x-4 text-xs text-gray-500 mt-2'>
                   <button className='flex items-center space-x-1 hover:text-blue-500'>
-                    <span>👍</span> {/* Like Icon */}
+                    <span>
+                      <FaHeart />
+                    </span>
                     <span>{value.likes?.length || 0} Likes</span>
                   </button>
                 </div>

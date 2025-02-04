@@ -58,60 +58,6 @@ const PostCard = ({ type, value }) => {
         <PostMedia value={value} type={type} />
         {/* Post Actions */}
         <PostActions value={value} showComments={showComments} />
-
-        {/* Add Comment */}
-        {show && (
-          <form className='flex items-center gap-3 p-4 border-t justify-center'>
-            {/* Comment Input (Textarea) */}
-            <textarea
-              className='custom-input flex-1 border border-gray-300 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none'
-              placeholder='Enter Comment'
-              value={comment}
-              onChange={(e) => setNewComment(e.target.value)}
-              rows='2' // Adjust to a smaller, reasonable height for the textarea
-              style={{
-                minHeight: '45px', // Ensure the height is consistent and compact
-              }}
-            />
-
-            {/* Submit Button */}
-            <button
-              type='submit'
-              className={`bg-blue-500 text-white rounded-md px-6 py-3 ${
-                !comment.trim()
-                  ? 'cursor-not-allowed opacity-50'
-                  : 'cursor-pointer'
-              }`}
-              onClick={handleAddComment}
-              disabled={!comment.trim()}>
-              {addLoading ? <LoadingAnimation /> : 'Comment'}
-            </button>
-          </form>
-        )}
-
-        <hr className='mt-2 mb-2' />
-        {/* All Comments */}
-        <div className='px-4'>
-          <p className='text-gray-800 font-semibold'>Comments</p>
-          <hr className='mt-2 mb-2' />
-          <div className='mt-4 max-h-56 overflow-y-auto'>
-            {value.comments && value.comments.length > 0 ? (
-              value.comments.map((comment, index) => (
-                <Comment
-                  key={index}
-                  value={comment}
-                  postOwner={value.owner}
-                  postId={value._id}
-                  Click={handleEdit}
-                  isEdited={isEdited}
-                  setIsEdited={setIsEdited}
-                />
-              ))
-            ) : (
-              <p className='text-gray-500 text-sm mb-4'>No Comments</p>
-            )}
-          </div>
-        </div>
       </div>
     </div>
   );

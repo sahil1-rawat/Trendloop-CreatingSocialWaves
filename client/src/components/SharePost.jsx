@@ -112,32 +112,6 @@ const SharePost = () => {
             </button>
           </form>
         )}
-
-        <hr className='mt-2 mb-2' />
-        <div className='px-4'>
-          <p className='text-gray-800 font-semibold'>Comments</p>
-          <hr className='mt-2 mb-2' />
-          <div className='mt-4 max-h-56 overflow-y-auto'>
-            {value.comments?.length > 0 ? (
-              value.comments.map((comment, index) => (
-                <Comment
-                  key={index}
-                  value={comment}
-                  postOwner={value.owner}
-                  postId={value._id}
-                  Click={handleEdit}
-                  isEdited={isEdited}
-                  setIsEdited={setIsEdited}
-                  setValue={setValue}
-                  setType={setType}
-                  params={params}
-                />
-              ))
-            ) : (
-              <p className='text-gray-500 text-sm mb-4'>No Comments</p>
-            )}
-          </div>
-        </div>
       </div>
     </div>
   );

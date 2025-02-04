@@ -87,9 +87,9 @@ const PostMedia = ({ value, type }) => {
           modules={[Navigation, Pagination]}
           navigation
           pagination={{ clickable: true }}
-          spaceBetween={20}
+          spaceBetween={10}
           slidesPerView={1}
-          className=' shadow-md'>
+          className=' overflow-hidden bg-white'>
           {value.post.map((media, index) => (
             <SwiperSlide
               key={index}
@@ -98,10 +98,10 @@ const PostMedia = ({ value, type }) => {
                 <img
                   src={media.url}
                   alt={`Slide ${index + 1}`}
-                  className='w-[500px] h-[300px] object-scale-down rounded-md'
+                  className='w-[500px] h-[500px] object-scale-down   '
                 />
               ) : (
-                <div className='relative bg-black/20 h-[500px]'>
+                <div className='relative bg-black/20  overflow-hidden flex justify-center items-center'>
                   <video
                     src={media.url}
                     ref={(el) => (videoRefs.current[index] = el)}
@@ -112,13 +112,14 @@ const PostMedia = ({ value, type }) => {
                     loop
                     onClick={() => handleVideoClick(index)}
                   />
+                  {/* Mute/Unmute Button */}
                   <button
                     onClick={toggleMute}
-                    className='absolute bottom-4 right-4 bg-black bg-opacity-50 text-white rounded-full p-2'>
+                    className='absolute bottom-4 right-4 bg-black bg-opacity-50 text-white rounded-full p-2 flex items-center justify-center w-10 h-10 hover:bg-opacity-75 transition'>
                     {isMuted ? (
-                      <BsVolumeMute title='Unmute' />
+                      <BsVolumeMute className='text-lg' title='Unmute' />
                     ) : (
-                      <BsVolumeUp title='Mute' />
+                      <BsVolumeUp className='text-lg' title='Mute' />
                     )}
                   </button>
                 </div>
