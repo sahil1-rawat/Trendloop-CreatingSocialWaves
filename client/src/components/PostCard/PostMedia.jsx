@@ -57,18 +57,16 @@ const PostMedia = ({ value, type }) => {
       if (video) observer.observe(video);
     });
 
-    // Cleanup observer on unmount
     return () => {
       videoRefs.current.forEach((video) => {
         if (video) observer.unobserve(video);
       });
     };
-  }, [isLoading]); // Re-run the effect if isLoading changes
+  }, [isLoading]);
 
   // Effect to trigger autoplay when page loads, especially for muted videos
   useEffect(() => {
     if (!isLoading) {
-      // Try autoplay when the page loads (muted videos can autoplay)
       videoRefs.current.forEach((video) => {
         if (video && !video.paused) {
           video.play().catch((error) => {
@@ -77,7 +75,7 @@ const PostMedia = ({ value, type }) => {
         }
       });
     }
-  }, [isLoading]); // This runs after the loading state is resolved
+  }, [isLoading]);
 
   return (
     <div className='mb-4'>
@@ -108,7 +106,7 @@ const PostMedia = ({ value, type }) => {
                     controlsList='nodownload'
                     className='h-[550px] w-[500px] rounded-lg object-scale-down'
                     playsInline
-                    muted={isMuted} // Muted for autoplay to work
+                    muted={isMuted}
                     loop
                     onClick={() => handleVideoClick(index)}
                   />
