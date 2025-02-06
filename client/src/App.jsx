@@ -20,10 +20,22 @@ import NewPost from './components/NewPost.jsx';
 import NewReel from './components/NewReel.jsx';
 import SharePost from './components/SharePost';
 import Chat from './pages/Chat.jsx';
+import io from 'socket.io-client';
 
 const App = () => {
   const { isAuth, setUsersData, setIsAuth, setIsLoading } = useUserStore();
-
+  const socket = io('http://localhost:7000');
+  // console.log(socket);
+  useEffect(() => {
+    if (isAuth) {
+      socket.on('connect', () => {
+        console.log('User Connect');
+      });
+    }
+    return () => {
+      socket.off('connect');
+    };
+  }, [isAuth]);
   useEffect(() => {
     const storedAuth = localStorage.getItem('isAuth');
     if (storedAuth === 'true') {

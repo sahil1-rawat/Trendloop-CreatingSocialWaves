@@ -1,6 +1,4 @@
 import express from 'express';
-import bodyParser from 'body-parser';
-import mongoose from 'mongoose';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
@@ -10,6 +8,8 @@ import userRoutes from './routes/userRoutes.js';
 import AuthRoutes from './routes/AuthRoutes.js';
 import postRoutes from './routes/postRoutes.js';
 import messageRoutes from './routes/messageRoutes.js';
+import { Server } from 'socket.io';
+import http from 'http';
 dotenv.config();
 cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -17,7 +17,9 @@ cloudinary.v2.config({
   api_secret: process.env.CLOUDINARY_SECRET,
 });
 const app = express();
+
 const port = process.env.PORT;
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(
@@ -26,6 +28,13 @@ app.use(
     origin: 'http://localhost:5173',
   })
 );
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    credentials: true,
+    origin: 'http://localhost:5173',
+  },
+});
 app.get('/', (req, res) => {
   res.send(`Server is working on ${port}`);
 });
@@ -34,7 +43,16 @@ app.use('/api/user', userRoutes);
 app.use('/api/post', postRoutes);
 app.use('/api/messages', messageRoutes);
 
-app.listen(port, () => {
+io.on('connection', (socket) => {
+  console.log('User is connected', socket.id);
+  socket.on('disconnect', () => {
+    console.log('User disconnected', socket.id);
+  });
+  /* socket.on('sendMessage', (message) => {
+    io.emit('recieveMessage', message);
+  }); */
+});
+server.listen(port, () => {
   console.log(`App is running on port ${port}`);
   connectDB();
 });
