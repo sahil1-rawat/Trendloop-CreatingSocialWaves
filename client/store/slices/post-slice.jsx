@@ -9,4 +9,6 @@ export const createPostSlice = (set) => ({
   setIsMuted: (isMuted) => set({ isMuted }),
   user: '',
   setUser: (user) => set({ user }),
+  myCommentId: 0,
+  setMyCommentId: (myCommentId) => set({ myCommentId }),
 });

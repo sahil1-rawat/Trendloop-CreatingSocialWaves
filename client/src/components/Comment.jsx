@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { fetchPosts, sharePost } from '../utills/FetchPost';
 import { FaHeart, FaReply } from 'react-icons/fa';
+import { format } from 'timeago.js';
 
 export const Comment = ({
   value,
@@ -24,22 +25,17 @@ export const Comment = ({
   showReplyInput,
   setShowReplyInput,
 }) => {
-  console.log(value.replies);
-
-  const { setPosts, setReels, setTab } = usePostStore();
+  const { setPosts, setReels, setTab, myCommentId, setMyCommentId } =
+    usePostStore();
   const { usersData, setIsLoading, isAuth } = useUserStore();
-
   const [newComment, setNewComment] = useState(value.comment);
   const [minutes, setMinutes] = useState(0);
   const [editedCommentId, setEditedCommentId] = useState(null);
-  const [replyText, setReplyText] = useState(''); // State to hold reply text
-  // Toggle for showing reply input
 
   const commentId = value._id;
   const profilePicUrl = value?.user?.profilePic?.url || value?.profilePic;
   const userName = value?.user?.name || value?.name;
   const userId = value?.user?._id || '';
-
   useEffect(() => {
     const formatTime = new Date(value.createdAt);
     const now = new Date();
@@ -51,24 +47,6 @@ export const Comment = ({
 
     return () => clearInterval(interval);
   }, [value.createdAt]);
-
-  const handleReply = async (e) => {
-    e.preventDefault();
-    try {
-      const res = await axios.post(`/api/post/reply/${postId}`, {
-        commentId: value._id,
-        replyComment: replyText,
-        withCredentials: true,
-      });
-      if (res.status === 201) {
-        setReplyText(''); // Clear reply input
-        setShowReplyInput(false); // Close the reply input after submission
-        fetchPosts({ setPosts, setReels, setIsLoading, isAuth }); // Refresh posts
-      }
-    } catch (err) {
-      toast.error('Failed to reply');
-    }
-  };
 
   const editOldComment = async () => {
     if (!newComment.trim()) {
@@ -185,7 +163,7 @@ export const Comment = ({
 
         {/* Time Ago */}
         <span className='text-xs text-gray-500 mt-1'>
-          {minutes > 0 ? `${minutes}m ago` : 'Just now'}
+          {format(value.createdAt)}
         </span>
 
         {/* Like, Comment, Reply Actions */}
@@ -200,7 +178,10 @@ export const Comment = ({
 
           <button
             className='flex items-center space-x-1 hover:text-blue-500'
-            onClick={() => setShowReplyInput(!showReplyInput)} // Toggle reply input
+            onClick={() => {
+              setMyCommentId(value._id);
+              setShowReplyInput(!showReplyInput);
+            }} // Toggle reply input
           >
             <span>
               <FaReply />
@@ -208,38 +189,6 @@ export const Comment = ({
             <span>Reply</span>
           </button>
         </div>
-
-        {/* Reply Input */}
-        {/* {showReplyInput && (
-          <form onSubmit={handleReply} className='mt-2'>
-            <textarea
-              className='w-full border border-gray-300 rounded-md px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none'
-              placeholder='Write a reply...'
-              value={replyText}
-              onChange={(e) => setReplyText(e.target.value)}
-              rows='2'
-              style={{ minHeight: '50px' }}
-            />
-            <div className='flex justify-end space-x-4 mt-2'>
-              <button
-                type='button'
-                onClick={() => setShowReplyInput(false)}
-                className='px-4 py-2 text-sm text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200'>
-                Cancel
-              </button>
-              <button
-                type='submit'
-                className={`px-4 py-2 text-sm text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 transition-all duration-200 ${
-                  !replyText.trim()
-                    ? 'cursor-not-allowed opacity-50'
-                    : 'cursor-pointer'
-                }`}
-                disabled={!replyText.trim()}>
-                Reply
-              </button>
-            </div>
-          </form>
-        )} */}
 
         {/* Displaying Replies */}
         {value.replies && value.replies.length > 0 && (

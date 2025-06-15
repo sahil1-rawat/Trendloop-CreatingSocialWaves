@@ -43,15 +43,16 @@ app.use('/api/user', userRoutes);
 app.use('/api/post', postRoutes);
 app.use('/api/messages', messageRoutes);
 
-io.on('connection', (socket) => {
-  console.log('User is connected', socket.id);
-  socket.on('disconnect', () => {
-    console.log('User disconnected', socket.id);
-  });
-  /* socket.on('sendMessage', (message) => {
-    io.emit('recieveMessage', message);
-  }); */
-});
+// io.on('connection', (socket) => {
+//   console.log('User is connected', socket.id);
+//   socket.on('disconnect', () => {
+//     console.log('User disconnected', socket.id);
+//   });
+//   /* socket.on('sendMessage', (message) => {
+//     io.emit('recieveMessage', message);
+//   }); */
+// }
+// );
 server.listen(port, () => {
   console.log(`App is running on port ${port}`);
   connectDB();

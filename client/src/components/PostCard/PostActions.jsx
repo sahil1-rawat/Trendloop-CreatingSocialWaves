@@ -20,7 +20,7 @@ import { Comment } from '../Comment';
 import toast from 'react-hot-toast';
 
 const PostActions = ({ value, showComments, setValue }) => {
-  const { setPosts, setReels } = usePostStore();
+  const { setPosts, setReels, myCommentId } = usePostStore();
   const { usersData, setIsLoading, addLoading, setAddLoading, isAuth } =
     useUserStore();
   const [showReplyInput, setShowReplyInput] = useState(false);
@@ -56,7 +56,30 @@ const PostActions = ({ value, showComments, setValue }) => {
       console.error(err);
     }
   };
-
+  const handleReply = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await axios.post(
+        `/api/post/reply/${value._id}`,
+        {
+          commentId: myCommentId,
+          replyComment: comment,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      if (res.status === 201) {
+        setShowReplyInput(false); // Close the reply input after submission
+        setAddLoading(false);
+        fetchPosts({ setPosts, setReels, setIsLoading, isAuth });
+        setNewComment('');
+      }
+    } catch (err) {
+      toast.error('Failed to reply');
+      console.log(err);
+    }
+  };
   const handleAddComment = async (e) => {
     e.preventDefault();
     setAddLoading(true);
@@ -120,7 +143,7 @@ const PostActions = ({ value, showComments, setValue }) => {
       {/* Comment Section */}
       <div className='flex flex-col items-center '>
         <Dialog>
-          <DialogTrigger>
+          <DialogTrigger asChild>
             <button className='flex items-center justify-center w-12 h-12 rounded-full hover:bg-gray-200 text-gray-600 transition duration-200 shadow-sm'>
               <BsChatFill className='text-2xl' />
             </button>
@@ -152,7 +175,6 @@ const PostActions = ({ value, showComments, setValue }) => {
                   ))
                 ) : (
                   <div className='flex flex-col items-center justify-center mt-3 mb-4 p-5rounded-lg   transition-shadow duration-200'>
-                    {/* Optional Icon */}
                     <svg
                       className='w-12 h-12 text-gray-300 mb-2'
                       xmlns='http://www.w3.org/2000/svg'
@@ -182,11 +204,7 @@ const PostActions = ({ value, showComments, setValue }) => {
                   placeholder='Write a comment...'
                   value={comment}
                   ref={textareaRef}
-                  onChange={(e) =>
-                    setNewComment(
-                      showReplyInput ? e.target.value : e.target.value
-                    )
-                  }
+                  onChange={(e) => setNewComment(e.target.value)}
                   rows='2'
                 />
                 <button
@@ -196,7 +214,7 @@ const PostActions = ({ value, showComments, setValue }) => {
                       ? 'cursor-not-allowed opacity-50'
                       : 'cursor-pointer'
                   }`}
-                  onClick={handleAddComment}
+                  onClick={showReplyInput ? handleReply : handleAddComment}
                   disabled={!comment.trim()}>
                   Comment
                 </button>

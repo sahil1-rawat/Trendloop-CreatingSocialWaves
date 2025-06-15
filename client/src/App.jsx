@@ -24,9 +24,9 @@ import io from 'socket.io-client';
 
 const App = () => {
   const { isAuth, setUsersData, setIsAuth, setIsLoading } = useUserStore();
-  const socket = io('http://localhost:7000');
+  // const socket = io('http://localhost:7000');
   // console.log(socket);
-  useEffect(() => {
+  /*  useEffect(() => {
     if (isAuth) {
       socket.on('connect', () => {
         console.log('User Connect');
@@ -36,7 +36,7 @@ const App = () => {
       socket.off('connect');
     };
   }, [isAuth]);
-  useEffect(() => {
+ */ useEffect(() => {
     const storedAuth = localStorage.getItem('isAuth');
     if (storedAuth === 'true') {
       setIsAuth(true);
