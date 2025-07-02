@@ -16,6 +16,7 @@ export const fetchPosts = async ({
     });
 
     if (res.status === 200) {
+      console.log('response Data', res.data);
       setPosts(res.data.posts);
       setReels(res.data.reels);
       // setIsLoading(false);

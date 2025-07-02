@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { usePostStore, useUserStore } from '../../../store';
 import { format } from 'date-fns';
 import axios from 'axios';
@@ -23,7 +23,8 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { BsThreeDotsVertical } from 'react-icons/bs';
-const PostHeader = ({ value, setValue, setType, params }) => {
+
+const PostHeader = ({ value, setValue, setType, params: params2 }) => {
   const formatDate = format(new Date(value.createdAt), 'MMMM do');
   const formatTime = format(new Date(value.createdAt), 'HH:mm');
   const [isFollower, setIsFollower] = useState(false);
@@ -34,6 +35,8 @@ const PostHeader = ({ value, setValue, setType, params }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const navigate = useNavigate();
+  const params = useParams();
+
   useEffect(() => {
     if (usersData?.followings?.includes(value.owner._id)) {
       setIsFollower(true);
@@ -48,7 +51,7 @@ const PostHeader = ({ value, setValue, setType, params }) => {
       if (res.status === 200) {
         setIsFollower(!isFollower);
         fetchUser({ setUsersData, setIsAuth });
-        if (setValue) sharePost({ setValue, setType, params });
+        if (setValue) sharePost({ setValue, setType, params: params2 });
         toast.dismiss();
         toast.success(res.data.message);
       }
@@ -74,14 +77,16 @@ const PostHeader = ({ value, setValue, setType, params }) => {
       if (res.status === 200) {
         toast.success(res.data.message);
         fetchPosts({ setPosts, setReels, setIsLoading, isAuth });
-        if (setValue && setType && params)
-          sharePost({ setValue, setType, params });
+        if (setValue && setType && params2)
+          sharePost({ setValue, setType, params: params2 });
         setDialogOpen(false);
       }
     } catch (err) {
       console.log(err);
     }
   };
+  // console.log(params.id);
+  console.log(usersData.id);
 
   // Function to delete a post
   const deletePost = async () => {
@@ -89,7 +94,7 @@ const PostHeader = ({ value, setValue, setType, params }) => {
       const res = await axios.delete(`/api/post/delete/${value._id}`);
       if (res.status === 200) {
         toast.success(res.data.message);
-        if (setValue && setType && params) {
+        if (setValue && setType && params2) {
           navigate('/');
         }
         fetchPosts({ setPosts, setReels, setIsLoading, isAuth });
@@ -124,18 +129,21 @@ const PostHeader = ({ value, setValue, setType, params }) => {
                 }>
                 {value.owner.name}
               </Link>
-              {value.owner._id !== usersData._id && (
-                <div>
-                  <div
-                    className=' text-blue-600 px-4  ml-4 rounded-lg  hover:text-blue-800 transition duration-300 cursor-pointer'
-                    onClick={() => followandUnfollowUsers(value.owner._id)}>
-                    {isFollower &&
-                    usersData.followings.includes(value.owner._id)
-                      ? 'Following'
-                      : 'Follow'}
+              {value.owner._id !== usersData._id &&
+                params.id !== value.owner._id && (
+                  <div>
+                    <div
+                      className={`px-4 ml-4 rounded-lg text-white transition duration-300 cursor-pointer ${
+                        isFollower ? 'bg-green-800' : 'bg-red-800'
+                      }`}
+                      onClick={() => followandUnfollowUsers(value.owner._id)}>
+                      {isFollower &&
+                      usersData.followings.includes(value.owner._id)
+                        ? 'Following'
+                        : 'Follow'}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
             </div>
             <div className='text-gray-500 text-sm'>
               {formatDate} | {formatTime}

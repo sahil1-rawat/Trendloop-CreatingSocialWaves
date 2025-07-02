@@ -4,11 +4,11 @@ import { Messages } from '../models/messageModel.js';
 
 export const sendMessage = async (req, res) => {
   try {
-    const { recieverId, message } = req.body;
+    const { receiverId, message } = req.body;
     const senderId = req.user._id.toString();
 
     // Validate inputs
-    if (!recieverId) {
+    if (!receiverId) {
       return res.status(400).json({ message: 'Please provide a recipient' });
     }
 
@@ -19,7 +19,7 @@ export const sendMessage = async (req, res) => {
     }
 
     // Sort users for consistent ordering
-    const sortedUsers = [senderId, recieverId].sort();
+    const sortedUsers = [senderId, receiverId].sort();
     console.log(sortedUsers);
 
     // Find or create chat

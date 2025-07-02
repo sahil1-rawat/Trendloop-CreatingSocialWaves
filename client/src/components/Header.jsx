@@ -25,7 +25,6 @@ const Header = () => {
   const handleSearch = async (e) => {
     const searchTerm = e.target.value;
     setSearch(searchTerm);
-
     if (searchTerm) {
       fetchResults(searchTerm); // Fetch results when the search term changes
     } else {
@@ -35,6 +34,8 @@ const Header = () => {
 
   const handleUserClick = () => {
     setResults([]);
+    setIsFocused(false);
+    setSearch('');
   };
 
   // Hide results when clicking outside but keep search term
@@ -58,7 +59,15 @@ const Header = () => {
   };
 
   const handleBlur = () => {
-    setIsFocused(false); // Reset focus state when search input loses focus
+    if (
+      divRef.current &&
+      !divRef.current.contains(event.target) &&
+      searchRef.current &&
+      !searchRef.current.contains(event.target)
+    ) {
+      setResults([]); // Clear the results, keep search term
+      setIsFocused(false); // Reset focus state
+    }
   };
 
   useEffect(() => {

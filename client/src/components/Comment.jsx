@@ -92,7 +92,6 @@ export const Comment = ({
       console.error(err);
     }
   };
-
   return (
     <div className='flex items-start space-x-3 mt-3 mb-4 p-3 rounded-lg   transition-shadow duration-200'>
       {/* Profile Picture */}
@@ -168,13 +167,13 @@ export const Comment = ({
 
         {/* Like, Comment, Reply Actions */}
         <div className='flex items-center space-x-4 text-xs text-gray-500 mt-2'>
-          <button className='flex items-center space-x-1 hover:text-blue-500'>
-            <span>
+          {/* <button className='flex items-center space-x-1 hover:text-blue-500'> */}
+          {/* <span>
               <FaHeart />
-            </span>
-            {/* Like Icon */}
-            <span>{value.likes?.length || 0} Likes</span>
-          </button>
+            </span> */}
+          {/* Like Icon */}
+          {/* <span>{value.likes?.length || 0} Likes</span> */}
+          {/* </button> */}
 
           <button
             className='flex items-center space-x-1 hover:text-blue-500'
@@ -215,14 +214,14 @@ export const Comment = ({
                     <p className='text-gray-800 text-sm'>{reply.comment}</p>
                   </div>
                 </div>
-                <div className='flex items-center space-x-4 text-xs text-gray-500 mt-2'>
+                {/* <div className='flex items-center space-x-4 text-xs text-gray-500 mt-2'>
                   <button className='flex items-center space-x-1 hover:text-blue-500'>
                     <span>
                       <FaHeart />
                     </span>
                     <span>{value.likes?.length || 0} Likes</span>
                   </button>
-                </div>
+                </div> */}
               </div>
             ))}
           </div>
