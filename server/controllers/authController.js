@@ -39,10 +39,11 @@ export const registerUser = async (req, res) => {
         url: myCloud.secure_url,
       },
     });
-    generateToken(user._id, res);
+    const token = generateToken(user._id, res);
     res.status(201).json({
       message: 'User Registered Success',
       user,
+      token,
     });
   } catch (err) {
     res.status(400).json({
@@ -71,10 +72,12 @@ export const loginUser = async (req, res) => {
       return res.status(404).json({
         message: 'Invalid Credentials',
       });
-    generateToken(user._id, res);
+    const token = generateToken(user._id, res);
+    // console.log('token' + generateToken(user._id, res));
     return res.status(201).json({
       message: 'User Logged in',
       user,
+      token,
     });
   } catch (err) {
     res.status(500).json({
