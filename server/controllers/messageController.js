@@ -1,12 +1,13 @@
 import express from 'express';
 import { Chat } from '../models/chatModel.js';
 import { Messages } from '../models/messageModel.js';
+import { getReceiverSocketId, io } from '../socket/socket.js';
 
 export const sendMessage = async (req, res) => {
   try {
     const { receiverId, message } = req.body;
+    console.log(receiverId);
     const senderId = req.user._id.toString();
-
     // Validate inputs
     if (!receiverId) {
       return res.status(400).json({ message: 'Please provide a recipient' });
@@ -45,6 +46,16 @@ export const sendMessage = async (req, res) => {
     });
     await newMessage.save();
 
+    await chat.updateOne({
+      latestMessage: {
+        text: message,
+        sender: senderId,
+      },
+    });
+    const receiverSocketId = getReceiverSocketId(receiverId);
+    if (receiverSocketId) {
+      io.to(receiverSocketId).emit('newMessage', newMessage);
+    }
     res.status(201).json(newMessage);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -55,6 +66,7 @@ export const sendMessage = async (req, res) => {
 export const getAllMessages = async (req, res) => {
   try {
     const { id } = req.params; // Recipient ID
+    console.log(id);
     const userId = req.user._id.toString();
 
     // Validate input

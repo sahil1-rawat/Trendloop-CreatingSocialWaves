@@ -13,7 +13,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:7000/api/auth/login', {
+      const res = await fetch('https://trendloop.onrender.com/api/auth/login', {
         method: 'POST',
         credentials: 'include',
         headers: {

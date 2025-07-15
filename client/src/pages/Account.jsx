@@ -120,7 +120,7 @@ const Account = ({ pathName }) => {
     e.preventDefault();
     try {
       const res = await fetch(
-        `http://localhost:7000/api/user/${usersData._id}`,
+        `https://trendloop.onrender.com/api/user/${usersData._id}`,
         {
           method: 'PUT',
           credentials: 'include',
@@ -158,7 +158,7 @@ const Account = ({ pathName }) => {
 
   const logoutHandler = async () => {
     try {
-      const res = await fetch('http://localhost:7000/api/auth/logout', {
+      const res = await fetch('https://trendloop.onrender.com/api/auth/logout', {
         method: 'get',
         credentials: 'include',
       });

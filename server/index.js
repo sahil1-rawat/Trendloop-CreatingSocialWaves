@@ -10,13 +10,15 @@ import postRoutes from './routes/postRoutes.js';
 import messageRoutes from './routes/messageRoutes.js';
 import { Server } from 'socket.io';
 import http from 'http';
+import { app, server } from './socket/socket.js';
+
 dotenv.config();
 cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API,
   api_secret: process.env.CLOUDINARY_SECRET,
 });
-const app = express();
+// const app = express();
 
 const port = process.env.PORT;
 
@@ -28,13 +30,7 @@ app.use(
     origin: 'http://localhost:5173',
   })
 );
-const server = http.createServer(app);
-const io = new Server(server, {
-  cors: {
-    credentials: true,
-    origin: 'http://localhost:5173',
-  },
-});
+
 app.get('/', (req, res) => {
   res.send(`Server is working on ${port}`);
 });
