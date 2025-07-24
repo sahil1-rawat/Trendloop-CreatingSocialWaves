@@ -5,10 +5,10 @@ import { isAuth } from '../middlewares/isAuth.js';
 const AdminRoutes = express.Router();
 
 // GET /api/admin/stats
-AdminRoutes.get('/stats', getAdminStats);
-AdminRoutes.get('/users', getAllUsers);
+AdminRoutes.get('/stats', isAuth,getAdminStats);
+AdminRoutes.get('/users',isAuth, getAllUsers);
 // PUT ban or unban
-AdminRoutes.patch('/:id/ban', banOrUnbanUser);
+AdminRoutes.patch('/:id/ban',isAuth, banOrUnbanUser);
 AdminRoutes.get('/posts', isAuth, getAllPostsAdmin);
 
 AdminRoutes.delete('/posts/:id', isAuth, deletePostAdmin);

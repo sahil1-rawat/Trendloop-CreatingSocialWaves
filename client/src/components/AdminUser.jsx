@@ -40,7 +40,7 @@ const AdminUsersPage = () => {
   const handleToggleBan = async (id) => {
     try {
       const res = await axios.patch(`${import.meta.env.VITE_SOCKET_URL}/api/admin/${id}/ban`,
-        
+        {},
         {
                 withCredentials: true,
       });
