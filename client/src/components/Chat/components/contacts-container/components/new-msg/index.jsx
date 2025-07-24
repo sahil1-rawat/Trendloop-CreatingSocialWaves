@@ -36,7 +36,7 @@ const NewMessage = () => {
         let hasMore = true;
         while (hasMore) {
           const { data } = await axios.get(
-          `${BASE_URL}/api/user/get/alluser?search=${searchTerm}&page=${page}`,
+          `${import.meta.env.VITE_SOCKET_URL}/api/user/get/alluser?search=${searchTerm}&page=${page}`,
           {
         withCredentials: true,
 

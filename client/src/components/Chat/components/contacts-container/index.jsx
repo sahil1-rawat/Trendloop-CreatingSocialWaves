@@ -29,7 +29,7 @@ const ContactsContainer = () => {
   useEffect(() => {
     const getContacts = async () => {
       try {
-        const res = await axios.get(`${BASE_URL}/api/messages/get-chat-contacts`, {
+        const res = await axios.get(`${import.meta.env.VITE_SOCKET_URL}/api/messages/get-chat-contacts`, {
           withCredentials: true,
         });
         // //console.log(`${res.data.contacts}`);

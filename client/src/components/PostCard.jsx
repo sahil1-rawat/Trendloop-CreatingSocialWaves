@@ -27,7 +27,7 @@ const PostCard = ({ type, value }) => {
     e.preventDefault();
     setAddLoading(true);
     try {
-      const res = await axios.post(`${BASE_URL}/api/post/comment/${value._id}`, {
+      const res = await axios.post(`${import.meta.env.VITE_SOCKET_URL}/api/post/comment/${value._id}`, {
         comment,
       },{
         withCredentials: true,

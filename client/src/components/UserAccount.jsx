@@ -63,7 +63,7 @@ const UserAccount = () => {
   // function to handle Follow and Unfollow events
   const followandUnfollowUsers = async () => {
     try {
-      const res = await axios.post(`${BASE_URL}/api/user/follow/${params.id}`,
+      const res = await axios.post(`${import.meta.env.VITE_SOCKET_URL}/api/user/follow/${params.id}`,
 
         {},
         {
@@ -85,7 +85,7 @@ const UserAccount = () => {
   const followData = async () => {
     try {
       const res = await axios.get(
-        `${BASE_URL}/api/user/followData/${user?._id || params.id}`,
+        `${import.meta.env.VITE_SOCKET_URL}/api/user/followData/${user?._id || params.id}`,
         {
         withCredentials: true,
 

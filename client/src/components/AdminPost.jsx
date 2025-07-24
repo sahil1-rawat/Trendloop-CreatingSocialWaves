@@ -6,9 +6,9 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import toast from 'react-hot-toast';
 import { format } from 'date-fns';
 import AdminPostVideo from './AdminPostVideo';
+import { BASE_URL } from '../../common';
 
 const ManagePostsPage = () => {
-  const BASE_URL = import.meta.env.VITE_SOCKET_URL;
 
   const [posts, setPosts] = useState([]);
   const [selectedPost, setSelectedPost] = useState(null);
@@ -17,7 +17,7 @@ const videoRefs = useRef({});
 
 const fetchPosts=async()=>{
     try {
-      const res = await axios.get(`${BASE_URL}/api/admin/posts`,
+      const res = await axios.get(`${import.meta.env.VITE_SOCKET_URL}/api/admin/posts`,
         {
         withCredentials: true,
 
@@ -39,7 +39,7 @@ const fetchPosts=async()=>{
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`${BASE_URL}/api/admin/posts/${selectedPost._id}`,{
+      await axios.delete(`${import.meta.env.VITE_SOCKET_URL}/api/admin/posts/${selectedPost._id}`,{
         withCredentials: true,
 
         });

@@ -47,7 +47,7 @@ const PostHeader = ({ value, setValue, setType, params: params2 }) => {
   //follow and unfollow the user
   const followandUnfollowUsers = async (id) => {
     try {
-      const res = await axios.post(`${BASE_URL}/api/user/follow/${id}`,
+      const res = await axios.post(`${import.meta.env.VITE_SOCKET_URL}/api/user/follow/${id}`,
         {},
         {
           withCredentials:true
@@ -76,7 +76,7 @@ const PostHeader = ({ value, setValue, setType, params: params2 }) => {
   // Function to edit caption
   const editCaption = async () => {
     try {
-      const res = await axios.put(`${BASE_URL}/api/post/edit/${value._id}`, {
+      const res = await axios.put(`${import.meta.env.VITE_SOCKET_URL}/api/post/edit/${value._id}`, {
         newCaption: caption,
       },{
         withCredentials: true,
@@ -99,7 +99,7 @@ const PostHeader = ({ value, setValue, setType, params: params2 }) => {
   // Function to delete a post
   const deletePost = async () => {
     try {
-      const res = await axios.delete(`${BASE_URL}/api/post/delete/${value._id}`,{
+      const res = await axios.delete(`${import.meta.env.VITE_SOCKET_URL}/api/post/delete/${value._id}`,{
                 withCredentials: true,
       });
       if (res.status === 200) {

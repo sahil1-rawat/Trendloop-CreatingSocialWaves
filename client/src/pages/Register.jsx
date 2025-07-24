@@ -40,7 +40,7 @@ const Register = () => {
     e.preventDefault();
     try {
 
-      const res=await axios.post(`${BASE_URL}/api/auth/register`,formData,{withCredentials:true})
+      const res=await axios.post(`${import.meta.env.VITE_SOCKET_URL}/api/auth/register`,formData,{withCredentials:true})
 //console.log(res.status);
 
       //console.log(res.data);

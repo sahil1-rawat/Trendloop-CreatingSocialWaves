@@ -21,7 +21,7 @@ const AdminUsersPage = () => {
 
   const fetchUsers = async () => {
     try {
-      const res = await axios.get(`${BASE_URL}/api/admin/users`,
+      const res = await axios.get(`${import.meta.env.VITE_SOCKET_URL}/api/admin/users`,
         {
         withCredentials: true,
 
@@ -39,7 +39,7 @@ const AdminUsersPage = () => {
 
   const handleToggleBan = async (id) => {
     try {
-      const res = await axios.patch(`${BASE_URL}/api/admin/${id}/ban`,{
+      const res = await axios.patch(`${import.meta.env.VITE_SOCKET_URL}/api/admin/${id}/ban`,{
                 withCredentials: true,
       });
       setUsers((prev) =>

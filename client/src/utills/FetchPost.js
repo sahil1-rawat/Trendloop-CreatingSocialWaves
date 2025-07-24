@@ -12,7 +12,7 @@ export const fetchPosts = async ({
     setIsLoading(true);
   }
   try {
-    const res = await axios.get(`${BASE_URL}/api/post/all`, {
+    const res = await axios.get(`${import.meta.env.VITE_SOCKET_URL}/api/post/all`, {
       withCredentials: true,
     });
     if (res.status === 200) {
@@ -36,7 +36,7 @@ export const fetchPosts = async ({
 
 export const fetchUsers = async ({ setUser, params }) => {
   try {
-    const res = await axios.get(`${BASE_URL}/api/user/${params.id}`,
+    const res = await axios.get(`${import.meta.env.VITE_SOCKET_URL}/api/user/${params.id}`,
       {
         withCredentials: true,
 
@@ -59,7 +59,7 @@ export const fetchUsers = async ({ setUser, params }) => {
 
 export const fetchUser = async ({ setUsersData, setIsAuth }) => {
   try {
-    const res = await axios.get(`${BASE_URL}/api/user/me`, {
+    const res = await axios.get(`${import.meta.env.VITE_SOCKET_URL}/api/user/me`, {
       withCredentials: true,
     });
 
@@ -83,7 +83,7 @@ export const fetchUser = async ({ setUsersData, setIsAuth }) => {
 };
 export const sharePost = async ({ setValue, setType, params }) => {
   try {
-    const res = await axios.post(`${BASE_URL}/api/post/share/${params.id}`,
+    const res = await axios.post(`${import.meta.env.VITE_SOCKET_URL}/api/post/share/${params.id}`,
       {},
       {
       withCredentials: true,

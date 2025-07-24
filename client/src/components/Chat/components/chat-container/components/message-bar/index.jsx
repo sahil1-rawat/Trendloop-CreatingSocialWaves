@@ -125,7 +125,7 @@ useEffect(() => {
       formData.append('file', file);
       setIsUploading(true);
 
-      const res = await axios.post(`${BASE_URL}/api/messages/upload-file`, formData, {
+      const res = await axios.post(`${import.meta.env.VITE_SOCKET_URL}/api/messages/upload-file`, formData, {
         withCredentials: true,
         headers: {
           'Content-Type': 'multipart/form-data',

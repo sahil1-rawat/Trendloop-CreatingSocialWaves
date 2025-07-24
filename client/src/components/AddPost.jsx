@@ -92,7 +92,7 @@ const Addpost = ({ type }) => {
     });
 
     try {
-      const res = await axios.post(`${BASE_URL}/api/post/new?type=${type}`, newPost, {
+      const res = await axios.post(`${import.meta.env.VITE_SOCKET_URL}/api/post/new?type=${type}`, newPost, {
         withCredentials: true,
       });
 

@@ -34,7 +34,7 @@ const LikesData = ({ totalLikes, value }) => {
   }, [usersData, value.owner, likesData]);
   const followandUnfollowUsers = async (id) => {
     try {
-      const res = await axios.post(`${BASE_URL}/api/user/follow/${id}`,
+      const res = await axios.post(`${import.meta.env.VITE_SOCKET_URL}/api/user/follow/${id}`,
         {},
         {
           withCredentials: true,
@@ -61,7 +61,7 @@ const LikesData = ({ totalLikes, value }) => {
 
   const postsLikesData = async () => {
     try {
-      const res = await axios.post(`${BASE_URL}/api/post/likes/${value._id}`,
+      const res = await axios.post(`${import.meta.env.VITE_SOCKET_URL}/api/post/likes/${value._id}`,
         {},
         {
           withCredentials: true,

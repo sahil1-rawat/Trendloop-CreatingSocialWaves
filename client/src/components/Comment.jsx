@@ -56,7 +56,7 @@ export const Comment = ({
     }
 
     try {
-      const res = await axios.put(`${BASE_URL}/api/post/comment/${postId}`, {
+      const res = await axios.put(`${import.meta.env.VITE_SOCKET_URL}/api/post/comment/${postId}`, {
         commentId: value._id,
         newComment,
       },
@@ -80,7 +80,7 @@ export const Comment = ({
 
   const deleteComment = async () => {
     try {
-      const res = await axios.delete(`${BASE_URL}/api/post/comment/${postId}`, {
+      const res = await axios.delete(`${import.meta.env.VITE_SOCKET_URL}/api/post/comment/${postId}`, {
         data: { commentId },
 withCredentials: true
       });

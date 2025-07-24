@@ -16,7 +16,7 @@ const Header = () => {
   // Function to fetch results
   const fetchResults = async (searchTerm) => {
     try {
-      const res = await axios.get(`${BASE_URL}/api/user/get/alluser?search=${searchTerm}`,
+      const res = await axios.get(`${import.meta.env.VITE_SOCKET_URL}/api/user/get/alluser?search=${searchTerm}`,
         {
         withCredentials: true,
 

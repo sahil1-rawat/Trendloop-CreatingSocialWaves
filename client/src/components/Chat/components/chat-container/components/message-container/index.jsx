@@ -183,7 +183,7 @@ const MessageContainer = () => {
     const fetchMessages = async () => {
       try {
         const res = await axios.post(
-          `${BASE_URL}/api/messages/get-messages`,
+          `${import.meta.env.VITE_SOCKET_URL}/api/messages/get-messages`,
           { id: selectedChatData._id },
           { withCredentials: true }
         );
