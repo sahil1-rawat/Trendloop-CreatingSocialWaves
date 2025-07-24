@@ -39,10 +39,10 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await axios.get(`${import.meta.env.VITE_SOCKET_URL}/api/admin/stats`,{
+        const {data} = await axios.get(`${import.meta.env.VITE_SOCKET_URL}/api/admin/stats`,{
           withCredentials: true,
         });
-        const data = await response.json();
+ 
         setStats(data);
         setLoading(false);
       } catch (err) {
