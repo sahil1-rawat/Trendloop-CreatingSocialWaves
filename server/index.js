@@ -29,7 +29,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: [process.env.ORIGIN],
+    origin: [process.env.ORIGIN,'https://trendloop-creating-social-waves.vercel.app'],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     credentials: true, // Allow cookies to be sent with requests
   })
