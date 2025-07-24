@@ -82,8 +82,8 @@ export const Comment = ({
     try {
       const res = await axios.delete(`${BASE_URL}/api/post/comment/${postId}`, {
         data: { commentId },
-
-      },{        withCredentials: true,});
+withCredentials: true
+      });
       if (res.status === 200) {
         setTimeout(() => {
           fetchPosts({ setPosts, setReels, setIsLoading, isAuth });

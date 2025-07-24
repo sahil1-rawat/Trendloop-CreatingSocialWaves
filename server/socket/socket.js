@@ -7,7 +7,7 @@ const setupSocket = (server) => {
   const io = new SocketIOServer(server, {
     cors: {
       origin: [process.env.ORIGIN,'https://trendloop-creating-social-waves.vercel.app'], // Allow requests from this origin
-      methods: ['GET', 'POST'], // Allow only GET and POST requests
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE','OPTIONS'],
       credentials: true, // Enable credentials (cookies, authorization headers, etc.)
     },
   });
