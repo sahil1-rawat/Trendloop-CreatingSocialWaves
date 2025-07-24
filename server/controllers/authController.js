@@ -64,7 +64,7 @@ export const loginUser = async (req, res) => {
       });
     }
     const user = await User.findOne({ email });
-console.log(user)
+//console.log(user)
     if (!user)
       return res.status(404).json({
         message: 'Invalid Credentials',
@@ -80,7 +80,7 @@ console.log(user)
       });
   }
     const token = generateToken(user._id, res);
-    // console.log('token' + generateToken(user._id, res));
+    // //console.log('token' + generateToken(user._id, res));
     return res.status(201).json({
       message: 'User Logged in',
       user,

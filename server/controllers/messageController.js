@@ -10,7 +10,7 @@ export const getChatContactsList = async (req, res, next) => {
   try {
     // Extract the userId from the request and convert it to a MongoDB ObjectId
     let  userId  = req.user._id;
-    console.log(userId)
+    //console.log(userId)
     userId = new mongoose.Types.ObjectId(userId);
 
     // Aggregate function to fetch chat contacts for the user
@@ -74,11 +74,11 @@ export const getChatContactsList = async (req, res, next) => {
     ]);
 
     // Send the contacts as a JSON response with a status of 200 (OK)
-    console.log(contacts)
+    //console.log(contacts)
     return res.status(200).json({ contacts });
   } catch (err) {
     // If an error occurs, log the error message and return a 500 status (Internal Server Error)
-    console.log(err.message);
+    //console.log(err.message);
     return res.status(500).send('Internal Server Error!');
   }
 };
@@ -87,7 +87,7 @@ export const getChatContactsList = async (req, res, next) => {
 export const getMessages = async (req, res, next) => {
   try {
     const user1 = req.user._id;
-    console.log(user1)
+    //console.log(user1)
 
     const user2 = req.body.id;
     if (!user1 || !user2) {
@@ -103,7 +103,7 @@ export const getMessages = async (req, res, next) => {
 
     return res.status(200).json({ messages });
   } catch (err) {
-    console.log(err);
+    //console.log(err);
     return res.status(500).send('Internal Server Error!');
   }
 };
@@ -120,7 +120,7 @@ export const getMessages = async (req, res, next) => {
 //     renameSync(req.file.path, fileName);
 //     return res.status(200).json({ filePath: fileName, size: req.file.size });
 //   } catch (err) {
-//     console.log(err);
+//     //console.log(err);
 //     return res.status(500).send('Internal Server Error!');
 //   }}
 

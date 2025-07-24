@@ -31,7 +31,7 @@ const ContactsContainer = () => {
         const res = await axios.get('/api/messages/get-chat-contacts', {
           withCredentials: true,
         });
-        // console.log(`${res.data.contacts}`);
+        // //console.log(`${res.data.contacts}`);
 
         if (res.data.contacts) {
           setDirectMessagesContacts(res.data.contacts);
@@ -49,7 +49,7 @@ const ContactsContainer = () => {
           setGroups(res.data.groups);
         }
       } catch (err) {
-        console.log(err);
+        //console.log(err);
         console.error('Failed to fetch groups:', err);
       }
     }; */

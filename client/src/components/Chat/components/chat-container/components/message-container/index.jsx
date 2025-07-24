@@ -79,7 +79,7 @@ const MessageContainer = () => {
       },
     });
   
- console.log(url);
+ //console.log(url);
     // Extract filename from URL or Content-Disposition header
     let filename = url.split('/').pop();
     const contentDisposition = res.headers['content-disposition'];
@@ -91,7 +91,7 @@ const MessageContainer = () => {
 
     // Create a download link
     const blobUrl = window.URL.createObjectURL(new Blob([res.data]));
-    console.log("Blob URL:", blobUrl);
+    //console.log("Blob URL:", blobUrl);
     const link = document.createElement('a');
     link.href = blobUrl;
     link.setAttribute('download', filename);
@@ -177,7 +177,7 @@ const MessageContainer = () => {
       console.error('Error copying to clipboard:', err);
     }
   };
-console.log(selectedChatData._id);
+//console.log(selectedChatData._id);
   useEffect(() => {
     const fetchMessages = async () => {
       try {
@@ -186,7 +186,7 @@ console.log(selectedChatData._id);
           { id: selectedChatData._id },
           { withCredentials: true }
         );
-        console.log(res);
+        //console.log(res);
 
         if (res.data.messages) {
           setSelectedChatMessages(res.data.messages);
@@ -195,7 +195,7 @@ console.log(selectedChatData._id);
         console.error('Failed to fetch messages:', err);
       }
     };
-    console.log(selectedChatData);
+    //console.log(selectedChatData);
 
     // const fetchGroupMessages = async () => {
     //   try {

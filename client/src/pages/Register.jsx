@@ -38,22 +38,21 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:7000/api/auth/register', {
-        method: 'POST',
-        body: formData,
-        credentials: 'include',
-      });
-      const data = await res.json();
-      if (res.ok) {
+
+      const res=await axios.post("/api/auth/register",formData,{withCredentials:true})
+//console.log(res.status);
+
+      //console.log(res.data);
+      if (res.status === 201) {
         navigate('/');
         setIsAuth(true);
-        setUsersData(data.user);
+        setUsersData(res.data.user);
 
         toast.dismiss();
-        toast.success(data.message);
+        toast.success(res.data.message);
       } else {
         toast.dismiss();
-        toast.error(data.message);
+        toast.error(res.data.message);
       }
     } catch (err) {
       toast.dismiss();

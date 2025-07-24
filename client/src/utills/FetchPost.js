@@ -15,7 +15,7 @@ export const fetchPosts = async ({
       withCredentials: true,
     });
     if (res.status === 200) {
-      console.log('response Data', res.data);
+      //console.log('response Data', res.data);
       setPosts(res.data.posts);
       setReels(res.data.reels);
       // setIsLoading(false);
@@ -45,7 +45,7 @@ export const fetchUsers = async ({ setUser, params }) => {
         toast.dismiss();
   
       }
-    console.log(err);
+    //console.log(err);
   }
 };
 

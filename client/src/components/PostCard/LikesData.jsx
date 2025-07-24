@@ -47,7 +47,7 @@ const LikesData = ({ totalLikes, value }) => {
         toast.success(res.data.message);
       }
     } catch (err) {
-      console.log(err);
+      //console.log(err);
     }
   };
 
@@ -58,7 +58,7 @@ const LikesData = ({ totalLikes, value }) => {
         setLikesData(res.data.posts.likes);
       }
     } catch (err) {
-      console.log(err);
+      //console.log(err);
     }
   };
 

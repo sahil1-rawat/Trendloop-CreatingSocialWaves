@@ -121,30 +121,24 @@ const socket = useSocket();
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch(
-        `http://localhost:7000/api/user/${usersData._id}`,
-        {
-          method: 'PUT',
-          credentials: 'include',
-          body: formData,
-        }
-      );
+      
+      const res=await axios.put(`/api/user/${usersData._id}`, formData, {
+        withCredentials: true});
+//console.log(res);
 
-      const data = await res.json();
-
-      if (res.ok) {
-        setUsersData(data.user);
+      if (res.status === 200) {
+        setUsersData(res.data.user);
         setIsEditing(false);
         fetchPosts({ setPosts, setReels, setIsLoading });
         toast.dismiss();
         toast.success('Profile updated successfully');
       } else {
         toast.dismiss();
-        toast.error(data.message);
+        toast.error(res.data.message);
       }
     } catch (err) {
       toast.dismiss();
-      toast.error(err.message);
+      toast.error(err.response.data.message);
     }
   };
 
@@ -160,17 +154,17 @@ const socket = useSocket();
 
   const logoutHandler = async () => {
     try {
-      const res = await fetch('http://localhost:7000/api/auth/logout', {
-        method: 'get',
-        credentials: 'include',
+
+      const res=await axios.get('/api/auth/logout', {
+        withCredentials: true,
       });
-      if (res.ok) {
+      if (res.status === 200) {
         localStorage.removeItem('isAuth');
 if (socket?.current) {
         if (socket.current.connected) {
           socket.current.emit('logout');
           socket.current.disconnect();
-          console.log('Socket disconnected on logout');
+          //console.log('Socket disconnected on logout');
         }
       }
         setIsAuth(false);
@@ -186,7 +180,7 @@ if (socket?.current) {
       }
     } catch (err) {
       toast.dismiss();
-      toast.error(err.message);
+      toast.error(err.response.data.message);
     }
   };
   const [followerModal, setFollowerModal] = useState(false);
@@ -203,7 +197,7 @@ if (socket?.current) {
           setFollowingsData(res.data.user.followings);
         }
       } catch (err) {
-        console.log(err);
+        //console.log(err);
       }
     }
   };

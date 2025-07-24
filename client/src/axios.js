@@ -3,7 +3,7 @@ import axios from 'axios';
 import toast from 'react-hot-toast';
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:7000',
+  baseURL: import.meta.env.VITE_SOCKET_URL,
   withCredentials: true,
 });
 
@@ -12,7 +12,7 @@ export const setupAxiosInterceptors = () => {
     (response) => response,
     (error) => {
       const message = error.response?.data?.message;
-      console.log(message)
+      //console.log(message)
       
 
       if (error.response?.status === 403 && message === 'User is banned') {

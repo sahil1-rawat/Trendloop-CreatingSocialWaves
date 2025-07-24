@@ -77,7 +77,7 @@ const PostActions = ({ value, showComments, setValue }) => {
       }
     } catch (err) {
       toast.error('Failed to reply');
-      console.log(err);
+      //console.log(err);
     }
   };
   const handleAddComment = async (e) => {

@@ -341,7 +341,7 @@ export const replyComment = async (req, res) => {
     const commentIndex = post.comments.findIndex(
       (item) => item._id.toString() === commentId.toString()
     );
-    // console.log(commentIndex);
+    // //console.log(commentIndex);
 
     if (commentIndex === -1) {
       return res.status(404).json({
@@ -362,6 +362,6 @@ export const replyComment = async (req, res) => {
       totalComments: post.comments[commentIndex].replies.length,
     });
   } catch (err) {
-    console.log(err);
+    //console.log(err);
   }
 };

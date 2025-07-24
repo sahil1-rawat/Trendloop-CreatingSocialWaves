@@ -71,7 +71,7 @@ const UserAccount = () => {
         toast.success(res.data.message);
       }
     } catch (err) {
-      console.log(err);
+      //console.log(err);
     }
   };
 
@@ -85,7 +85,7 @@ const UserAccount = () => {
         setFollowingsData(res.data.user.followings);
       }
     } catch (err) {
-      console.log(err);
+      //console.log(err);
     }
   };
 

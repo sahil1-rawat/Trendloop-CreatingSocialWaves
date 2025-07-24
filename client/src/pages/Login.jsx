@@ -3,6 +3,7 @@ import toast from 'react-hot-toast';
 import { Link, useNavigate } from 'react-router-dom';
 import { useUserStore } from '../../store/index.jsx';
 import Loading from '../components/Loading.jsx';
+import axios from 'axios';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -13,30 +14,23 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch('http://localhost:7000/api/auth/login', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email,
-          password,
-        }),
+      const res=await axios.post('/api/auth/login', {
+        email,
+        password,
+      }, {
+        withCredentials: true,
       });
-      const resData = await res.json();
-
-      if (res.ok) {
-        setUsersData(resData.user);
+      if (res.status===201) {
+        setUsersData(res.data.user);
         setIsAuth(true);
         navigate('/');
         localStorage.setItem('isAuth', 'true');
 
         toast.dismiss();
-        toast.success(resData.message);
+        toast.success(res.data.message);
       } else {
         toast.dismiss();
-        toast.error(resData.message);
+        toast.error(res.data.message);
       }
     } catch (error) {
       toast.dismiss();

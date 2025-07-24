@@ -58,7 +58,7 @@ const ChatHeader = () => {
       setDropdownOpen(false); // Close dropdown
       setSheetOpen(true); // Open sheet
     } else {
-      console.log(`${action} clicked`);
+      //console.log(`${action} clicked`);
 
       setDropdownOpen(false);
     }
@@ -111,7 +111,7 @@ const ChatHeader = () => {
   //       setIsEditingGroup(false);
   //     }
   //   } catch (err) {
-  //     console.log(err);
+  //     //console.log(err);
   //   }
   //   // Handle group save logic
   // };
@@ -127,7 +127,7 @@ const ChatHeader = () => {
   const handleExitGroup = () => {
     // Handle exit group logic
   };
-console.log(selectedChatData)
+//console.log(selectedChatData)
   
   return (
     <div className='h-[10vh] min-h-[60px] border-b-2 border-[#2f303b] flex items-center justify-between px-4 sm:px-20 shadow-md relative'>
@@ -150,11 +150,11 @@ console.log(selectedChatData)
                     />
                   </div>
                 )}
-                {onlineStatuses[selectedChatData._id] === true ? (
+                {/* {onlineStatuses[selectedChatData._id] === true ? (
                   <span className='absolute right-0.5 bottom-2  inline-block w-2 h-2 bg-green-500 rounded-full border-2 border-black'></span>
                 ) : (
                   <span className='absolute right-0.5 bottom-2 inline-block w-2 h-2 bg-gray-700 rounded-full border-2 border-black'></span>
-                )}
+                )} */}
               </Avatar>
             ) : (
               <Avatar className='w-full h-full rounded-full overflow-hidden'>

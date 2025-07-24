@@ -6,6 +6,6 @@ mongoose.connect('mongodb+srv://Sahil:sahilmedia@cluster0.smq4n.mongodb.net/?ret
     { isAdmin: { $exists: false } },
     { $set: { isAdmin: false } }
   );
-  console.log('All users updated with isAdmin: false');
+  //console.log('All users updated with isAdmin: false');
   mongoose.disconnect();
 });

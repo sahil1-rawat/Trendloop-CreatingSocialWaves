@@ -19,7 +19,7 @@ const setupSocket = (server) => {
 
   // Function to handle socket disconnection
   const disconnect = (socket) => {
-    console.log(`Client Disconnected: ${socket.id}`);
+    //console.log(`Client Disconnected: ${socket.id}`);
     // Remove the user from the map when they disconnect
     for (const [userId, socketId] of userSocketMap.entries()) {
       if (socketId === socket.id) {
@@ -41,14 +41,14 @@ const setupSocket = (server) => {
 
       // Save message to the database
       const createdMessage = await Message.create(message);
-      console.log(createdMessage);
+      //console.log(createdMessage);
 
       // Retrieve the saved message with populated sender and recipient details
       const messageData = await Message.findById(createdMessage._id)
         .populate('sender', 'id email name gender followers followings profilePic')
         .populate('recipient', 'id email name gender followers followings profilePic');
 
-      // console.log('Message data to send:', messageData);
+      // //console.log('Message data to send:', messageData);
 
       // Emit the message to the recipient if they are connected
       if (recipientSocketId) {
@@ -132,7 +132,7 @@ const unsendMessage = async ({ messageId, userId }, socket) => {
         });
       }
     } catch (error) {
-      console.log('Error:', error);
+      //console.log('Error:', error);
     }
   };
 
@@ -144,7 +144,7 @@ const unsendMessage = async ({ messageId, userId }, socket) => {
       // Map user ID to socket ID
       userSocketMap.set(userId, socket.id);
       userStatusMap.set(userId, true); // Set status to online
-      console.log(`User connected: ${userId} with socket ID ${socket.id}`);
+      //console.log(`User connected: ${userId} with socket ID ${socket.id}`);
 
       // Notify other users about the status change
       io.emit('userStatusChange', { userId, status: 'online' });
@@ -155,7 +155,7 @@ const unsendMessage = async ({ messageId, userId }, socket) => {
         Object.fromEntries(userStatusMap)
       );
     } else {
-      console.log('User ID not provided during connection');
+      //console.log('User ID not provided during connection');
     }
 
     // Listen for 'sendMessage' events and handle them with sendMessage function

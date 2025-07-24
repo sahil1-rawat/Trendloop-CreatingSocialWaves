@@ -40,7 +40,7 @@ const PostMedia = ({ value, type }) => {
           if (entry.isIntersecting && !isLoading) {
             // Play video if in view and not loading
             video.play().catch((error) => {
-              console.log('Autoplay failed', error); // Handle autoplay failures
+              //console.log('Autoplay failed', error); // Handle autoplay failures
             });
           } else {
             // Pause and reset video if out of view
@@ -70,7 +70,7 @@ const PostMedia = ({ value, type }) => {
       videoRefs.current.forEach((video) => {
         if (video && !video.paused) {
           video.play().catch((error) => {
-            console.log('Autoplay failed on load', error);
+            //console.log('Autoplay failed on load', error);
           });
         }
       });

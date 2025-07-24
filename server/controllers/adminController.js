@@ -68,7 +68,7 @@ const monthlyUserGrowth = await User.aggregate([
       .sort({ createdAt: -1 })
       .limit(7)
       .select('_id name email');
-console.log(monthlyUserGrowth);
+//console.log(monthlyUserGrowth);
     res.status(200).json({
       stats: {
         totalUsers,

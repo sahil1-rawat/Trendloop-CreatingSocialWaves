@@ -42,7 +42,7 @@ const ProfileInfo = () => {
         toast.success('Goodbye for now!');
       }
     } catch (err) {
-      console.log(err);
+      //console.log(err);
     }
   };
   return (

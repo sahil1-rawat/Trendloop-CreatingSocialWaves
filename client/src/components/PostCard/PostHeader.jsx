@@ -56,7 +56,7 @@ const PostHeader = ({ value, setValue, setType, params: params2 }) => {
         toast.success(res.data.message);
       }
     } catch (err) {
-      console.log(err);
+      //console.log(err);
     }
   };
 
@@ -82,11 +82,11 @@ const PostHeader = ({ value, setValue, setType, params: params2 }) => {
         setDialogOpen(false);
       }
     } catch (err) {
-      console.log(err);
+      //console.log(err);
     }
   };
-  // console.log(params.id);
-  console.log(usersData.id);
+  // //console.log(params.id);
+  //console.log(usersData.id);
 
   // Function to delete a post
   const deletePost = async () => {
@@ -100,7 +100,7 @@ const PostHeader = ({ value, setValue, setType, params: params2 }) => {
         fetchPosts({ setPosts, setReels, setIsLoading, isAuth });
       }
     } catch (err) {
-      console.log(err);
+      //console.log(err);
     }
   };
 

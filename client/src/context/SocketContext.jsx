@@ -3,8 +3,7 @@ import { io } from 'socket.io-client';
 import { useChatStore, useUserStore } from '../../store';
 
 const SocketContext = createContext(null);
-const HOST = 'http://localhost:7000'; // update if using deployed server
-
+const HOST = import.meta.env.VITE_SOCKET_URL;
 export const useSocket = () => {
   return useContext(SocketContext);
 };
@@ -28,11 +27,12 @@ export const SocketProvider = ({ children }) => {
 
     socket.current = io(HOST, {
       withCredentials: true,
+      transports: ['websocket'],
       query: { userId: usersData._id },
     });
 
     socket.current.on('connect', () => {
-      console.log('Connected to socket server');
+      //console.log('Connected to socket server');
     });
 
     const handleReceiveMessage = (message) => {

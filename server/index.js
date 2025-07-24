@@ -23,7 +23,7 @@ cloudinary.v2.config({
 });
 const app = express();
 
-const port = process.env.PORT;
+const port = process.env.PORT|| 7000;
 
 app.use(express.json());
 app.use(cookieParser());
@@ -45,9 +45,9 @@ app.use('/api/messages', messageRoutes);
 app.use('/api/admin', AdminRoutes);
 
 // io.on('connection', (socket) => {
-//   console.log('User is connected', socket.id);
+//   //console.log('User is connected', socket.id);
 //   socket.on('disconnect', () => {
-//     console.log('User disconnected', socket.id);
+//     //console.log('User disconnected', socket.id);
 //   });
 //   /* socket.on('sendMessage', (message) => {
 //     io.emit('recieveMessage', message);

@@ -167,7 +167,7 @@ useEffect(() => {
   } catch (err) {
     setIsUploading(false);
     setIsMessageSent(false);
-    console.log(err);
+    //console.log(err);
   }
 };
 

@@ -20,7 +20,7 @@ const Header = () => {
       const users = res.data.users || [];
       setResults(users);
     } catch (err) {
-      console.log(err);
+      //console.log(err);
     }
   };
 
