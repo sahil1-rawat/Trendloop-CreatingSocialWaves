@@ -3,6 +3,7 @@ import logo from '../assets/logo.png';
 import { FaSearch } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { useUserStore } from '../../store';
 
 const Header = () => {
   const [search, setSearch] = useState('');
@@ -10,6 +11,7 @@ const Header = () => {
   const divRef = useRef(null);
   const searchRef = useRef(null);
   const [isFocused, setIsFocused] = useState(false);
+  const {usersData} = useUserStore();
 
   // Function to fetch results
   const fetchResults = async (searchTerm) => {
@@ -93,7 +95,8 @@ const Header = () => {
         </div>
 
         {/* Search Bar */}
-        <div className='relative w-1/3 max-w-lg' ref={divRef}>
+        {
+          usersData && usersData.isAdmin?null:<div className='relative w-1/3 max-w-lg' ref={divRef}>
           <input
             type='text'
             placeholder='Search'
@@ -138,6 +141,7 @@ const Header = () => {
             )
           )}
         </div>
+        }
       </div>
     </div>
   );

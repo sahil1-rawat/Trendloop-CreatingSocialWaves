@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { useSocket } from '../context/SocketContext';
 const Account = ({ pathName }) => {
   const {
     usersData,
@@ -31,6 +32,7 @@ const Account = ({ pathName }) => {
     setIsLoading,
     setPathName,
   } = useUserStore();
+const socket = useSocket();
 
   const { posts, reels, setPosts, setReels, setTab, setUser } = usePostStore();
   const [isEditing, setIsEditing] = useState(false);
@@ -120,7 +122,7 @@ const Account = ({ pathName }) => {
     e.preventDefault();
     try {
       const res = await fetch(
-        `https://trendloop.onrender.com/api/user/${usersData._id}`,
+        `http://localhost:7000/api/user/${usersData._id}`,
         {
           method: 'PUT',
           credentials: 'include',
@@ -158,13 +160,19 @@ const Account = ({ pathName }) => {
 
   const logoutHandler = async () => {
     try {
-      const res = await fetch('https://trendloop.onrender.com/api/auth/logout', {
+      const res = await fetch('http://localhost:7000/api/auth/logout', {
         method: 'get',
         credentials: 'include',
       });
       if (res.ok) {
         localStorage.removeItem('isAuth');
-
+if (socket?.current) {
+        if (socket.current.connected) {
+          socket.current.emit('logout');
+          socket.current.disconnect();
+          console.log('Socket disconnected on logout');
+        }
+      }
         setIsAuth(false);
         setUsersData([]);
         setTab('/');
@@ -209,6 +217,7 @@ const Account = ({ pathName }) => {
       ) : (
         isAuth && (
           <div className='bg-gray-100 min-h-screen'>
+            
             <div className='flex justify-center py-10'>
               {followerModal && (
                 <Modal
@@ -287,7 +296,9 @@ const Account = ({ pathName }) => {
                       <p className='bg-indigo-100 text-indigo-700 font-bold px-4 py-1 rounded-lg inline-block'>
                         {usersData.email}
                       </p>
-                      <div className='flex justify-center gap-6 text-gray-600'>
+                      {
+                        !usersData.isAdmin && (
+                                                <div className='flex justify-center gap-6 text-gray-600'>
                         <p className='text-lg'>{totalPosts} Posts</p>
                         <p
                           className='text-lg cursor-pointer'
@@ -300,6 +311,9 @@ const Account = ({ pathName }) => {
                           {usersData.followings?.length} Following
                         </p>
                       </div>
+                        )
+                      }
+
                     </>
                   )}
                   {isEditing ? (
@@ -309,21 +323,33 @@ const Account = ({ pathName }) => {
                       Cancel
                     </button>
                   ) : (
+                    
                     <div className='flex gap-2 justify-center'>
-                      <button
+                      {
+!usersData.isAdmin &&(
+                        <button
                         onClick={handleEditToggle}
                         className='bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-6 rounded-lg font-medium transition duration-200'>
                         Edit Profile
                       </button>
+)
+                      }
+
                       <Dialog
                         open={isDialogOpen}
                         onOpenChange={setIsDialogOpen}>
                         <DialogTrigger
                           asChild
                           className='bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-6 rounded-lg font-medium transition duration-200'>
+                            {
+                              !usersData.isAdmin && (
                           <Button onClick={() => setIsDialogOpen(true)}>
                             Update Password
                           </Button>
+                              )
+
+                            }
+
                         </DialogTrigger>
                         <DialogContent
                           className='sm:max-w-[500px]'
@@ -403,9 +429,14 @@ const Account = ({ pathName }) => {
                 </div>
               </div>
             </div>
-            <div className='flex justify-center items-center p-4 gap-6 mt-6 '>
+            {
+!usersData.isAdmin && (
+  <div className='flex justify-center items-center p-4 gap-6 mt-6 '>
               <SwitchTabs myPosts={myPosts} myReels={myReels} />
             </div>
+) 
+            }
+            
           </div>
         )
       )}

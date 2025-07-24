@@ -15,14 +15,17 @@ import UserAccount from './components/UserAccount.jsx';
 import NewPost from './components/NewPost.jsx';
 import NewReel from './components/NewReel.jsx';
 import SharePost from './components/SharePost.jsx';
-import Chat from './pages/Chat.jsx';
 import Header from './components/Header.jsx';
 import NavigationBar from './components/NavigationBar.jsx';
 import NotFoundPage from './components/NotFoundPage.jsx';
 
 import { useUserStore } from '../store/index.jsx';
 import { fetchUser } from './utills/FetchPost.js';
-import { SocketData } from './context/SocketContext.jsx';
+import Chat from './pages/Chat.jsx';
+import AdminDashboard from './pages/AdminDashBoard.jsx';
+import AdminUsersPage from './components/AdminUser.jsx';
+import AdminPostsPage from './components/AdminPost.jsx';
+
 // import { SocketData } from './context/SocketContext.jsx';
 
 const App = () => {
@@ -46,12 +49,21 @@ const App = () => {
     return () => clearTimeout(timeout);
   }, []);
 
+  
   return (
     <div>
       <Router>
         {isAuth && <Header />}
         <Routes>
-          <Route
+          {
+usersData && usersData.isAdmin? <Route
+            path='/'
+            element={
+              <PrivateRoute isAuth={isAuth} redirectPath='/login'>
+                <AdminDashboard />
+              </PrivateRoute>
+            }
+          />:<Route
             path='/'
             element={
               <PrivateRoute isAuth={isAuth} redirectPath='/login'>
@@ -59,7 +71,27 @@ const App = () => {
               </PrivateRoute>
             }
           />
+          }
+
           <Route
+            path='/admin-dashboard'
+            element={
+              <PrivateRoute isAuth={isAuth} redirectPath='/login'>
+                <AdminDashboard />
+              </PrivateRoute>
+            }
+          />
+
+          {
+            usersData && usersData.isAdmin ? <Route
+            path='/users'
+            element={
+              <PrivateRoute isAuth={isAuth} redirectPath='/login'>
+                <AdminUsersPage />
+              </PrivateRoute>
+            }
+          />
+             : <Route
             path='/reels'
             element={
               <PrivateRoute isAuth={isAuth} redirectPath='/login'>
@@ -67,7 +99,10 @@ const App = () => {
               </PrivateRoute>
             }
           />
-          <Route
+          }
+          {
+            usersData && usersData.isAdmin ? null : <>
+            <Route
             path='/new-post'
             element={
               <PrivateRoute isAuth={isAuth} redirectPath='/login'>
@@ -83,6 +118,9 @@ const App = () => {
               </PrivateRoute>
             }
           />
+            </>
+          }
+          
           <Route
             path='/account'
             element={
@@ -91,15 +129,28 @@ const App = () => {
               </PrivateRoute>
             }
           />
-          <Route
+          {
+            usersData && usersData.isAdmin ?  <Route
+            path='/manage-posts'
+            element={
+              <PrivateRoute isAuth={isAuth} redirectPath='/login'>
+                <AdminPostsPage />
+              </PrivateRoute>
+            }
+          /> : 
+             <Route
             path='/chat'
             element={
               <PrivateRoute isAuth={isAuth} redirectPath='/login'>
-                <Chat user={usersData} />
+                <Chat />
               </PrivateRoute>
             }
           />
-          <Route
+          }
+           
+          {
+            usersData && usersData.isAdmin ? null : <>
+             <Route
             path='/user/:id'
             element={
               <PrivateRoute isAuth={isAuth} redirectPath='/login'>
@@ -115,6 +166,9 @@ const App = () => {
               </PrivateRoute>
             }
           />
+            </>
+          }
+         
           <Route
             path='/login'
             element={

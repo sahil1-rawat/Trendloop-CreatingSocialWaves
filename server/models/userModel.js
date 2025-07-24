@@ -35,6 +35,14 @@ const userSchema = new mongoose.Schema(
       id: String,
       url: String,
     },
+    isAdmin:{
+      type: Boolean,
+      default: false,
+    },
+    isBanned: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

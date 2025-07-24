@@ -7,7 +7,7 @@ import cloudinary from 'cloudinary';
 // Registration Page
 export const registerUser = async (req, res) => {
   try {
-    const { name, email, password, gender } = req.body;
+    const { name, email, password, gender,isAdmin=false } = req.body;
     const file = req.file;
     if (!name || !email || !password || !gender) {
       return res.status(400).json({
@@ -24,6 +24,7 @@ export const registerUser = async (req, res) => {
       return res.status(409).json({
         message: 'User Already Exist',
       });
+
     }
     const fileUrl = getDataUrl(file);
     const hashPassword = await bcrypt.hash(password, 10);
@@ -34,6 +35,7 @@ export const registerUser = async (req, res) => {
       email,
       password: hashPassword,
       gender,
+      isAdmin,
       profilePic: {
         id: myCloud.public_id,
         url: myCloud.secure_url,
@@ -62,7 +64,7 @@ export const loginUser = async (req, res) => {
       });
     }
     const user = await User.findOne({ email });
-
+console.log(user)
     if (!user)
       return res.status(404).json({
         message: 'Invalid Credentials',
@@ -72,6 +74,11 @@ export const loginUser = async (req, res) => {
       return res.status(404).json({
         message: 'Invalid Credentials',
       });
+    if (user.isBanned) {
+      return res.status(403).json({
+        message: 'You are banned from this platform',
+      });
+  }
     const token = generateToken(user._id, res);
     // console.log('token' + generateToken(user._id, res));
     return res.status(201).json({

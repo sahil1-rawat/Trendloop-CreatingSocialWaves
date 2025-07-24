@@ -14,14 +14,19 @@ export const fetchPosts = async ({
     const res = await axios.get('/api/post/all', {
       withCredentials: true,
     });
-
     if (res.status === 200) {
       console.log('response Data', res.data);
       setPosts(res.data.posts);
       setReels(res.data.reels);
       // setIsLoading(false);
     }
+   
   } catch (err) {
+     if (err.response?.status === 403 && err.response.data.message === 'User is banned') {
+       toast.dismiss();
+        toast.error('Your account has been banned.');
+        localStorage.clear();
+      }
     console.error('Failed to fetch posts:', err);
   } finally {
     setIsLoading(false);
@@ -35,6 +40,11 @@ export const fetchUsers = async ({ setUser, params }) => {
       setUser(res.data);
     }
   } catch (err) {
+    if (err.response?.status === 403 && err.response.data.message === 'User is banned') {
+        toast.error('Your account has been banned.');
+        toast.dismiss();
+  
+      }
     console.log(err);
   }
 };
@@ -51,8 +61,15 @@ export const fetchUser = async ({ setUsersData, setIsAuth }) => {
     } else {
       setIsAuth(false);
     }
+   
   } catch (error) {
-    console.log(error.message);
+    if (error.response?.status === 403 && error.response.data.message === 'User is banned') {
+      toast.dismiss();
+        toast.error('Your account has been banned.');
+        localStorage.clear();
+        window.location.href = '/login';
+  
+      }
     setIsAuth(false);
   }
 };

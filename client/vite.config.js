@@ -13,7 +13,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'https://trendloop.onrender.com',
+        target: 'http://localhost:7000',
       },
     },
   },

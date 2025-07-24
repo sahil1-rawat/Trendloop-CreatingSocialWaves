@@ -7,10 +7,13 @@ import connectDB from './database/db.js';
 import userRoutes from './routes/userRoutes.js';
 import AuthRoutes from './routes/AuthRoutes.js';
 import postRoutes from './routes/postRoutes.js';
-import messageRoutes from './routes/messageRoutes.js';
+// import messageRoutes from './routes/messageRoutes.js';
 import { Server } from 'socket.io';
 import http from 'http';
-import { app, server } from './socket/socket.js';
+import setupSocket from './socket/socket.js';
+import messageRoutes from './routes/messageRoutes.js';
+import AdminRoutes from './routes/admitRouter.js';
+// import { app, server } from './socket/socket.js';
 
 dotenv.config();
 cloudinary.v2.config({
@@ -18,7 +21,7 @@ cloudinary.v2.config({
   api_key: process.env.CLOUDINARY_API,
   api_secret: process.env.CLOUDINARY_SECRET,
 });
-// const app = express();
+const app = express();
 
 const port = process.env.PORT;
 
@@ -26,8 +29,9 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    credentials: true,
-    origin: 'http://localhost:5173',
+    origin: [process.env.ORIGIN],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    credentials: true, // Allow cookies to be sent with requests
   })
 );
 
@@ -38,6 +42,7 @@ app.use('/api/auth', AuthRoutes);
 app.use('/api/user', userRoutes);
 app.use('/api/post', postRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/admin', AdminRoutes);
 
 // io.on('connection', (socket) => {
 //   console.log('User is connected', socket.id);
@@ -49,7 +54,8 @@ app.use('/api/messages', messageRoutes);
 //   }); */
 // }
 // );
-server.listen(port, () => {
+const server= app.listen(port, () => {
   console.log(`App is running on port ${port}`);
   connectDB();
 });
+setupSocket(server);

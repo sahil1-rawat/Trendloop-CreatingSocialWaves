@@ -164,31 +164,32 @@ export const getAllUsers = async (req, res) => {
     const { page = 1, limit = 20 } = req.query;
     const skip = (page - 1) * limit;
 
-    const users = await User.find({
-      $or: [
-        { name: { $regex: search, $options: 'i' } },
-        { email: { $regex: search, $options: 'i' } },
+    const filter = {
+      $and: [
+        {
+          $or: [
+            { name: { $regex: search, $options: 'i' } },
+            { email: { $regex: search, $options: 'i' } },
+          ],
+        },
+        { _id: { $ne: req.user._id } },
+        { isAdmin: { $ne: true } }, // 🔒 Exclude admins
       ],
-      _id: { $ne: req.user._id },
-    })
+    };
+
+    const users = await User.find(filter)
       .select('-password')
       .sort({ name: 1 })
       .skip(skip)
       .limit(limit);
 
-    const totalUsers = await User.countDocuments({
-      $or: [
-        { name: { $regex: search, $options: 'i' } },
-        { email: { $regex: search, $options: 'i' } },
-      ],
-      _id: { $ne: req.user._id },
-    });
+    const totalUsers = await User.countDocuments(filter);
 
     res.json({
       users,
       totalUsers,
       totalPages: Math.ceil(totalUsers / limit),
-      currentPage: page,
+      currentPage: Number(page),
     });
   } catch (err) {
     return res.status(500).json({
