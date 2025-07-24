@@ -76,7 +76,7 @@ const ContactList = ({ contacts = [], isgroup = false }) => {
                         <AvatarImage
                           src={`${contact.profilePic.url}`}
                           alt='profile'
-                          className='object-cover w-12 h-12 rounded-full bg-black'
+                          className='object-full w-12 h-12 rounded-full bg-black'
                         />
                       ) : (
                         <div className={` w-12 h-12`}>

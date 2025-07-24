@@ -1,30 +1,24 @@
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useChatStore, useUserStore } from '../../store';
+import React from 'react';
+import { useChatStore } from '../../store';
 import ContactsContainer from '../components/Chat/components/contacts-container';
 import EmptyChatContainer from '../components/Chat/components/empty-chat-container';
+import { useMediaQuery } from 'react-responsive';
 import ChatContainer from '../components/Chat/components/chat-container';
 
 const Chat = () => {
-  const {
-    selectedChatType,
-    selectedChatData,
-    isUploading,
-    isDownloading,
-    fileUploadProgress,
-    fileDownloadProgress,
-  } = useChatStore();
-  const {usersData}=useUserStore();
-  
+  const { selectedChatType } = useChatStore();
+  const isMobile = useMediaQuery({ maxWidth: 768 });
+
   return (
-    <div className='flex h-[90vh] text-white overflow-hidden'>
-      <ContactsContainer />
+    <div className='flex h-[calc(100vh-64px)] text-white overflow-hidden'>
+      {(!isMobile || selectedChatType === undefined) && <ContactsContainer />}
+      
       {selectedChatType === undefined ? (
         <EmptyChatContainer />
       ) : (
-        <ChatContainer />
-      )} 
-      
+        <ChatContainer
+         />
+      )}
     </div>
   );
 };

@@ -140,7 +140,7 @@ const ChatHeader = () => {
                   <AvatarImage
                     src={`${selectedChatData.profilePic.url}`}
                     alt='profile'
-                    className='object-cover rounded-full bg-black w-[40px] h-[40px]'
+                    className='object-full rounded-full bg-black w-[40px] h-[40px] '
                   />
                 ) : (
                   <div
