@@ -25,7 +25,7 @@ const app = express();
 const port = process.env.PORT || 7000;
 
 const allowedOrigins = [
-  'https://trendloop-creating-social-waves.vercel.app',
+  'https://trendloop-waves.vercel.app',
   process.env.ORIGIN,
 ];
 
