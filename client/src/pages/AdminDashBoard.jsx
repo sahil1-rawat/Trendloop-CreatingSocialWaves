@@ -8,6 +8,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import dayjs from 'dayjs';
+import axios from 'axios';
 
 const formatMonthlyData = (rawData) => {
   const map = {};
@@ -38,7 +39,9 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const response = await fetch('/api/admin/stats');
+        const response = await axios.get(`${import.meta.env.VITE_SOCKET_URL}/api/admin/stats`,{
+          withCredentials: true,
+        });
         const data = await response.json();
         setStats(data);
         setLoading(false);
