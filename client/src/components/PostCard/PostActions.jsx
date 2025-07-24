@@ -18,6 +18,7 @@ import {
 import LikesData from './LikesData';
 import { Comment } from '../Comment';
 import toast from 'react-hot-toast';
+import { BASE_URL } from '../../../common';
 
 const PostActions = ({ value, showComments, setValue }) => {
   const { setPosts, setReels, myCommentId } = usePostStore();
@@ -36,8 +37,12 @@ const PostActions = ({ value, showComments, setValue }) => {
 
   const likeUnlikePost = async () => {
     try {
-      const res = await axios.post(`/api/post/likeunlike/${value._id}`, {
+      const res = await axios.post(`${BASE_URL}/api/post/likeunlike/${value._id}`,
+        {},
+        {
         withCredentials: true,
+
+
       });
 
       if (res.status === 200) {
@@ -60,7 +65,7 @@ const PostActions = ({ value, showComments, setValue }) => {
     e.preventDefault();
     try {
       const res = await axios.post(
-        `/api/post/reply/${value._id}`,
+        `${BASE_URL}/api/post/reply/${value._id}`,
         {
           commentId: myCommentId,
           replyComment: comment,
@@ -84,10 +89,13 @@ const PostActions = ({ value, showComments, setValue }) => {
     e.preventDefault();
     setAddLoading(true);
     try {
-      const res = await axios.post(`/api/post/comment/${value._id}`, {
+      const res = await axios.post(`${BASE_URL}/api/post/comment/${value._id}`, {
         comment,
+      },{
         withCredentials: true,
+
       });
+      console.log(res);
       if (res.status === 201) {
         setTimeout(() => {
           setAddLoading(false);
@@ -96,6 +104,7 @@ const PostActions = ({ value, showComments, setValue }) => {
         }, 500);
       }
     } catch (err) {
+      console.log(err)
       setTimeout(() => {
         setAddLoading(false);
         toast.error(err.response.data.message);

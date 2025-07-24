@@ -1,5 +1,6 @@
 import axios from 'axios';
 import toast from 'react-hot-toast';
+import { BASE_URL } from '../../common';
 
 export const fetchPosts = async ({
   setPosts,
@@ -11,7 +12,7 @@ export const fetchPosts = async ({
     setIsLoading(true);
   }
   try {
-    const res = await axios.get('/api/post/all', {
+    const res = await axios.get(`${BASE_URL}/api/post/all`, {
       withCredentials: true,
     });
     if (res.status === 200) {
@@ -35,7 +36,14 @@ export const fetchPosts = async ({
 
 export const fetchUsers = async ({ setUser, params }) => {
   try {
-    const res = await axios.get(`/api/user/${params.id}`);
+    const res = await axios.get(`${BASE_URL}/api/user/${params.id}`,
+      {
+        withCredentials: true,
+
+        }
+
+
+    );
     if (res.status === 200) {
       setUser(res.data);
     }
@@ -51,7 +59,7 @@ export const fetchUsers = async ({ setUser, params }) => {
 
 export const fetchUser = async ({ setUsersData, setIsAuth }) => {
   try {
-    const res = await axios.get('/api/user/me', {
+    const res = await axios.get(`${BASE_URL}/api/user/me`, {
       withCredentials: true,
     });
 
@@ -75,7 +83,9 @@ export const fetchUser = async ({ setUsersData, setIsAuth }) => {
 };
 export const sharePost = async ({ setValue, setType, params }) => {
   try {
-    const res = await axios.post(`/api/post/share/${params.id}`, {
+    const res = await axios.post(`${BASE_URL}/api/post/share/${params.id}`,
+      {},
+      {
       withCredentials: true,
     });
 

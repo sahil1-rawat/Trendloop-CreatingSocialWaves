@@ -11,6 +11,7 @@ import {
   AlertDialogTitle,
   AlertDialogDescription,
 } from "@/components/ui/alert-dialog";
+import { BASE_URL } from '../../common';
 
 const AdminUsersPage = () => {
   const [users, setUsers] = useState([]);
@@ -20,7 +21,14 @@ const AdminUsersPage = () => {
 
   const fetchUsers = async () => {
     try {
-      const res = await axios.get('/api/admin/users');
+      const res = await axios.get(`${BASE_URL}/api/admin/users`,
+        {
+        withCredentials: true,
+
+        }
+
+
+      );
       setUsers(res.data);
     } catch (err) {
       console.error('Error fetching users:', err);
@@ -31,7 +39,9 @@ const AdminUsersPage = () => {
 
   const handleToggleBan = async (id) => {
     try {
-      const res = await axios.patch(`/api/admin/${id}/ban`);
+      const res = await axios.patch(`${BASE_URL}/api/admin/${id}/ban`,{
+                withCredentials: true,
+      });
       setUsers((prev) =>
         prev.map((user) =>
           user._id === id ? { ...user, isBanned: res.data.isBanned } : user

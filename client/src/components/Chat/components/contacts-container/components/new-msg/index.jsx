@@ -19,6 +19,7 @@ import { BsChatDots, BsPlus } from 'react-icons/bs';
 import { useChatStore } from '../../../../../../../store';
 import ToolTips from '../../../../../Extra/ToolTips';
 import axios from 'axios';
+import { BASE_URL } from '../../../../../../../common';
 
 const NewMessage = () => {
   const { setSelectedChatType, setSelectedChatData } = useChatStore();
@@ -35,7 +36,11 @@ const NewMessage = () => {
         let hasMore = true;
         while (hasMore) {
           const { data } = await axios.get(
-          `/api/user/get/alluser?search=${searchTerm}&page=${page}`
+          `${BASE_URL}/api/user/get/alluser?search=${searchTerm}&page=${page}`,
+          {
+        withCredentials: true,
+
+        }
           );
           const pageUsers = data.users ?? [];
           all.push(...pageUsers);

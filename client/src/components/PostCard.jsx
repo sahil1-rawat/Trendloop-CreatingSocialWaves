@@ -9,6 +9,7 @@ import PostActions from './PostCard/PostActions';
 
 import { LoadingAnimation } from './Loading';
 import toast from 'react-hot-toast';
+import { BASE_URL } from '../../common';
 const PostCard = ({ type, value }) => {
   const { setPosts, setReels } = usePostStore();
 
@@ -26,8 +27,9 @@ const PostCard = ({ type, value }) => {
     e.preventDefault();
     setAddLoading(true);
     try {
-      const res = await axios.post(`/api/post/comment/${value._id}`, {
+      const res = await axios.post(`${BASE_URL}/api/post/comment/${value._id}`, {
         comment,
+      },{
         withCredentials: true,
       });
       if (res.status === 201) {

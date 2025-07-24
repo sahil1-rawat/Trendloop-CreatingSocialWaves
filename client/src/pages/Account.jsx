@@ -22,6 +22,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useSocket } from '../context/SocketContext';
+import { BASE_URL } from '../../common';
 const Account = ({ pathName }) => {
   const {
     usersData,
@@ -94,10 +95,12 @@ const socket = useSocket();
   // Change Password
   const handlePasswordChange = async () => {
     try {
-      const res = await axios.post(`/api/user/${usersData._id}`, {
+      const res = await axios.post(`${BASE_URL}/api/user/${usersData._id}`, {
         oldPassword: passwordDetails.oldPassword,
         newPassword: passwordDetails.newPassword,
         confirmPassword: passwordDetails.confirmPassword,
+      },{
+        withCredentials: true,
       });
       if (res.status === 200) {
         toast.dismiss();
@@ -122,7 +125,7 @@ const socket = useSocket();
     e.preventDefault();
     try {
       
-      const res=await axios.put(`/api/user/${usersData._id}`, formData, {
+      const res=await axios.put(`${BASE_URL}/api/user/${usersData._id}`, formData, {
         withCredentials: true});
 //console.log(res);
 
@@ -155,7 +158,7 @@ const socket = useSocket();
   const logoutHandler = async () => {
     try {
 
-      const res=await axios.get('/api/auth/logout', {
+      const res=await axios.get(`${BASE_URL}/api/auth/logout`, {
         withCredentials: true,
       });
       if (res.status === 200) {
@@ -190,7 +193,12 @@ if (socket?.current) {
   const followData = async () => {
     if (usersData._id) {
       try {
-        const res = await axios.get(`/api/user/followData/${usersData?._id}`);
+        const res = await axios.get(`${BASE_URL}/api/user/followData/${usersData?._id}`,
+          {
+        withCredentials: true,
+
+        }
+        );
 
         if (res.status === 200) {
           setFollowersData(res.data.user.followers);

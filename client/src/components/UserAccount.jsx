@@ -8,6 +8,7 @@ import { fetchPosts, fetchUser, fetchUsers } from '../utills/FetchPost';
 import axios from 'axios';
 import Modal from './Modal';
 import SwitchTabs from '../utills/SwitchTabs';
+import { BASE_URL } from '../../common';
 
 const UserAccount = () => {
   const {
@@ -62,7 +63,13 @@ const UserAccount = () => {
   // function to handle Follow and Unfollow events
   const followandUnfollowUsers = async () => {
     try {
-      const res = await axios.post(`/api/user/follow/${params.id}`);
+      const res = await axios.post(`${BASE_URL}/api/user/follow/${params.id}`,
+
+        {},
+        {
+          withCredentials: true,
+        }
+      );
       if (res.status === 200) {
         setIsFollower(!isFollower);
         fetchUsers({ setUser, params });
@@ -78,7 +85,11 @@ const UserAccount = () => {
   const followData = async () => {
     try {
       const res = await axios.get(
-        `/api/user/followData/${user?._id || params.id}`
+        `${BASE_URL}/api/user/followData/${user?._id || params.id}`,
+        {
+        withCredentials: true,
+
+        }
       );
       if (res.status === 200) {
         setFollowersData(res.data.user.followers);

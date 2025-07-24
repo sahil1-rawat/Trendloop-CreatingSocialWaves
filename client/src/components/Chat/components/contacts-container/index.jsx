@@ -12,6 +12,7 @@ import NewMessage from './components/new-msg';
 import ContactList from '../chat-container/components/contact-list';
 import { useChatStore } from '../../../../../store';
 import axios from 'axios';
+import { BASE_URL } from '../../../../../common';
 // import ProfileInfo from './components/profile-info';
 // import moment from 'moment';
 // import CreateGroup from './components/create-group';
@@ -28,7 +29,7 @@ const ContactsContainer = () => {
   useEffect(() => {
     const getContacts = async () => {
       try {
-        const res = await axios.get('/api/messages/get-chat-contacts', {
+        const res = await axios.get(`${BASE_URL}/api/messages/get-chat-contacts`, {
           withCredentials: true,
         });
         // //console.log(`${res.data.contacts}`);

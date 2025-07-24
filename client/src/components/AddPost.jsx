@@ -11,6 +11,7 @@ import { Navigation, Pagination } from 'swiper/modules';
 import { usePostStore, useUserStore } from '../../store';
 import { fetchPosts } from '../utills/FetchPost';
 import { LoadingAnimation } from './Loading';
+import { BASE_URL } from '../../common';
 
 const Addpost = ({ type }) => {
   const { setPosts, setReels } = usePostStore();
@@ -91,7 +92,7 @@ const Addpost = ({ type }) => {
     });
 
     try {
-      const res = await axios.post(`/api/post/new?type=${type}`, newPost, {
+      const res = await axios.post(`${BASE_URL}/api/post/new?type=${type}`, newPost, {
         withCredentials: true,
       });
 

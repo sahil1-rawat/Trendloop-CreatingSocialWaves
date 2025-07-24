@@ -7,6 +7,7 @@ import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognitio
 import { useChatStore, useUserStore } from '../../../../../../../store';
 import { useSocket } from '@/context/SocketContext';
 import axios from 'axios';
+import { BASE_URL } from '../../../../../../../common';
 
 const MessageBar = () => {
   const emojiRef = useRef();
@@ -124,7 +125,7 @@ useEffect(() => {
       formData.append('file', file);
       setIsUploading(true);
 
-      const res = await axios.post('/api/messages/upload-file', formData, {
+      const res = await axios.post(`${BASE_URL}/api/messages/upload-file`, formData, {
         withCredentials: true,
         headers: {
           'Content-Type': 'multipart/form-data',

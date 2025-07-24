@@ -37,6 +37,7 @@ import { useChatStore, useUserStore } from '../../../../../../../store';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useSocket } from '../../../../../../context/SocketContext';
+import { BASE_URL } from '../../../../../../../common';
 
 const MessageContainer = () => {
   const scrollRef = useRef(null);
@@ -182,7 +183,7 @@ const MessageContainer = () => {
     const fetchMessages = async () => {
       try {
         const res = await axios.post(
-          '/api/messages/get-messages',
+          `${BASE_URL}/api/messages/get-messages`,
           { id: selectedChatData._id },
           { withCredentials: true }
         );

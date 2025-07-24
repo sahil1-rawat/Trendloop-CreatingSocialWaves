@@ -7,6 +7,7 @@ import Loading from '../components/Loading';
 
 import { FaEdit, FaPen } from 'react-icons/fa';
 import { FiEdit2 } from 'react-icons/fi';
+import { BASE_URL } from '../../common';
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -39,7 +40,7 @@ const Register = () => {
     e.preventDefault();
     try {
 
-      const res=await axios.post("/api/auth/register",formData,{withCredentials:true})
+      const res=await axios.post(`${BASE_URL}/api/auth/register`,formData,{withCredentials:true})
 //console.log(res.status);
 
       //console.log(res.data);

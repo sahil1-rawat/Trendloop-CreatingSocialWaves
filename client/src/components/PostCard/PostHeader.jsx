@@ -23,6 +23,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { BsThreeDotsVertical } from 'react-icons/bs';
+import { BASE_URL } from '../../../common';
 
 const PostHeader = ({ value, setValue, setType, params: params2 }) => {
   const formatDate = format(new Date(value.createdAt), 'MMMM do');
@@ -46,7 +47,12 @@ const PostHeader = ({ value, setValue, setType, params: params2 }) => {
   //follow and unfollow the user
   const followandUnfollowUsers = async (id) => {
     try {
-      const res = await axios.post(`/api/user/follow/${id}`);
+      const res = await axios.post(`${BASE_URL}/api/user/follow/${id}`,
+        {},
+        {
+          withCredentials:true
+        }
+      );
 
       if (res.status === 200) {
         setIsFollower(!isFollower);
@@ -70,9 +76,11 @@ const PostHeader = ({ value, setValue, setType, params: params2 }) => {
   // Function to edit caption
   const editCaption = async () => {
     try {
-      const res = await axios.put(`/api/post/edit/${value._id}`, {
+      const res = await axios.put(`${BASE_URL}/api/post/edit/${value._id}`, {
         newCaption: caption,
+      },{
         withCredentials: true,
+        
       });
       if (res.status === 200) {
         toast.success(res.data.message);
@@ -91,7 +99,9 @@ const PostHeader = ({ value, setValue, setType, params: params2 }) => {
   // Function to delete a post
   const deletePost = async () => {
     try {
-      const res = await axios.delete(`/api/post/delete/${value._id}`);
+      const res = await axios.delete(`${BASE_URL}/api/post/delete/${value._id}`,{
+                withCredentials: true,
+      });
       if (res.status === 200) {
         toast.success(res.data.message);
         if (setValue && setType && params2) {

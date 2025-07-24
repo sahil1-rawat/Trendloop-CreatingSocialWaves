@@ -14,6 +14,7 @@ import {
 import { fetchPosts, sharePost } from '../utills/FetchPost';
 import { FaHeart, FaReply } from 'react-icons/fa';
 import { format } from 'timeago.js';
+import { BASE_URL } from '../../common';
 
 export const Comment = ({
   value,
@@ -55,11 +56,15 @@ export const Comment = ({
     }
 
     try {
-      const res = await axios.put(`/api/post/comment/${postId}`, {
+      const res = await axios.put(`${BASE_URL}/api/post/comment/${postId}`, {
         commentId: value._id,
         newComment,
+      },
+      {
         withCredentials: true,
-      });
+
+      }
+    );
       if (res.status === 200) {
         fetchPosts({ setPosts, setReels, setIsLoading, isAuth });
         toast.success(res.data.message);
@@ -75,10 +80,10 @@ export const Comment = ({
 
   const deleteComment = async () => {
     try {
-      const res = await axios.delete(`/api/post/comment/${postId}`, {
+      const res = await axios.delete(`${BASE_URL}/api/post/comment/${postId}`, {
         data: { commentId },
-        withCredentials: true,
-      });
+
+      },{        withCredentials: true,});
       if (res.status === 200) {
         setTimeout(() => {
           fetchPosts({ setPosts, setReels, setIsLoading, isAuth });

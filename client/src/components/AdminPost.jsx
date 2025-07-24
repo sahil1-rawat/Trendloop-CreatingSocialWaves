@@ -8,6 +8,8 @@ import { format } from 'date-fns';
 import AdminPostVideo from './AdminPostVideo';
 
 const ManagePostsPage = () => {
+  const BASE_URL = import.meta.env.VITE_SOCKET_URL;
+
   const [posts, setPosts] = useState([]);
   const [selectedPost, setSelectedPost] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
@@ -15,7 +17,15 @@ const videoRefs = useRef({});
 
 const fetchPosts=async()=>{
     try {
-      const res = await axios.get('/api/admin/posts');
+      const res = await axios.get(`${BASE_URL}/api/admin/posts`,
+        {
+        withCredentials: true,
+
+        }
+        
+
+
+      );
       setPosts(res.data);
     } catch (err) {
       console.error('Error fetching posts:', err);
@@ -29,7 +39,10 @@ const fetchPosts=async()=>{
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`/api/admin/posts/${selectedPost._id}`);
+      await axios.delete(`${BASE_URL}/api/admin/posts/${selectedPost._id}`,{
+        withCredentials: true,
+
+        });
       setPosts(posts.filter((p) => p._id !== selectedPost._id));
       setOpenDialog(false);
       toast.success( 'Post deleted successfully' );

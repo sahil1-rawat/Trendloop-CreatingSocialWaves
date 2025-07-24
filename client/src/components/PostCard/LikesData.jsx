@@ -12,6 +12,7 @@ import { fetchUser } from '../../utills/FetchPost';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { Link } from 'react-router-dom';
+import { BASE_URL } from '../../../common';
 const LikesData = ({ totalLikes, value }) => {
   // follow unfollow users
   const { usersData, setUsersData, setIsAuth } = useUserStore();
@@ -33,7 +34,14 @@ const LikesData = ({ totalLikes, value }) => {
   }, [usersData, value.owner, likesData]);
   const followandUnfollowUsers = async (id) => {
     try {
-      const res = await axios.post(`/api/user/follow/${id}`);
+      const res = await axios.post(`${BASE_URL}/api/user/follow/${id}`,
+        {},
+        {
+          withCredentials: true,
+        }
+
+
+      );
 
       if (res.status === 200) {
         //! 'like._id':true/false
@@ -53,7 +61,12 @@ const LikesData = ({ totalLikes, value }) => {
 
   const postsLikesData = async () => {
     try {
-      const res = await axios.post(`/api/post/likes/${value._id}`);
+      const res = await axios.post(`${BASE_URL}/api/post/likes/${value._id}`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
       if (res.status === 200) {
         setLikesData(res.data.posts.likes);
       }
