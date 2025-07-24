@@ -6,7 +6,7 @@ const setupSocket = (server) => {
   // Initialize Socket.IO server with CORS settings
   const io = new SocketIOServer(server, {
     cors: {
-      origin: [process.env.ORIGIN,'https://trendloop-creating-social-waves.vercel.app'], // Allow requests from this origin
+      origin: ['https://trendloop-creating-social-waves.vercel.app',process.env.ORIGIN], // Allow requests from this origin
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE','OPTIONS'],
       credentials: true, // Enable credentials (cookies, authorization headers, etc.)
     },

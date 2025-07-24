@@ -34,7 +34,7 @@ app.use(
     credentials: true, // Allow cookies to be sent with requests
   })
 );
-
+app.options('*', cors());
 app.get('/', (req, res) => {
   res.send(`Server is working on ${port}`);
 });
