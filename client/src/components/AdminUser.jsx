@@ -12,6 +12,8 @@ import {
   AlertDialogDescription,
 } from "@/components/ui/alert-dialog";
 import { BASE_URL } from '../../common';
+import { format } from 'date-fns';
+
 
 const AdminUsersPage = () => {
   const [users, setUsers] = useState([]);
@@ -64,7 +66,7 @@ const AdminUsersPage = () => {
     (user) =>
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  )  .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));  ;
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen pb-16">
@@ -86,6 +88,7 @@ const AdminUsersPage = () => {
             <thead className="bg-gray-200 text-gray-700">
               <tr>
                 <th className="text-left py-3 px-4">Name</th>
+                <th className="text-left py-3 px-4">Date of Joining</th>
                 <th className="text-left py-3 px-4">Email</th>
                 <th className="text-left py-3 px-4">Gender</th>
                 <th className="text-left py-3 px-4">Status</th>
@@ -97,6 +100,8 @@ const AdminUsersPage = () => {
                 filteredUsers.map((user) => (
                   <tr key={user._id} className="border-t hover:bg-gray-50">
                     <td className="py-3 px-4">{user.name}</td>
+                    <td className="py-3 px-4">{  format(new Date(user.createdAt), 'dd MMM yyyy')
+                    }</td>
                     <td className="py-3 px-4">{user.email}</td>
                     <td className="py-3 px-4 capitalize">{user.gender}</td>
                     <td className="py-3 px-4">

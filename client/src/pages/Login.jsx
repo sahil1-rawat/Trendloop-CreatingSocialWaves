@@ -2,18 +2,20 @@ import React, { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import { Link, useNavigate } from 'react-router-dom';
 import { useUserStore } from '../../store/index.jsx';
-import Loading from '../components/Loading.jsx';
+import Loading, { LoadingAnimation } from '../components/Loading.jsx';
 import axios from 'axios';
 import { BASE_URL } from '../../common.js';
 
 const Login = () => {
   const [email, setEmail] = useState('');
+  const [isClicked, setIsClicked] = useState(false);
   const [password, setPassword] = useState('');
   const { isLoading, setIsAuth, setUsersData } = useUserStore();
 
   const navigate = useNavigate();
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsClicked(true);
     try {
       const res=await axios.post(`${import.meta.env.VITE_SOCKET_URL}/api/auth/login`, {
         email,
@@ -35,7 +37,11 @@ const Login = () => {
       }
     } catch (error) {
       toast.dismiss();
-      toast.error(error?.response?.data?.message);
+      // toast.error(error?.response?.data?.message);
+      toast.error("Failed to Login");
+    }
+    finally{
+      setIsClicked(false);
     }
   };
 
@@ -96,7 +102,8 @@ const Login = () => {
 
                   <div className='text-center mt-6'>
                     <button type='submit' className='auth-btn w-full'>
-                      Login
+                                            {isClicked?<div><LoadingAnimation/></div>: "Login "}
+                      
                     </button>
                   </div>
                 </div>
@@ -108,7 +115,7 @@ const Login = () => {
                 <Link
                   to='/register'
                   className='bg-white text-indigo-500 px-6 rounded-full font-semibold hover:underline transition'>
-                  Register Now
+                   Register Now
                 </Link>
               </div>
             </div>

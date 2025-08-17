@@ -3,15 +3,18 @@ import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import axios from 'axios';
 import { usePostStore, useUserStore } from '../../store';
-import Loading from '../components/Loading';
+import Loading, { LoadingAnimation } from '../components/Loading';
 
 import { FaEdit, FaPen } from 'react-icons/fa';
 import { FiEdit2 } from 'react-icons/fi';
 import { BASE_URL } from '../../common';
+import { Loader, Loader2Icon } from 'lucide-react';
 
 const Register = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+    const [isClicked, setIsClicked] = useState(false);
+  
   const [password, setPassword] = useState('');
   const [gender, setGender] = useState('');
   const [file, setFile] = useState('');
@@ -38,6 +41,7 @@ const Register = () => {
   formData.append('file', file);
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsClicked(true);
     try {
 
       const res=await axios.post(`${import.meta.env.VITE_SOCKET_URL}/api/auth/register`,formData,{withCredentials:true})
@@ -57,7 +61,10 @@ const Register = () => {
       }
     } catch (err) {
       toast.dismiss();
-      toast.error(err.response.data.message);
+      toast.error("Failed to Register");
+    }
+    finally{
+      setIsClicked(false);
     }
   };
   return (
@@ -172,7 +179,7 @@ const Register = () => {
                   </div>
                   <div className='text-center mt-6'>
                     <button type='submit' className='auth-btn w-full'>
-                      Register
+                      {isClicked?<div><LoadingAnimation/></div>: "Register"}
                     </button>
                   </div>
                 </div>
